@@ -1,0 +1,60 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+*.env
+
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+.venv/
+venv/
+ENV/
+env/
+
+# Build outputs
+.next/
+out/
+dist/
+build/
+*.egg-info/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+.cache/
+coverage/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+database/backups/*
+!database/backups/.gitkeep
+
+# Backups
+*.backup
+
+# Misc
+.turbo
+.vercel
+*.tsbuildinfo
+playwright-report/
+test-results/
