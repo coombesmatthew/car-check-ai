@@ -353,31 +353,11 @@ export default function CheckResult({ data }: { data: FreeCheckResponse }) {
         )}
       </div>
 
-      {/* Upsell */}
-      <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 text-center">
-        <h3 className="font-semibold text-blue-900 mb-1">
-          Want the full picture?
-        </h3>
-        <p className="text-sm text-blue-700 mb-3">
-          Get stolen vehicle check, outstanding finance, insurance write-off
-          history, market valuation, and an AI-powered risk assessment.
-        </p>
-        <div className="flex justify-center gap-3">
-          <button
-            disabled
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium opacity-50 cursor-not-allowed"
-          >
-            Full Check - Coming Soon
-          </button>
-          <a
-            href="https://ownvehicle.askmid.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-4 py-2 border border-blue-300 text-blue-700 rounded-lg text-sm font-medium hover:bg-blue-100 transition-colors"
-          >
-            Check Insurance (askMID)
-          </a>
-        </div>
+      {/* Free tier badge */}
+      <div className="text-center pt-2">
+        <span className="inline-block bg-slate-100 text-slate-500 text-xs px-3 py-1 rounded-full">
+          Free Check &middot; Powered by DVLA &amp; DVSA data
+        </span>
       </div>
     </div>
   );

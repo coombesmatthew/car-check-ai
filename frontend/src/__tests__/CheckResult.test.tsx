@@ -163,9 +163,9 @@ describe("CheckResult", () => {
     expect(screen.getByText("5x")).toBeInTheDocument();
   });
 
-  it("shows upsell section", () => {
+  it("shows free tier badge", () => {
     render(<CheckResult data={makeResponse()} />);
-    expect(screen.getByText("Want the full picture?")).toBeInTheDocument();
+    expect(screen.getByText(/Free Check/)).toBeInTheDocument();
   });
 
   it("handles null vehicle gracefully", () => {
