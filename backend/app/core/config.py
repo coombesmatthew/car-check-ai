@@ -19,9 +19,13 @@ class Settings(BaseSettings):
     REDIS_DVLA_TTL: int = 86400  # 24 hours - DVLA data changes infrequently
     REDIS_MOT_TTL: int = 3600  # 1 hour - MOT data updated daily
 
-    # DVSA MOT History API
+    # DVSA MOT History API (new OAuth 2.0 API)
     MOT_API_KEY: str = ""
-    MOT_API_URL: str = "https://beta.check-mot.service.gov.uk/trade/vehicles/mot-tests"
+    MOT_CLIENT_ID: str = ""
+    MOT_CLIENT_SECRET: str = ""
+    MOT_TOKEN_URL: str = "https://login.microsoftonline.com/a455b827-244f-4c97-b5b4-ce5d13b4d00c/oauth2/v2.0/token"
+    MOT_SCOPE_URL: str = "https://tapi.dvsa.gov.uk/.default"
+    MOT_API_URL: str = "https://history.mot.api.gov.uk/v1/trade/vehicles/registration"
 
     # DVLA Vehicle Enquiry Service API
     DVLA_VES_API_KEY: str = ""
@@ -49,13 +53,23 @@ class Settings(BaseSettings):
 
     # Email
     RESEND_API_KEY: str = ""
-    FROM_EMAIL: str = "reports@carcheck.ai"
+    FROM_EMAIL: str = "reports@vericar.co.uk"
+
+    # Gumtree Scraping
+    GUMTREE_TIMEOUT: float = 20.0
+    GUMTREE_REQUEST_DELAY: float = 1.5
+    GUMTREE_CACHE_TTL: int = 1800
+    GUMTREE_USER_AGENT: str = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
 
     # CORS
     ALLOWED_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:3001"]
 
     # Security
     SECRET_KEY: str = "your-secret-key-change-in-production"
+
+    # Rate limiting
+    RATE_LIMIT_PER_MINUTE: int = 30
+    RATE_LIMIT_BURST: int = 10
 
     # Monitoring
     SENTRY_DSN: str = ""

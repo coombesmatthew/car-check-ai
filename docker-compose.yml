@@ -29,6 +29,10 @@ services:
       - DATABASE_URL=postgresql://carcheck:password@postgres:5432/carcheck
       - REDIS_URL=redis://redis:6379
       - MOT_API_KEY=${MOT_API_KEY}
+      - MOT_CLIENT_ID=${MOT_CLIENT_ID}
+      - MOT_CLIENT_SECRET=${MOT_CLIENT_SECRET}
+      - MOT_TOKEN_URL=${MOT_TOKEN_URL}
+      - MOT_SCOPE_URL=${MOT_SCOPE_URL}
       - DVLA_VES_API_KEY=${DVLA_VES_API_KEY}
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
       - ANTHROPIC_MODEL=${ANTHROPIC_MODEL:-claude-sonnet-4-5-20250929}

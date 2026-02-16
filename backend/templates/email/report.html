@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Vehicle Report - VeriCar</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+  <!-- Wrapper -->
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc;">
+    <tr>
+      <td align="center" style="padding: 24px 16px;">
+        <!-- Main container -->
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width: 600px; width: 100%; background-color: #ffffff; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0;">
+
+          <!-- Header -->
+          <tr>
+            <td style="background-color: #1e293b; padding: 24px 32px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td>
+                    <table role="presentation" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td style="background-color: #2563eb; border-radius: 8px; width: 36px; height: 36px; text-align: center; vertical-align: middle;">
+                          <span style="color: #ffffff; font-size: 14px; font-weight: bold;">&#9745;</span>
+                        </td>
+                        <td style="padding-left: 12px;">
+                          <span style="color: #ffffff; font-size: 18px; font-weight: 700;">Car<span style="color: #60a5fa;">Verify</span></span>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding-top: 12px;">
+                    <span style="color: #ffffff; font-size: 20px; font-weight: 600;">Your Vehicle Report is Ready</span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Vehicle summary bar -->
+          <tr>
+            <td style="background-color: #f1f5f9; padding: 16px 32px; border-bottom: 1px solid #e2e8f0;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td>
+                    <span style="display: inline-block; background-color: #fefce8; border: 2px solid #fde047; font-family: 'Courier New', monospace; font-weight: 700; font-size: 16px; padding: 4px 12px; border-radius: 4px; color: #1e293b; letter-spacing: 2px;">{{ registration }}</span>
+                  </td>
+                  <td style="text-align: right;">
+                    <span style="color: #1e293b; font-weight: 600; font-size: 14px;">{{ make }} {{ model }}</span>
+                    <br>
+                    <span style="color: #64748b; font-size: 13px;">{{ year }}</span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Condition Score -->
+          <tr>
+            <td style="padding: 24px 32px; text-align: center; border-bottom: 1px solid #e2e8f0;">
+              <span style="color: #64748b; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Condition Score</span>
+              <br>
+              <span style="font-size: 48px; font-weight: 700; color: {{ score_colour }};">{{ condition_score }}</span>
+              <span style="color: #64748b; font-size: 14px;">/100</span>
+            </td>
+          </tr>
+
+          <!-- Verdict banner -->
+          {% if verdict %}
+          <tr>
+            <td style="background-color: {{ verdict_bg_colour }}; padding: 20px 32px; text-align: center;">
+              <span style="color: #ffffff; font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px;">AI Verdict</span>
+              <br>
+              <span style="color: #ffffff; font-size: 28px; font-weight: 700;">{{ verdict }}</span>
+            </td>
+          </tr>
+          {% endif %}
+
+          <!-- Key findings -->
+          <tr>
+            <td style="padding: 24px 32px;">
+              <h2 style="margin: 0 0 16px 0; color: #1e293b; font-size: 16px; font-weight: 600;">Key Findings</h2>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                {% for finding in key_findings %}
+                <tr>
+                  <td style="padding: 6px 0; vertical-align: top; width: 24px;">
+                    <span style="color: {{ finding.colour }}; font-size: 14px;">{{ finding.icon }}</span>
+                  </td>
+                  <td style="padding: 6px 0 6px 8px; color: #334155; font-size: 14px; line-height: 1.5;">
+                    {{ finding.text }}
+                  </td>
+                </tr>
+                {% endfor %}
+              </table>
+            </td>
+          </tr>
+
+          <!-- CTA button -->
+          <tr>
+            <td style="padding: 0 32px 24px 32px; text-align: center;">
+              <a href="{{ report_url }}" style="display: inline-block; background-color: #2563eb; color: #ffffff; font-size: 14px; font-weight: 600; text-decoration: none; padding: 12px 32px; border-radius: 8px;">
+                View Full Report
+              </a>
+              <p style="margin: 12px 0 0 0; color: #94a3b8; font-size: 12px;">
+                Your full PDF report is also attached to this email.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Divider -->
+          <tr>
+            <td style="padding: 0 32px;">
+              <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 0;">
+            </td>
+          </tr>
+
+          <!-- Data sources -->
+          <tr>
+            <td style="padding: 16px 32px;">
+              <p style="margin: 0; color: #94a3b8; font-size: 11px; line-height: 1.6;">
+                <strong>Data sources:</strong> DVLA Vehicle Enquiry Service, DVSA MOT History API.<br>
+                This report is AI-generated and advisory only. It should not replace a professional vehicle inspection.
+                Always verify details independently before making a purchase decision.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #f8fafc; padding: 20px 32px; border-top: 1px solid #e2e8f0;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td>
+                    <span style="color: #64748b; font-size: 12px;">&copy; {{ year_now }} VeriCar &mdash; vericar.co.uk</span>
+                  </td>
+                  <td style="text-align: right;">
+                    <a href="{{ unsubscribe_url }}" style="color: #94a3b8; font-size: 12px; text-decoration: underline;">Unsubscribe</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

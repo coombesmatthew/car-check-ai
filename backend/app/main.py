@@ -10,6 +10,7 @@ from sentry_sdk.integrations.fastapi import FastApiIntegration
 from app.core.config import settings
 from app.core.logging import setup_logging
 from app.core.cache import cache
+from app.core.middleware import SecurityHeadersMiddleware, RateLimitMiddleware
 from app.api.v1.router import api_router
 
 # Initialize Sentry (optional)
@@ -52,6 +53,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.add_middleware(GZipMiddleware, minimum_size=1000)
+app.add_middleware(SecurityHeadersMiddleware)
+if not settings.DEBUG:
+    app.add_middleware(
+        RateLimitMiddleware,
+        requests_per_minute=settings.RATE_LIMIT_PER_MINUTE,
+        burst=settings.RATE_LIMIT_BURST,
+    )
 
 # Include API routers
 app.include_router(api_router, prefix="/api/v1")

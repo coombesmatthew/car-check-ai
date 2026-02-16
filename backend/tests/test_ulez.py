@@ -20,12 +20,15 @@ class TestULEZCompliance:
         assert result["status"] == "exempt"
         assert result["zones"]["london_ulez"] is True
         assert result["zones"]["london_lez"] is True
-        assert result["zones"]["clean_air_zone_d"] is True
+        assert result["zones"]["oxford_zez"] is True
+        assert result["total_zones"] == 14
+        assert result["compliant_zones"] == 14
 
     def test_hydrogen_always_exempt(self):
         result = calculate_ulez_compliance({"fuelType": "HYDROGEN"})
         assert result["compliant"] is True
         assert result["status"] == "exempt"
+        assert result["compliant_zones"] == 14
 
     def test_electric_case_insensitive(self):
         result = calculate_ulez_compliance({"fuelType": "Electric"})
@@ -36,10 +39,14 @@ class TestULEZCompliance:
             "fuelType": "PETROL",
             "euroStatus": "Euro 4",
         })
-        assert result["compliant"] is True
-        assert result["status"] == "compliant"
         assert result["euro_standard"] == 4
-        assert result["daily_charge"] is None
+        # Compliant with main zones (ULEZ, CAZs) but not Oxford ZEZ
+        assert result["zones"]["london_ulez"] is True
+        assert result["zones"]["birmingham_caz"] is True
+        assert result["zones"]["oxford_zez"] is False
+        # Overall non-compliant because of Oxford ZEZ
+        assert result["compliant"] is False
+        assert result["non_compliant_zones"] == 1
 
     def test_petrol_euro_3_non_compliant(self):
         result = calculate_ulez_compliance({
@@ -48,16 +55,19 @@ class TestULEZCompliance:
         })
         assert result["compliant"] is False
         assert result["status"] == "non_compliant"
-        assert result["daily_charge"] == "£12.50 (London ULEZ)"
         assert result["zones"]["london_ulez"] is False
-        assert result["zones"]["clean_air_zone_d"] is False
+        assert result["non_compliant_zones"] >= 2  # ULEZ + Oxford ZEZ at minimum
 
     def test_diesel_euro_6_compliant(self):
         result = calculate_ulez_compliance({
             "fuelType": "DIESEL",
             "euroStatus": "Euro 6",
         })
-        assert result["compliant"] is True
+        # Compliant with all zones except Oxford ZEZ
+        assert result["zones"]["london_ulez"] is True
+        assert result["zones"]["birmingham_caz"] is True
+        assert result["zones"]["glasgow_lez"] is True
+        assert result["zones"]["oxford_zez"] is False
         assert result["euro_standard"] == 6
 
     def test_diesel_euro_5_non_compliant(self):
@@ -66,14 +76,16 @@ class TestULEZCompliance:
             "euroStatus": "Euro 5",
         })
         assert result["compliant"] is False
+        assert result["zones"]["london_ulez"] is False
 
     def test_diesel_euro_6d_variant(self):
         result = calculate_ulez_compliance({
             "fuelType": "DIESEL",
             "euroStatus": "EURO6D",
         })
-        assert result["compliant"] is True
         assert result["euro_standard"] == 6
+        assert result["zones"]["london_ulez"] is True
+        assert result["zones"]["birmingham_caz"] is True
 
     def test_lez_always_passes_for_cars(self):
         result = calculate_ulez_compliance({
@@ -87,7 +99,8 @@ class TestULEZCompliance:
             "fuelType": "PETROL",
             "yearOfManufacture": 2012,
         })
-        assert result["compliant"] is True
+        # 2012 petrol = Euro 6, compliant with main zones
+        assert result["zones"]["london_ulez"] is True
         assert result["euro_inferred"] is True
 
     def test_inferred_from_year_diesel_2014(self):
@@ -95,16 +108,18 @@ class TestULEZCompliance:
             "fuelType": "DIESEL",
             "yearOfManufacture": 2014,
         })
-        # 2014 diesel = Euro 5, not compliant
+        # 2014 diesel = Euro 5, not compliant with ULEZ
         assert result["compliant"] is False
+        assert result["zones"]["london_ulez"] is False
 
     def test_inferred_from_year_diesel_2016(self):
         result = calculate_ulez_compliance({
             "fuelType": "DIESEL",
             "yearOfManufacture": 2016,
         })
-        # 2016 diesel = Euro 6, compliant
-        assert result["compliant"] is True
+        # 2016 diesel = Euro 6, compliant with main zones
+        assert result["zones"]["london_ulez"] is True
+        assert result["zones"]["birmingham_caz"] is True
 
     def test_no_euro_no_year_returns_unknown(self):
         result = calculate_ulez_compliance({"fuelType": "PETROL"})
@@ -116,7 +131,48 @@ class TestULEZCompliance:
             "fuelType": "HEAVY OIL",
             "euroStatus": "Euro 6",
         })
-        assert result["compliant"] is True
+        # Should be treated as diesel, compliant with main zones
+        assert result["zones"]["london_ulez"] is True
+        assert result["zones"]["birmingham_caz"] is True
+
+    def test_zone_details_populated(self):
+        result = calculate_ulez_compliance({
+            "fuelType": "PETROL",
+            "euroStatus": "Euro 4",
+        })
+        assert len(result["zone_details"]) == 14
+        assert result["total_zones"] == 14
+        # Check zone detail structure
+        zone = result["zone_details"][0]
+        assert "zone_id" in zone
+        assert "name" in zone
+        assert "region" in zone
+        assert "compliant" in zone
+        assert "charge" in zone
+
+    def test_oxford_zez_only_evs_exempt(self):
+        """Oxford ZEZ charges all non-EV vehicles."""
+        # Petrol Euro 6 — not exempt from Oxford ZEZ
+        result = calculate_ulez_compliance({
+            "fuelType": "PETROL",
+            "euroStatus": "Euro 6",
+        })
+        assert result["zones"]["oxford_zez"] is False
+
+        # Electric — exempt from Oxford ZEZ
+        result = calculate_ulez_compliance({"fuelType": "ELECTRICITY"})
+        assert result["zones"]["oxford_zez"] is True
+
+    def test_scottish_lez_zones(self):
+        """Scottish LEZs should be compliant for Euro 4+ petrol and Euro 6+ diesel."""
+        result = calculate_ulez_compliance({
+            "fuelType": "PETROL",
+            "euroStatus": "Euro 4",
+        })
+        assert result["zones"]["glasgow_lez"] is True
+        assert result["zones"]["edinburgh_lez"] is True
+        assert result["zones"]["aberdeen_lez"] is True
+        assert result["zones"]["dundee_lez"] is True
 
 
 class TestParseEuroNumber:

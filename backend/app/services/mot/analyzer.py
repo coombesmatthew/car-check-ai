@@ -5,10 +5,10 @@ from app.core.logging import logger
 
 # Severity weights for condition scoring (out of 100)
 SEVERITY_WEIGHTS = {
-    "DANGEROUS": -30,
+    "DANGEROUS": -25,
     "MAJOR": -15,
     "MINOR": -5,
-    "ADVISORY": -2,
+    "ADVISORY": -3,
 }
 
 # Average annual mileage in UK is ~7,400 miles
@@ -51,6 +51,7 @@ class MOTAnalyzer:
         condition_score = self._calculate_condition_score(sorted_tests)
         failure_patterns = self._analyze_failure_patterns(sorted_tests)
         mot_summary = self._build_summary(vehicle, sorted_tests)
+        mot_tests_full = self._build_full_test_records(sorted_tests)
 
         return {
             "clocking_analysis": clocking,
@@ -58,6 +59,8 @@ class MOTAnalyzer:
             "mileage_timeline": mileage_timeline,
             "failure_patterns": failure_patterns,
             "mot_summary": mot_summary,
+            "mot_tests": mot_tests_full,
+            "raw_tests": sorted_tests,
         }
 
     def _empty_result(self) -> Dict:
@@ -114,6 +117,19 @@ class MOTAnalyzer:
 
             if next_r["miles"] < current["miles"]:
                 drop = current["miles"] - next_r["miles"]
+
+                # Ignore small drops (<200 miles) within 14 days — common
+                # fail/retest pattern where odometer readings differ slightly
+                try:
+                    date_a = datetime.strptime(current["date"][:10], "%Y-%m-%d")
+                    date_b = datetime.strptime(next_r["date"][:10], "%Y-%m-%d")
+                    days_apart = abs((date_b - date_a).days)
+                except (ValueError, TypeError):
+                    days_apart = 999
+
+                if drop < 200 and days_apart <= 14:
+                    continue
+
                 flags.append({
                     "type": "mileage_drop",
                     "severity": "high",
@@ -217,26 +233,120 @@ class MOTAnalyzer:
         return timeline
 
     def _calculate_condition_score(self, tests: List[Dict]) -> int:
-        """Calculate vehicle condition score (0-100) from MOT defect history.
+        """Calculate vehicle condition score (0-100) from MOT history.
 
-        Weights: DANGEROUS(-30), MAJOR(-15), MINOR(-5), ADVISORY(-2).
-        Only considers defects from the last 3 tests to reflect current condition.
+        Factors in:
+        1. Defect history across ALL tests with recency weighting
+        2. Test failure rate
+        3. Mileage relative to vehicle age
+        4. Advisory trend (improving vs deteriorating)
+        5. History length confidence cap
+
+        Score bands:
+        - 90-100: Excellent condition, clean history
+        - 75-89:  Good condition, some wear
+        - 60-74:  Fair, notable issues
+        - 40-59:  Poor, significant concerns
+        - 0-39:   Very poor, major red flags
         """
-        score = 100
-        recent_tests = tests[-3:] if len(tests) >= 3 else tests
+        if not tests:
+            return 50  # No data, neutral score
 
-        for test in recent_tests:
+        score = 100.0
+        num_tests = len(tests)
+
+        # --- 1. Defect deductions with recency weighting ---
+        # Last test = full weight, second-to-last = 80%, third-to-last = 60%,
+        # anything older = 30%
+        for i, test in enumerate(tests):
+            reverse_index = num_tests - 1 - i  # 0 = oldest, num_tests-1 = newest
+            if reverse_index == 0:
+                recency_weight = 1.0
+            elif reverse_index == 1:
+                recency_weight = 0.8
+            elif reverse_index == 2:
+                recency_weight = 0.6
+            else:
+                recency_weight = 0.3
+
             defects = test.get("defects", [])
             if not defects:
-                # Also check rfrAndComments for older API format
                 defects = test.get("rfrAndComments", [])
 
             for defect in defects:
                 severity = defect.get("type", "").upper()
                 weight = SEVERITY_WEIGHTS.get(severity, 0)
-                score += weight
+                score += weight * recency_weight
 
-        return max(0, min(100, score))
+        # --- 2. Test failure rate deduction ---
+        failures = sum(
+            1 for t in tests if t.get("testResult", "").upper() == "FAILED"
+        )
+        score -= failures * 8
+
+        # --- 3. Mileage factor ---
+        # Compare actual mileage to expected mileage based on vehicle age
+        if num_tests >= 1:
+            first_test = tests[0]
+            latest_test = tests[-1]
+
+            try:
+                first_date = datetime.strptime(
+                    first_test["completedDate"][:10], "%Y-%m-%d"
+                )
+                latest_date = datetime.strptime(
+                    latest_test["completedDate"][:10], "%Y-%m-%d"
+                )
+                latest_odometer = int(latest_test.get("odometerValue", 0))
+
+                # Estimate vehicle age from first MOT (typically at 3 years old)
+                # so add 3 years to first test date for total age estimate
+                estimated_age_years = (
+                    (latest_date - first_date).days / 365.25
+                ) + 3.0
+
+                if estimated_age_years > 0 and latest_odometer > 0:
+                    expected_mileage = estimated_age_years * UK_AVG_ANNUAL_MILEAGE
+                    mileage_ratio = latest_odometer / expected_mileage
+
+                    if mileage_ratio > 2.0:
+                        score -= 10
+                    elif mileage_ratio > 1.5:
+                        score -= 5
+                    # Low mileage with total > 10k is fine -- no deduction
+            except (ValueError, TypeError, KeyError):
+                pass  # Cannot determine mileage factor, skip
+
+        # --- 4. Advisory trend ---
+        # Look at last 3 tests; if advisories are increasing, car is
+        # deteriorating. If decreasing, slight bonus.
+        if num_tests >= 3:
+            recent_3 = tests[-3:]
+            advisory_counts = []
+            for t in recent_3:
+                defects = t.get("defects", []) or t.get("rfrAndComments", [])
+                count = sum(
+                    1 for d in defects
+                    if d.get("type", "").upper() == "ADVISORY"
+                )
+                advisory_counts.append(count)
+
+            # Check if strictly increasing
+            if advisory_counts[0] < advisory_counts[1] < advisory_counts[2]:
+                score -= 5  # Deteriorating trend
+            # Check if strictly decreasing
+            elif advisory_counts[0] > advisory_counts[1] > advisory_counts[2]:
+                score += 3  # Improving trend
+
+        # --- 5. History length confidence cap ---
+        # Cars with very little history cannot achieve top scores due to
+        # insufficient evidence of sustained good condition.
+        if num_tests == 1:
+            score = min(score, 85)
+        elif num_tests == 2:
+            score = min(score, 92)
+
+        return max(0, min(100, round(score)))
 
     def _analyze_failure_patterns(self, tests: List[Dict]) -> List[Dict]:
         """Identify recurring failure patterns across MOT history."""
@@ -276,6 +386,54 @@ class MOTAnalyzer:
 
         return patterns
 
+    def _build_full_test_records(self, tests: List[Dict]) -> List[Dict]:
+        """Build detailed records for each individual MOT test.
+
+        Includes test number, date, result, mileage, expiry, and all
+        advisories/defects with their severity and text.
+        """
+        records = []
+        # Reverse so newest test is first
+        for i, test in enumerate(reversed(tests)):
+            defects = test.get("defects", []) or test.get("rfrAndComments", [])
+            advisories = []
+            failures = []
+            dangerous_items = []
+
+            for defect in defects:
+                dtype = defect.get("type", "ADVISORY").upper()
+                text = defect.get("text", defect.get("comment", ""))
+                item = {"type": dtype, "text": text}
+
+                if dtype == "ADVISORY":
+                    advisories.append(item)
+                elif dtype == "DANGEROUS":
+                    dangerous_items.append(item)
+                else:
+                    failures.append(item)
+
+            odometer = test.get("odometerValue")
+            try:
+                odometer_int = int(odometer) if odometer else None
+            except (ValueError, TypeError):
+                odometer_int = None
+
+            records.append({
+                "test_number": i + 1,
+                "test_id": test.get("motTestNumber", ""),
+                "date": test.get("completedDate", "")[:10],
+                "result": test.get("testResult", ""),
+                "odometer": odometer_int,
+                "odometer_unit": test.get("odometerUnit", "mi"),
+                "expiry_date": test.get("expiryDate"),
+                "advisories": advisories,
+                "failures": failures,
+                "dangerous": dangerous_items,
+                "total_defects": len(defects),
+            })
+
+        return records
+
     def _build_summary(self, vehicle: Dict, tests: List[Dict]) -> Dict:
         """Build a concise MOT summary."""
         latest_test = tests[-1] if tests else None
@@ -288,6 +446,7 @@ class MOTAnalyzer:
             "make": vehicle.get("make"),
             "model": vehicle.get("model"),
             "first_used_date": vehicle.get("firstUsedDate"),
+            "has_outstanding_recall": vehicle.get("hasOutstandingRecall"),
         }
 
         if latest_test:

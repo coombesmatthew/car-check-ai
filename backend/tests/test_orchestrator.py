@@ -99,7 +99,9 @@ class TestCheckOrchestrator:
             assert result.clocking_analysis.clocked is False
             assert result.condition_score is not None
             assert result.ulez_compliance is not None
-            assert result.ulez_compliance.compliant is True
+            # Euro 6 petrol is compliant with all zones except Oxford ZEZ (EVs only)
+            assert result.ulez_compliance.zones["london_ulez"] is True
+            assert result.ulez_compliance.compliant_zones >= 13
             assert len(result.mileage_timeline) == 3
             assert "DVLA VES API" in result.data_sources
             assert "DVSA MOT History API" in result.data_sources

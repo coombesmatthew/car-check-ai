@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import Home from "@/app/page";
+import SearchSection from "@/components/SearchSection";
 import * as api from "@/lib/api";
 
 // Mock the API module
@@ -60,53 +60,62 @@ const MOCK_RESPONSE: api.FreeCheckResponse = {
   ulez_compliance: {
     compliant: true,
     status: "compliant",
-    reason: "Petrol vehicle with Euro 6 - meets Euro 4 requirement",
-    zones: { london_ulez: true, london_lez: true, clean_air_zone_d: true },
+    reason: "Petrol vehicle with Euro 6 — meets emission requirements for all 8 zones affecting cars",
+    zones: { london_ulez: true, birmingham_caz: true, bristol_caz: true },
   },
+  mot_tests: [],
+  tax_calculation: null,
+  safety_rating: null,
+  vehicle_stats: null,
+  finance_check: null,
+  stolen_check: null,
+  write_off_check: null,
+  plate_changes: null,
+  valuation: null,
   checked_at: "2024-01-15T12:00:00",
   data_sources: ["DVLA VES API", "DVSA MOT History API"],
 };
 
-describe("Home Page", () => {
+describe("SearchSection", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it("renders the search form", () => {
-    render(<Home />);
+    render(<SearchSection />);
     expect(screen.getByPlaceholderText("AB12 CDE")).toBeInTheDocument();
     expect(screen.getByText("Check")).toBeInTheDocument();
   });
 
   it("renders the page heading", () => {
-    render(<Home />);
+    render(<SearchSection />);
     expect(
-      screen.getByText("Check any UK vehicle instantly")
+      screen.getByText("Don't buy a clocked car.")
     ).toBeInTheDocument();
   });
 
   it("disables the button when input is too short", () => {
-    render(<Home />);
+    render(<SearchSection />);
     const button = screen.getByText("Check");
     expect(button).toBeDisabled();
   });
 
   it("enables the button when registration is entered", () => {
-    render(<Home />);
+    render(<SearchSection />);
     const input = screen.getByPlaceholderText("AB12 CDE");
     fireEvent.change(input, { target: { value: "AB12CDE" } });
     expect(screen.getByText("Check")).not.toBeDisabled();
   });
 
   it("uppercases the input automatically", () => {
-    render(<Home />);
+    render(<SearchSection />);
     const input = screen.getByPlaceholderText("AB12 CDE") as HTMLInputElement;
     fireEvent.change(input, { target: { value: "ab12cde" } });
     expect(input.value).toBe("AB12CDE");
   });
 
   it("shows error for very short registration", async () => {
-    render(<Home />);
+    render(<SearchSection />);
     const input = screen.getByPlaceholderText("AB12 CDE");
     fireEvent.change(input, { target: { value: "A" } });
 
@@ -117,7 +126,7 @@ describe("Home Page", () => {
   it("calls API and shows results on submit", async () => {
     mockRunFreeCheck.mockResolvedValueOnce(MOCK_RESPONSE);
 
-    render(<Home />);
+    render(<SearchSection />);
     const input = screen.getByPlaceholderText("AB12 CDE");
     fireEvent.change(input, { target: { value: "AB12CDE" } });
     fireEvent.submit(input.closest("form")!);
@@ -136,7 +145,7 @@ describe("Home Page", () => {
   it("shows error message on API failure", async () => {
     mockRunFreeCheck.mockRejectedValueOnce(new Error("Vehicle not found"));
 
-    render(<Home />);
+    render(<SearchSection />);
     const input = screen.getByPlaceholderText("AB12 CDE");
     fireEvent.change(input, { target: { value: "ZZ99ZZZ" } });
     fireEvent.submit(input.closest("form")!);
@@ -152,7 +161,7 @@ describe("Home Page", () => {
       () => new Promise(() => {}) // Never resolves
     );
 
-    render(<Home />);
+    render(<SearchSection />);
     const input = screen.getByPlaceholderText("AB12 CDE");
     fireEvent.change(input, { target: { value: "AB12CDE" } });
 

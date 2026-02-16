@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Vehicle Report - {{ registration }} - VeriCar</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 20mm 15mm;
+      @bottom-center {
+        content: "VeriCar — vericar.co.uk";
+        font-size: 8pt;
+        color: #94a3b8;
+      }
+      @bottom-right {
+        content: "Page " counter(page) " of " counter(pages);
+        font-size: 8pt;
+        color: #94a3b8;
+      }
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      color: #334155;
+      font-size: 10pt;
+      line-height: 1.5;
+    }
+
+    .cover {
+      page-break-after: always;
+      text-align: center;
+      padding-top: 50mm;
+    }
+
+    .cover-brand {
+      font-size: 28pt;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 16mm;
+    }
+
+    .cover-brand span { color: #2563eb; }
+
+    .cover-reg {
+      display: inline-block;
+      background-color: #fefce8;
+      border: 3px solid #fde047;
+      font-family: 'Courier New', monospace;
+      font-weight: 700;
+      font-size: 28pt;
+      padding: 8px 24px;
+      border-radius: 6px;
+      letter-spacing: 4px;
+      color: #1e293b;
+      margin-bottom: 8mm;
+    }
+
+    .cover-vehicle {
+      font-size: 16pt;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 4mm;
+    }
+
+    .cover-year {
+      font-size: 12pt;
+      color: #64748b;
+      margin-bottom: 16mm;
+    }
+
+    .cover-score {
+      font-size: 60pt;
+      font-weight: 700;
+      margin-bottom: 2mm;
+    }
+
+    .cover-score-label {
+      font-size: 10pt;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 12mm;
+    }
+
+    .cover-verdict {
+      display: inline-block;
+      color: #ffffff;
+      font-size: 18pt;
+      font-weight: 700;
+      padding: 8px 40px;
+      border-radius: 8px;
+      text-transform: uppercase;
+      margin-bottom: 20mm;
+    }
+
+    .verdict-buy { background-color: #059669; }
+    .verdict-negotiate { background-color: #f59e0b; }
+    .verdict-avoid { background-color: #dc2626; }
+    .score-green { color: #059669; }
+    .score-amber { color: #f59e0b; }
+    .score-red { color: #dc2626; }
+
+    .cover-meta {
+      font-size: 9pt;
+      color: #94a3b8;
+    }
+
+    .section {
+      margin-bottom: 6mm;
+    }
+
+    .section-title {
+      font-size: 13pt;
+      font-weight: 700;
+      color: #1e293b;
+      border-bottom: 2px solid #2563eb;
+      padding-bottom: 2mm;
+      margin-bottom: 4mm;
+    }
+
+    .section-content {
+      font-size: 10pt;
+      color: #334155;
+      line-height: 1.6;
+    }
+
+    .section-content p { margin-bottom: 2mm; }
+    .section-content ul { margin-left: 5mm; margin-bottom: 2mm; }
+    .section-content li { margin-bottom: 1mm; }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 4mm;
+    }
+
+    .data-table th {
+      background-color: #f1f5f9;
+      text-align: left;
+      padding: 2mm 3mm;
+      font-size: 9pt;
+      font-weight: 600;
+      color: #475569;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .data-table td {
+      padding: 2mm 3mm;
+      font-size: 9pt;
+      border-bottom: 1px solid #f1f5f9;
+      color: #334155;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 1px 8px;
+      border-radius: 4px;
+      font-size: 8pt;
+      font-weight: 600;
+    }
+
+    .badge-pass { background-color: #d1fae5; color: #065f46; }
+    .badge-fail { background-color: #fee2e2; color: #991b1b; }
+    .badge-warn { background-color: #fef3c7; color: #92400e; }
+    .badge-neutral { background-color: #f1f5f9; color: #475569; }
+
+    .mot-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 4mm;
+      font-size: 8pt;
+    }
+
+    .mot-table th {
+      background-color: #f1f5f9;
+      text-align: left;
+      padding: 1.5mm 2mm;
+      font-weight: 600;
+      color: #475569;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .mot-table td {
+      padding: 1.5mm 2mm;
+      border-bottom: 1px solid #f1f5f9;
+      color: #334155;
+    }
+
+    .zone-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 4mm;
+      font-size: 8pt;
+    }
+
+    .zone-table th {
+      background-color: #f1f5f9;
+      text-align: left;
+      padding: 1.5mm 2mm;
+      font-weight: 600;
+      color: #475569;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .zone-table td {
+      padding: 1.5mm 2mm;
+      border-bottom: 1px solid #f1f5f9;
+      color: #334155;
+    }
+
+    .disclaimer {
+      margin-top: 10mm;
+      padding-top: 4mm;
+      border-top: 1px solid #e2e8f0;
+      font-size: 8pt;
+      color: #94a3b8;
+      line-height: 1.5;
+    }
+
+    .report-ref {
+      font-family: 'Courier New', monospace;
+      font-size: 8pt;
+      color: #94a3b8;
+      margin-top: 4mm;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Page 1: Cover -->
+  <div class="cover">
+    <div class="cover-brand">Veri<span>Car</span></div>
+
+    <div style="margin-bottom: 12mm;">
+      <div class="cover-reg">{{ registration }}</div>
+    </div>
+
+    <div class="cover-vehicle">{{ make }} {{ model }}</div>
+    <div class="cover-year">{{ year }} &bull; {{ colour }} &bull; {{ fuel_type }}</div>
+
+    {% if condition_score is not none %}
+    <div class="cover-score {{ score_class }}">{{ condition_score }}</div>
+    <div class="cover-score-label">Condition Score</div>
+    {% endif %}
+
+    {% if verdict %}
+    <div class="cover-verdict verdict-{{ verdict_class }}">{{ verdict }}</div>
+    {% endif %}
+
+    <div class="cover-meta">
+      Report generated: {{ generated_date }}<br>
+      Data sources: DVLA Vehicle Enquiry Service, DVSA MOT History API<br>
+      Reference: {{ report_ref }}
+    </div>
+  </div>
+
+  <!-- AI Report Sections -->
+  {% if ai_report_sections %}
+  {% for section in ai_report_sections %}
+  <div class="section">
+    <div class="section-title">{{ section.title }}</div>
+    <div class="section-content">
+      {{ section.content }}
+    </div>
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  <!-- Vehicle Details -->
+  {% if vehicle %}
+  <div class="section">
+    <div class="section-title">Vehicle Details</div>
+    <table class="data-table">
+      <tr><td><strong>Registration</strong></td><td>{{ vehicle.registration }}</td><td><strong>Make</strong></td><td>{{ vehicle.make }}</td></tr>
+      <tr><td><strong>Colour</strong></td><td>{{ vehicle.colour }}</td><td><strong>Fuel Type</strong></td><td>{{ vehicle.fuel_type }}</td></tr>
+      <tr><td><strong>Year</strong></td><td>{{ vehicle.year_of_manufacture }}</td><td><strong>Engine</strong></td><td>{{ vehicle.engine_capacity }}cc</td></tr>
+      <tr><td><strong>Tax Status</strong></td><td>{{ vehicle.tax_status }}</td><td><strong>MOT Status</strong></td><td>{{ vehicle.mot_status }}</td></tr>
+      {% if vehicle.euro_status %}<tr><td><strong>Euro Standard</strong></td><td>{{ vehicle.euro_status }}</td><td><strong>CO2</strong></td><td>{{ vehicle.co2_emissions }} g/km</td></tr>{% endif %}
+    </table>
+  </div>
+  {% endif %}
+
+  <!-- Valuation -->
+  {% if valuation %}
+  <div class="section">
+    <div class="section-title">Valuation</div>
+    <table class="data-table">
+      {% if valuation.private_sale is not none %}<tr><td><strong>Private Sale</strong></td><td>&pound;{{ "{:,}".format(valuation.private_sale) }}</td></tr>{% endif %}
+      {% if valuation.dealer_forecourt is not none %}<tr><td><strong>Dealer Forecourt</strong></td><td>&pound;{{ "{:,}".format(valuation.dealer_forecourt) }}</td></tr>{% endif %}
+      {% if valuation.trade_in is not none %}<tr><td><strong>Trade-in</strong></td><td>&pound;{{ "{:,}".format(valuation.trade_in) }}</td></tr>{% endif %}
+      {% if valuation.part_exchange is not none %}<tr><td><strong>Part Exchange</strong></td><td>&pound;{{ "{:,}".format(valuation.part_exchange) }}</td></tr>{% endif %}
+      <tr><td><strong>Condition</strong></td><td>{{ valuation.condition }}</td></tr>
+      {% if valuation.mileage_used is not none %}<tr><td><strong>Mileage Used</strong></td><td>{{ "{:,}".format(valuation.mileage_used) }} miles</td></tr>{% endif %}
+      <tr><td><strong>Valuation Date</strong></td><td>{{ valuation.valuation_date }}</td></tr>
+    </table>
+  </div>
+  {% endif %}
+
+  <!-- Finance Check -->
+  {% if finance %}
+  <div class="section">
+    <div class="section-title">Finance Check</div>
+    <p style="margin-bottom: 3mm;">
+      Status: <span class="badge {{ 'badge-fail' if finance.finance_outstanding else 'badge-pass' }}">
+        {{ 'FINANCE OUTSTANDING' if finance.finance_outstanding else 'NO FINANCE' }}
+      </span>
+    </p>
+    {% if finance.records %}
+    <table class="data-table">
+      <thead>
+        <tr><th>Agreement Type</th><th>Finance Company</th><th>Date</th><th>Term</th></tr>
+      </thead>
+      <tbody>
+        {% for r in finance.records %}
+        <tr>
+          <td>{{ r.agreement_type }}</td>
+          <td>{{ r.finance_company }}</td>
+          <td>{{ r.agreement_date or '—' }}</td>
+          <td>{{ r.agreement_term or '—' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- Stolen Check -->
+  {% if stolen %}
+  <div class="section">
+    <div class="section-title">Stolen Check</div>
+    <p style="margin-bottom: 3mm;">
+      Status: <span class="badge {{ 'badge-fail' if stolen.stolen else 'badge-pass' }}">
+        {{ 'REPORTED STOLEN' if stolen.stolen else 'NOT STOLEN' }}
+      </span>
+    </p>
+    {% if stolen.stolen %}
+    <table class="data-table">
+      {% if stolen.reported_date %}<tr><td><strong>Reported Date</strong></td><td>{{ stolen.reported_date }}</td></tr>{% endif %}
+      {% if stolen.police_force %}<tr><td><strong>Police Force</strong></td><td>{{ stolen.police_force }}</td></tr>{% endif %}
+      {% if stolen.reference %}<tr><td><strong>Reference</strong></td><td>{{ stolen.reference }}</td></tr>{% endif %}
+    </table>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- Write-off Check -->
+  {% if writeoff %}
+  <div class="section">
+    <div class="section-title">Insurance Write-off Check</div>
+    <p style="margin-bottom: 3mm;">
+      Status: <span class="badge {{ 'badge-fail' if writeoff.written_off else 'badge-pass' }}">
+        {{ 'INSURANCE WRITE-OFF' if writeoff.written_off else 'NOT WRITTEN OFF' }}
+      </span>
+    </p>
+    {% if writeoff.records %}
+    <table class="data-table">
+      <thead>
+        <tr><th>Category</th><th>Date</th><th>Loss Type</th></tr>
+      </thead>
+      <tbody>
+        {% for r in writeoff.records %}
+        <tr>
+          <td><span class="badge badge-fail">Cat {{ r.category }}</span></td>
+          <td>{{ r.date }}</td>
+          <td>{{ r.loss_type or '—' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- Plate Changes -->
+  {% if plates %}
+  <div class="section">
+    <div class="section-title">Plate Change History</div>
+    <p style="margin-bottom: 3mm;">
+      {% if plates.changes_found %}
+      <span class="badge badge-warn">{{ plates.record_count }} CHANGE{{ 'S' if plates.record_count != 1 else '' }} FOUND</span>
+      {% else %}
+      <span class="badge badge-neutral">No Plate Changes</span>
+      {% endif %}
+    </p>
+    {% if plates.records %}
+    <table class="data-table">
+      <thead>
+        <tr><th>Previous Plate</th><th>Change Date</th><th>Change Type</th></tr>
+      </thead>
+      <tbody>
+        {% for r in plates.records %}
+        <tr>
+          <td><strong>{{ r.previous_plate }}</strong></td>
+          <td>{{ r.change_date }}</td>
+          <td>{{ r.change_type }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- Tax Calculation -->
+  {% if tax %}
+  <div class="section">
+    <div class="section-title">Road Tax (VED)</div>
+    <table class="data-table">
+      <tr><td><strong>Tax Band</strong></td><td>Band {{ tax.band }} ({{ tax.band_range }})</td></tr>
+      <tr><td><strong>First Year Rate</strong></td><td>&pound;{{ tax.first_year_rate }}</td></tr>
+      <tr><td><strong>Annual Rate (Year 2+)</strong></td><td>&pound;{{ tax.annual_rate }}</td></tr>
+      <tr><td><strong>6-Month Payment</strong></td><td>&pound;{{ tax.six_month_rate }}</td></tr>
+    </table>
+  </div>
+  {% endif %}
+
+  <!-- Mileage Timeline -->
+  {% if mileage_timeline %}
+  <div class="section">
+    <div class="section-title">Mileage Timeline</div>
+    <table class="mot-table">
+      <thead>
+        <tr><th>Date</th><th>Mileage</th></tr>
+      </thead>
+      <tbody>
+        {% for reading in mileage_timeline %}
+        <tr><td>{{ reading.date }}</td><td>{{ "{:,}".format(reading.miles) }} miles</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+  <!-- MOT History -->
+  {% if mot_tests %}
+  <div class="section">
+    <div class="section-title">MOT History ({{ mot_tests|length }} tests)</div>
+    <table class="mot-table">
+      <thead>
+        <tr><th>#</th><th>Date</th><th>Result</th><th>Mileage</th><th>Defects</th></tr>
+      </thead>
+      <tbody>
+        {% for test in mot_tests %}
+        <tr>
+          <td>{{ test.test_number }}</td>
+          <td>{{ test.date }}</td>
+          <td><span class="badge {{ 'badge-pass' if test.result == 'PASSED' else 'badge-fail' }}">{{ test.result }}</span></td>
+          <td>{% if test.odometer is not none %}{{ "{:,}".format(test.odometer) }} mi{% else %}—{% endif %}</td>
+          <td>{{ test.total_defects }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+  <!-- Clean Air Zones -->
+  {% if ulez %}
+  <div class="section">
+    <div class="section-title">UK Clean Air Zone Compliance</div>
+    <p style="margin-bottom: 3mm;">
+      Status: <span class="badge {{ 'badge-pass' if ulez.compliant else 'badge-fail' if ulez.compliant == false else 'badge-neutral' }}">
+        {{ 'ALL ZONES CLEAR' if ulez.compliant else 'NON-COMPLIANT' if ulez.compliant == false else 'UNKNOWN' }}
+      </span>
+      {% if ulez.total_zones %} &mdash; {{ ulez.compliant_zones }}/{{ ulez.total_zones }} zones{% endif %}
+    </p>
+    <p style="margin-bottom: 3mm;">{{ ulez.reason }}</p>
+    {% if ulez.daily_charge %}
+    <p style="color: #dc2626; font-weight: 600; margin-bottom: 3mm;">Charges: {{ ulez.daily_charge }}</p>
+    {% endif %}
+    {% if ulez.zone_details %}
+    <table class="zone-table">
+      <thead>
+        <tr><th>Zone</th><th>Region</th><th>Status</th><th>Charge</th></tr>
+      </thead>
+      <tbody>
+        {% for z in ulez.zone_details %}
+        {% if z.cars_affected %}
+        <tr>
+          <td>{{ z.name }}</td>
+          <td>{{ z.region }}</td>
+          <td><span class="badge {{ 'badge-pass' if z.compliant else 'badge-fail' }}">{{ 'Clear' if z.compliant else 'Charge' }}</span></td>
+          <td>{{ z.charge }}</td>
+        </tr>
+        {% endif %}
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- Safety Rating -->
+  {% if safety %}
+  <div class="section">
+    <div class="section-title">Safety Rating ({{ safety.source }})</div>
+    <table class="data-table">
+      <tr><td><strong>Rating</strong></td><td>{{ safety.stars }}/5 Stars ({{ safety.year_range }})</td></tr>
+      <tr><td><strong>Adult Occupant</strong></td><td>{{ safety.adult }}%</td></tr>
+      <tr><td><strong>Child Occupant</strong></td><td>{{ safety.child }}%</td></tr>
+      <tr><td><strong>Pedestrian</strong></td><td>{{ safety.pedestrian }}%</td></tr>
+      <tr><td><strong>Safety Assist</strong></td><td>{{ safety.safety_assist }}%</td></tr>
+    </table>
+  </div>
+  {% endif %}
+
+  <!-- Vehicle Statistics -->
+  {% if stats %}
+  <div class="section">
+    <div class="section-title">Vehicle Statistics</div>
+    <table class="data-table">
+      {% if stats.vehicle_age_years is not none %}<tr><td><strong>Vehicle Age</strong></td><td>{{ stats.vehicle_age_years }} years</td></tr>{% endif %}
+      {% if stats.estimated_annual_mileage is not none %}<tr><td><strong>Est. Annual Mileage</strong></td><td>{{ "{:,}".format(stats.estimated_annual_mileage) }} mi/yr ({{ stats.mileage_assessment }})</td></tr>{% endif %}
+      {% if stats.total_recorded_mileage is not none %}<tr><td><strong>Total Recorded Mileage</strong></td><td>{{ "{:,}".format(stats.total_recorded_mileage) }} miles</td></tr>{% endif %}
+      {% if stats.mot_status_detail %}<tr><td><strong>MOT</strong></td><td>{{ stats.mot_status_detail }}</td></tr>{% endif %}
+      {% if stats.tax_status_detail %}<tr><td><strong>Tax</strong></td><td>{{ stats.tax_status_detail }}</td></tr>{% endif %}
+      {% if stats.v5c_insight %}<tr><td><strong>V5C</strong></td><td>{{ stats.v5c_insight }}</td></tr>{% endif %}
+      {% if stats.total_advisory_items is not none %}<tr><td><strong>Lifetime Advisories</strong></td><td>{{ stats.total_advisory_items }}</td></tr>{% endif %}
+      {% if stats.total_failure_items is not none %}<tr><td><strong>Lifetime Failures</strong></td><td>{{ stats.total_failure_items }}</td></tr>{% endif %}
+    </table>
+  </div>
+  {% endif %}
+
+  <!-- Disclaimer -->
+  <div class="disclaimer">
+    <p><strong>Disclaimer:</strong> This report is generated by VeriCar using data from the DVLA Vehicle Enquiry Service and DVSA MOT History API. The AI analysis is advisory only and should not be used as the sole basis for purchasing decisions. Always arrange a professional vehicle inspection before buying a used car. VeriCar accepts no liability for decisions made based on this report.</p>
+    <p>Data is accurate as of the report generation date. Vehicle history may have changed since the data was last updated by the relevant authorities.</p>
+  </div>
+
+  <div class="report-ref">
+    Report generated by VeriCar &mdash; vericar.co.uk<br>
+    Reference: {{ report_ref }}
+  </div>
+
+</body>
+</html>

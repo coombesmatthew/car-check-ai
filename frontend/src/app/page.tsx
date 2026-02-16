@@ -1,344 +1,604 @@
-"use client";
+import { Metadata } from "next";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import SearchSection from "@/components/SearchSection";
 
-import { useState } from "react";
-import { runFreeCheck, runBasicCheckPreview, FreeCheckResponse } from "@/lib/api";
-import CheckResult from "@/components/CheckResult";
-import AIReport from "@/components/AIReport";
+export const metadata: Metadata = {
+  title:
+    "Free Car Check UK | Finance, Stolen, MOT & Valuation | VeriCar",
+  description:
+    "Free instant vehicle check with 15+ checks: finance outstanding, stolen, write-off, MOT history, mileage clocking, valuation, and ULEZ compliance. Official DVLA & DVSA data. No signup required.",
+  keywords: [
+    "car check",
+    "free car check",
+    "MOT history",
+    "mileage check",
+    "clocking detection",
+    "ULEZ check",
+    "vehicle check UK",
+    "HPI alternative",
+    "used car check",
+    "finance check",
+    "stolen check",
+    "write off check",
+    "car valuation",
+    "free HPI check",
+  ],
+  openGraph: {
+    title: "Free Car Check UK — 15+ Checks | VeriCar",
+    description:
+      "Free vehicle check with finance, stolen, write-off, MOT history, mileage verification, valuation, and ULEZ compliance. No signup required.",
+    type: "website",
+    locale: "en_GB",
+  },
+};
+
+const faqItems = [
+  {
+    question: "Is this car check really free?",
+    answer:
+      "Yes. Our free check uses official DVLA and DVSA government data at zero cost. There are no hidden charges or signup required.",
+  },
+  {
+    question: "How does clocking detection work?",
+    answer:
+      "We analyse mileage readings recorded at every MOT test. If the mileage drops between tests or shows improbable jumps, we flag it as a potential clocking risk.",
+  },
+  {
+    question: "What data sources do you use?",
+    answer:
+      "We use the DVLA Vehicle Enquiry Service for vehicle identity and tax data, and the DVSA MOT History API for test results and mileage readings. Both are official UK government data sources.",
+  },
+  {
+    question:
+      "What's the difference between the free check and the full report?",
+    answer:
+      "The free check gives you MOT history, mileage analysis, clocking detection, condition score, and ULEZ compliance. The \u00A33.99 full report adds an AI-powered buyer's verdict, estimated repair costs, negotiation points, and questions to ask the seller.",
+  },
+  {
+    question: "How accurate is the condition score?",
+    answer:
+      "The condition score is based on the vehicle's complete MOT history, including defect severity, failure rate, mileage, and advisory trends. It provides a good indication but should be used alongside a physical inspection.",
+  },
+  {
+    question: "Do you check for outstanding finance or stolen vehicles?",
+    answer:
+      "Yes! Every check includes finance, stolen, and insurance write-off status, along with plate change history and a vehicle valuation. These are included free of charge.",
+  },
+];
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "FAQPage",
+      mainEntity: faqItems.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: item.answer,
+        },
+      })),
+    },
+    {
+      "@type": "WebApplication",
+      name: "VeriCar",
+      url: "https://vericar.co.uk",
+      applicationCategory: "UtilitiesApplication",
+      operatingSystem: "Any",
+      offers: [
+        {
+          "@type": "Offer",
+          price: "0",
+          priceCurrency: "GBP",
+          description:
+            "Free vehicle check with MOT history, mileage verification, finance, stolen, write-off, valuation, and ULEZ compliance.",
+        },
+        {
+          "@type": "Offer",
+          price: "3.99",
+          priceCurrency: "GBP",
+          description:
+            "Full AI-powered buyer's report with risk assessment, verdict, and negotiation points.",
+        },
+        {
+          "@type": "Offer",
+          price: "9.99",
+          priceCurrency: "GBP",
+          description:
+            "Premium report with market price comparison, insurance data, dealer analysis, and extended history.",
+        },
+      ],
+      description:
+        "Free instant UK vehicle check using official DVLA and DVSA data. MOT history, mileage clocking detection, condition scoring, and ULEZ compliance.",
+    },
+    {
+      "@type": "Organization",
+      name: "VeriCar",
+      url: "https://vericar.co.uk",
+      description:
+        "AI-powered vehicle checks using official UK government data.",
+    },
+  ],
+};
 
 export default function Home() {
-  const [registration, setRegistration] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<FreeCheckResponse | null>(null);
-
-  // BASIC tier upsell state
-  const [showUpsell, setShowUpsell] = useState(false);
-  const [listingUrl, setListingUrl] = useState("");
-  const [listingPrice, setListingPrice] = useState("");
-  const [aiReport, setAiReport] = useState<string | null>(null);
-  const [reportLoading, setReportLoading] = useState(false);
-  const [reportError, setReportError] = useState<string | null>(null);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setResult(null);
-    setAiReport(null);
-    setShowUpsell(false);
-
-    const cleaned = registration.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
-    if (cleaned.length < 2 || cleaned.length > 8) {
-      setError("Please enter a valid UK registration number");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const data = await runFreeCheck(cleaned);
-      setResult(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleGenerateReport = async () => {
-    if (!result) return;
-    setReportLoading(true);
-    setReportError(null);
-
-    try {
-      const priceInPence = listingPrice
-        ? Math.round(parseFloat(listingPrice) * 100)
-        : undefined;
-
-      const data = await runBasicCheckPreview(
-        result.registration,
-        listingUrl || undefined,
-        priceInPence
-      );
-      setAiReport(data.ai_report);
-    } catch (err) {
-      setReportError(
-        err instanceof Error ? err.message : "Report generation failed"
-      );
-    } finally {
-      setReportLoading(false);
-    }
-  };
-
   return (
-    <main className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-      {/* Header */}
-      <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto max-w-5xl px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center">
-              <span className="text-white font-bold text-sm">CC</span>
-            </div>
-            <span className="font-semibold text-lg text-slate-900">
-              Car Check AI
-            </span>
+    <main className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex flex-col">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
+      <Header />
+
+      <SearchSection />
+
+      {/* Feature Cards */}
+      <section className="bg-white border-t border-slate-100 py-16">
+        <div className="mx-auto max-w-5xl px-4">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl font-bold text-slate-900">
+              Everything you need, completely free
+            </h2>
+            <p className="text-slate-500 mt-2">
+              15 checks including finance, stolen, and valuation &mdash; no signup required
+            </p>
           </div>
-          <nav className="hidden sm:flex items-center gap-6 text-sm text-slate-600">
-            <span>Free Check</span>
-            <span className="text-blue-600 font-medium">
-              Full Report &mdash; £3.99
-            </span>
-          </nav>
-        </div>
-      </header>
-
-      {/* Hero + Search */}
-      <section className="mx-auto max-w-5xl px-4 pt-12 pb-8">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-3">
-            Check any UK vehicle instantly
-          </h1>
-          <p className="text-slate-500 text-lg max-w-xl mx-auto">
-            Free MOT history, tax status, mileage clocking detection, ULEZ
-            compliance, and condition scoring. Powered by DVLA &amp; DVSA data.
-          </p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="max-w-md mx-auto">
-          <div className="flex gap-2">
-            <div className="relative flex-1">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 bg-blue-600 text-white text-xs font-bold px-1.5 py-0.5 rounded">
-                GB
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-slate-50 rounded-xl p-6 border border-slate-100">
+              <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center mb-4">
+                <svg
+                  className="w-5 h-5 text-blue-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+                  />
+                </svg>
               </div>
-              <input
-                type="text"
-                value={registration}
-                onChange={(e) =>
-                  setRegistration(e.target.value.toUpperCase().slice(0, 8))
-                }
-                placeholder="AB12 CDE"
-                className="w-full pl-14 pr-4 py-3 text-lg font-mono font-bold tracking-wider border-2 border-slate-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none bg-yellow-50 text-slate-900 placeholder:text-slate-400 placeholder:font-normal"
-                maxLength={8}
-                autoFocus
-              />
+              <h3 className="font-semibold text-slate-900 mb-2">MOT History</h3>
+              <p className="text-sm text-slate-500 leading-relaxed">
+                Full test history, pass/fail rates, advisory tracking, and
+                recurring issue detection.
+              </p>
             </div>
-            <button
-              type="submit"
-              disabled={loading || registration.length < 2}
-              className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors"
-            >
-              {loading ? (
-                <span className="flex items-center gap-2">
-                  <svg
-                    className="animate-spin h-5 w-5"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                    />
-                  </svg>
-                  Checking
-                </span>
-              ) : (
-                "Check"
-              )}
-            </button>
+            <div className="bg-slate-50 rounded-xl p-6 border border-slate-100">
+              <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center mb-4">
+                <svg
+                  className="w-5 h-5 text-amber-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-slate-900 mb-2">
+                Mileage Verification
+              </h3>
+              <p className="text-sm text-slate-500 leading-relaxed">
+                AI-powered clocking detection across all MOT readings. Spot
+                rollbacks and anomalies instantly.
+              </p>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-6 border border-slate-100">
+              <div className="w-10 h-10 rounded-lg bg-red-100 flex items-center justify-center mb-4">
+                <svg
+                  className="w-5 h-5 text-red-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"
+                  />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-slate-900 mb-2">
+                Finance &amp; Stolen
+              </h3>
+              <p className="text-sm text-slate-500 leading-relaxed">
+                Outstanding finance, stolen vehicle, and insurance write-off
+                checks to avoid costly surprises.
+              </p>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-6 border border-slate-100">
+              <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center mb-4">
+                <svg
+                  className="w-5 h-5 text-emerald-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-slate-900 mb-2">
+                ULEZ &amp; Tax
+              </h3>
+              <p className="text-sm text-slate-500 leading-relaxed">
+                Live tax status, MOT validity, and London ULEZ compliance check
+                for clean air zones.
+              </p>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-6 border border-slate-100">
+              <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center mb-4">
+                <svg
+                  className="w-5 h-5 text-purple-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z"
+                  />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-slate-900 mb-2">
+                Vehicle Valuation
+              </h3>
+              <p className="text-sm text-slate-500 leading-relaxed">
+                Private sale, dealer, and trade-in valuations so you know
+                exactly what it&apos;s worth.
+              </p>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-6 border border-slate-100">
+              <div className="w-10 h-10 rounded-lg bg-cyan-100 flex items-center justify-center mb-4">
+                <svg
+                  className="w-5 h-5 text-cyan-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M7.5 7.5h-.75A2.25 2.25 0 004.5 9.75v7.5a2.25 2.25 0 002.25 2.25h7.5a2.25 2.25 0 002.25-2.25v-7.5a2.25 2.25 0 00-2.25-2.25h-.75m0-3l-3-3m0 0l-3 3m3-3v11.25m6-2.25h.75a2.25 2.25 0 012.25 2.25v7.5a2.25 2.25 0 01-2.25 2.25h-7.5a2.25 2.25 0 01-2.25-2.25v-7.5a2.25 2.25 0 012.25-2.25H12"
+                  />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-slate-900 mb-2">
+                Plate Changes
+              </h3>
+              <p className="text-sm text-slate-500 leading-relaxed">
+                Full registration plate history to spot vehicles hiding
+                a damaged or troubled past.
+              </p>
+            </div>
           </div>
-          {error && (
-            <p className="mt-3 text-red-600 text-sm text-center">{error}</p>
-          )}
-        </form>
-
-        <div className="flex justify-center gap-6 mt-6 text-xs text-slate-400">
-          <span>DVLA Vehicle Data</span>
-          <span>DVSA MOT History</span>
-          <span>Mileage Analysis</span>
-          <span>ULEZ Check</span>
         </div>
       </section>
 
-      {/* Results */}
-      {result && (
-        <section className="mx-auto max-w-5xl px-4 pb-8">
-          <CheckResult data={result} />
-        </section>
-      )}
-
-      {/* AI Report (if generated) */}
-      {aiReport && result && (
-        <section className="mx-auto max-w-5xl px-4 pb-8">
-          <AIReport report={aiReport} registration={result.registration} />
-        </section>
-      )}
-
-      {/* Upsell CTA - shown after free check, before report */}
-      {result && !aiReport && (
-        <section className="mx-auto max-w-5xl px-4 pb-16">
-          {!showUpsell ? (
-            /* Collapsed upsell card */
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6">
-              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                <div className="flex-1">
-                  <h3 className="font-semibold text-blue-900 text-lg mb-1">
-                    Want the full picture? Get an AI Buyer&apos;s Report
-                  </h3>
-                  <p className="text-sm text-blue-700 mb-3">
-                    Our AI analyses all the data above and writes you a
-                    personalised buyer&apos;s report with a clear
-                    buy/negotiate/avoid recommendation.
-                  </p>
-                  <div className="flex flex-wrap gap-3 text-xs">
-                    <span className="bg-white border border-blue-200 rounded-full px-3 py-1 text-blue-700">
-                      AI Risk Assessment
-                    </span>
-                    <span className="bg-white border border-blue-200 rounded-full px-3 py-1 text-blue-700">
-                      Buy/Avoid Verdict
-                    </span>
-                    <span className="bg-white border border-blue-200 rounded-full px-3 py-1 text-blue-700">
-                      Negotiation Points
-                    </span>
-                    <span className="bg-white border border-blue-200 rounded-full px-3 py-1 text-blue-700">
-                      PDF Report Emailed
-                    </span>
-                  </div>
-                </div>
-                <div className="flex flex-col items-center gap-2">
-                  <div className="text-center">
-                    <span className="text-3xl font-bold text-blue-900">
-                      £3.99
-                    </span>
-                    <span className="text-sm text-blue-600 block">
-                      one-time
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => setShowUpsell(true)}
-                    className="px-6 py-2.5 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors text-sm whitespace-nowrap"
-                  >
-                    Get Full Report
-                  </button>
-                </div>
-              </div>
+      {/* Trust Signals */}
+      <section className="py-12">
+        <div className="mx-auto max-w-5xl px-4">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16 text-center">
+            <div>
+              <p className="text-3xl font-bold text-slate-900">15+</p>
+              <p className="text-sm text-slate-500 mt-1">Checks per vehicle</p>
             </div>
-          ) : (
-            /* Expanded upsell form */
-            <div className="bg-white border border-blue-200 rounded-xl overflow-hidden">
-              <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
-                <h3 className="text-white font-semibold text-lg">
-                  Generate AI Buyer&apos;s Report &mdash; £3.99
-                </h3>
-                <p className="text-blue-200 text-sm">
-                  Optional: add the listing details for a more personalised
-                  report
-                </p>
-              </div>
-              <div className="p-6 space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Listing URL (optional)
-                  </label>
-                  <input
-                    type="url"
-                    value={listingUrl}
-                    onChange={(e) => setListingUrl(e.target.value)}
-                    placeholder="https://autotrader.co.uk/listing/..."
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Listed Price (optional)
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-                      £
-                    </span>
-                    <input
-                      type="number"
-                      value={listingPrice}
-                      onChange={(e) => setListingPrice(e.target.value)}
-                      placeholder="8,995"
-                      className="w-full pl-7 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
-                    />
-                  </div>
-                </div>
-
-                {/* Payment placeholder - will be Stripe Elements */}
-                <div className="border-2 border-dashed border-slate-200 rounded-lg p-4 bg-slate-50">
-                  <p className="text-sm text-slate-500 text-center">
-                    Payment form will appear here (Stripe Elements)
-                  </p>
-                  <p className="text-xs text-slate-400 text-center mt-1">
-                    Demo mode: click below to generate report without payment
-                  </p>
-                </div>
-
-                {reportError && (
-                  <p className="text-red-600 text-sm">{reportError}</p>
-                )}
-
-                <div className="flex gap-3">
-                  <button
-                    onClick={handleGenerateReport}
-                    disabled={reportLoading}
-                    className="flex-1 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:bg-blue-400 transition-colors"
-                  >
-                    {reportLoading ? (
-                      <span className="flex items-center justify-center gap-2">
-                        <svg
-                          className="animate-spin h-5 w-5"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          />
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                          />
-                        </svg>
-                        Generating Report...
-                      </span>
-                    ) : (
-                      "Generate Report (Demo)"
-                    )}
-                  </button>
-                  <button
-                    onClick={() => setShowUpsell(false)}
-                    className="px-4 py-3 border border-slate-300 text-slate-600 rounded-lg hover:bg-slate-50 transition-colors text-sm"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
+            <div className="hidden md:block w-px h-12 bg-slate-200" />
+            <div>
+              <p className="text-3xl font-bold text-slate-900">DVLA + DVSA</p>
+              <p className="text-sm text-slate-500 mt-1">
+                Official government data
+              </p>
             </div>
-          )}
-        </section>
-      )}
-
-      {/* Footer */}
-      <footer className="border-t border-slate-200 mt-auto">
-        <div className="mx-auto max-w-5xl px-4 py-6 text-center text-xs text-slate-400">
-          Car Check AI uses official UK government data sources. Not affiliated
-          with DVLA or DVSA.
+            <div className="hidden md:block w-px h-12 bg-slate-200" />
+            <div>
+              <p className="text-3xl font-bold text-slate-900">Instant</p>
+              <p className="text-sm text-slate-500 mt-1">
+                Results in seconds
+              </p>
+            </div>
+            <div className="hidden md:block w-px h-12 bg-slate-200" />
+            <div>
+              <p className="text-3xl font-bold text-slate-900">Free</p>
+              <p className="text-sm text-slate-500 mt-1">
+                No signup or payment
+              </p>
+            </div>
+          </div>
         </div>
-      </footer>
+      </section>
+
+      {/* How It Works */}
+      <section id="how-it-works" className="py-16">
+        <div className="mx-auto max-w-5xl px-4">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl font-bold text-slate-900">How it works</h2>
+            <p className="text-slate-500 mt-2">
+              Three simple steps to a smarter car purchase
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center">
+              <div className="w-12 h-12 rounded-full bg-blue-600 text-white font-bold text-lg flex items-center justify-center mx-auto mb-4">
+                1
+              </div>
+              <h3 className="font-semibold text-slate-900 mb-2">
+                Enter Registration
+              </h3>
+              <p className="text-sm text-slate-500">
+                Type any UK vehicle registration number into the search box
+                above.
+              </p>
+            </div>
+            <div className="text-center">
+              <div className="w-12 h-12 rounded-full bg-blue-600 text-white font-bold text-lg flex items-center justify-center mx-auto mb-4">
+                2
+              </div>
+              <h3 className="font-semibold text-slate-900 mb-2">
+                Get Free Report
+              </h3>
+              <p className="text-sm text-slate-500">
+                Instantly receive MOT history, mileage analysis, tax status, and
+                a condition score.
+              </p>
+            </div>
+            <div className="text-center">
+              <div className="w-12 h-12 rounded-full bg-emerald-600 text-white font-bold text-lg flex items-center justify-center mx-auto mb-4">
+                3
+              </div>
+              <h3 className="font-semibold text-slate-900 mb-2">
+                Upgrade for AI Verdict
+              </h3>
+              <p className="text-sm text-slate-500">
+                Get a personalised buy/negotiate/avoid recommendation with
+                negotiation points.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Comparison Table */}
+      <section
+        id="full-report"
+        className="bg-white border-t border-slate-100 py-16"
+      >
+        <div className="mx-auto max-w-3xl px-4">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl font-bold text-slate-900">
+              Choose your check
+            </h2>
+            <p className="text-slate-500 mt-2">
+              Start free. Upgrade if you need the full picture.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Free tier */}
+            <div className="border border-slate-200 rounded-xl p-6">
+              <div className="mb-4">
+                <span className="text-sm font-semibold text-slate-500 uppercase tracking-wide">
+                  Free
+                </span>
+                <div className="mt-1">
+                  <span className="text-3xl font-bold text-slate-900">
+                    &pound;0
+                  </span>
+                </div>
+              </div>
+              <ul className="space-y-3 mb-6">
+                {[
+                  "DVLA Vehicle Data",
+                  "Full MOT History",
+                  "Mileage &amp; Clocking Detection",
+                  "Finance &amp; Stolen Check",
+                  "Write-off &amp; Plate History",
+                  "Valuation &amp; ULEZ Check",
+                ].map((item) => (
+                  <li
+                    key={item}
+                    className="flex items-center gap-2 text-sm text-slate-600"
+                  >
+                    <svg
+                      className="w-4 h-4 text-emerald-500 flex-shrink-0"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M4.5 12.75l6 6 9-13.5"
+                      />
+                    </svg>
+                    <span dangerouslySetInnerHTML={{ __html: item }} />
+                  </li>
+                ))}
+              </ul>
+              <a
+                href="#search"
+                className="block text-center py-2.5 border-2 border-slate-300 text-slate-700 font-semibold rounded-lg hover:bg-slate-50 transition-colors text-sm"
+              >
+                Try Free Check
+              </a>
+            </div>
+
+            {/* Basic tier */}
+            <div className="border-2 border-blue-600 rounded-xl p-6 relative">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                <span className="bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                  Most Popular
+                </span>
+              </div>
+              <div className="mb-4">
+                <span className="text-sm font-semibold text-blue-600 uppercase tracking-wide">
+                  Full Report
+                </span>
+                <div className="mt-1">
+                  <span className="text-3xl font-bold text-slate-900">
+                    &pound;3.99
+                  </span>
+                </div>
+              </div>
+              <ul className="space-y-3 mb-6">
+                {[
+                  "Everything in Free",
+                  "AI Risk Assessment",
+                  "Buy/Avoid Verdict",
+                  "Negotiation Points",
+                  "PDF Report &amp; Email",
+                ].map((item, i) => (
+                  <li
+                    key={item}
+                    className="flex items-center gap-2 text-sm text-slate-700"
+                  >
+                    <svg
+                      className={`w-4 h-4 flex-shrink-0 ${
+                        i === 0 ? "text-emerald-500" : "text-blue-600"
+                      }`}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M4.5 12.75l6 6 9-13.5"
+                      />
+                    </svg>
+                    <span
+                      className={i > 0 ? "font-medium" : ""}
+                      dangerouslySetInnerHTML={{ __html: item }}
+                    />
+                  </li>
+                ))}
+              </ul>
+              <a
+                href="#search"
+                className="block text-center py-2.5 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors text-sm"
+              >
+                Get Full Report &mdash; &pound;3.99
+              </a>
+            </div>
+
+            {/* Premium tier */}
+            <div className="border border-slate-200 rounded-xl p-6">
+              <div className="mb-4">
+                <span className="text-sm font-semibold text-purple-600 uppercase tracking-wide">
+                  Premium
+                </span>
+                <div className="mt-1">
+                  <span className="text-3xl font-bold text-slate-900">
+                    &pound;9.99
+                  </span>
+                </div>
+              </div>
+              <ul className="space-y-3 mb-6">
+                {[
+                  "Everything in Full Report",
+                  "Market Price Comparison",
+                  "Insurance Group Data",
+                  "Dealer Listing Analysis",
+                  "Extended Vehicle History",
+                ].map((item, i) => (
+                  <li
+                    key={item}
+                    className="flex items-center gap-2 text-sm text-slate-700"
+                  >
+                    <svg
+                      className={`w-4 h-4 flex-shrink-0 ${
+                        i === 0 ? "text-emerald-500" : "text-purple-600"
+                      }`}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M4.5 12.75l6 6 9-13.5"
+                      />
+                    </svg>
+                    <span className={i > 0 ? "font-medium" : ""}>{item}</span>
+                  </li>
+                ))}
+              </ul>
+              <a
+                href="#search"
+                className="block text-center py-2.5 border-2 border-purple-300 text-purple-700 font-semibold rounded-lg hover:bg-purple-50 transition-colors text-sm"
+              >
+                Coming Soon
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section id="faq" className="py-16">
+        <div className="mx-auto max-w-3xl px-4">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl font-bold text-slate-900">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-slate-500 mt-2">
+              Everything you need to know about our vehicle checks
+            </p>
+          </div>
+          <div className="space-y-3">
+            {faqItems.map((item) => (
+              <details
+                key={item.question}
+                className="group border border-slate-200 rounded-lg bg-white"
+              >
+                <summary className="flex items-center justify-between cursor-pointer px-6 py-4 text-left font-medium text-slate-900 hover:bg-slate-50 transition-colors rounded-lg [&::-webkit-details-marker]:hidden list-none">
+                  <span>{item.question}</span>
+                  <svg
+                    className="w-5 h-5 text-slate-400 flex-shrink-0 ml-4 transition-transform group-open:rotate-180"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+                    />
+                  </svg>
+                </summary>
+                <div className="px-6 pb-4">
+                  <p className="text-sm text-slate-600 leading-relaxed">
+                    {item.answer}
+                  </p>
+                </div>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <Footer />
     </main>
   );
 }

@@ -1,12 +1,17 @@
 import asyncio
 from datetime import datetime
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 from app.core.logging import logger
 from app.services.check.dvla_client import DVLAClient
 from app.services.check.ulez import calculate_ulez_compliance
 from app.services.mot.client import MOTClient
 from app.services.mot.analyzer import MOTAnalyzer
+from app.services.data.tax_calculator import calculate_tax
+from app.services.data.ncap_ratings import lookup_ncap_rating
+from app.services.data.vehicle_stats import calculate_vehicle_stats
+from app.services.data.demo import get_demo_data
+from app.services.data.provenance_demo import get_demo_provenance
 from app.schemas.check import (
     FreeCheckResponse,
     VehicleIdentity,
@@ -17,6 +22,19 @@ from app.schemas.check import (
     MileageReading,
     FailurePattern,
     ULEZCompliance,
+    MOTTestRecord,
+    MOTDefect,
+    TaxCalculation,
+    SafetyRating,
+    VehicleStats,
+    FinanceCheck,
+    FinanceRecord,
+    StolenCheck,
+    WriteOffCheck,
+    WriteOffRecord,
+    PlateChangeHistory,
+    PlateChangeRecord,
+    Valuation,
 )
 
 
@@ -57,6 +75,13 @@ class CheckOrchestrator:
             logger.error(f"MOT fetch failed: {mot_data}")
             mot_data = None
 
+        # Fall back to demo data if APIs returned nothing
+        if not dvla_data and not mot_data:
+            demo = get_demo_data(clean_reg)
+            if demo:
+                dvla_data, mot_data = demo
+                logger.info(f"Using demo data for {clean_reg}")
+
         # Step 2: Analyze
         mot_analysis = self.mot_analyzer.analyze(mot_data)
         ulez_result = calculate_ulez_compliance(dvla_data)
@@ -85,16 +110,45 @@ class CheckOrchestrator:
         ]
         ulez_compliance = ULEZCompliance(**ulez_result)
 
+        # Build full MOT test records
+        mot_tests = self._build_mot_test_records(mot_analysis.get("mot_tests", []))
+
+        # Calculate tax band
+        tax_calculation = self._build_tax_calculation(dvla_data)
+
+        # Look up safety rating
+        safety_rating = self._build_safety_rating(dvla_data, mot_analysis.get("mot_summary"))
+
+        # Calculate derived vehicle stats
+        raw_tests = mot_analysis.get("raw_tests", [])
+        vehicle_stats = self._build_vehicle_stats(
+            dvla_data, raw_tests, mot_analysis.get("mileage_timeline", [])
+        )
+
+        # Build provenance data (finance, stolen, write-off, plates, valuation)
+        provenance = self._build_provenance_data(clean_reg)
+        if provenance:
+            data_sources.append("Provenance Check (Demo)")
+
         response = FreeCheckResponse(
             registration=clean_reg,
             tier="free",
             vehicle=vehicle,
             mot_summary=mot_summary,
+            mot_tests=mot_tests,
             clocking_analysis=clocking,
             condition_score=mot_analysis.get("condition_score"),
             mileage_timeline=mileage_timeline,
             failure_patterns=failure_patterns,
             ulez_compliance=ulez_compliance,
+            tax_calculation=tax_calculation,
+            safety_rating=safety_rating,
+            vehicle_stats=vehicle_stats,
+            finance_check=provenance.get("finance_check") if provenance else None,
+            stolen_check=provenance.get("stolen_check") if provenance else None,
+            write_off_check=provenance.get("write_off_check") if provenance else None,
+            plate_changes=provenance.get("plate_changes") if provenance else None,
+            valuation=provenance.get("valuation") if provenance else None,
             checked_at=datetime.utcnow(),
             data_sources=data_sources,
         )
@@ -141,6 +195,7 @@ class CheckOrchestrator:
             first_used_date=summary_data.get("first_used_date"),
             latest_test=latest_test,
             current_odometer=summary_data.get("current_odometer"),
+            has_outstanding_recall=summary_data.get("has_outstanding_recall"),
         )
 
     def _build_clocking_analysis(self, clocking_data: Optional[Dict]) -> Optional[ClockingAnalysis]:
@@ -155,6 +210,111 @@ class CheckOrchestrator:
             reason=clocking_data.get("reason"),
             flags=flags,
         )
+
+    def _build_mot_test_records(self, tests_data: List[Dict]) -> List[MOTTestRecord]:
+        records = []
+        for t in tests_data:
+            advisories = [MOTDefect(**a) for a in t.get("advisories", [])]
+            failures = [MOTDefect(**f) for f in t.get("failures", [])]
+            dangerous = [MOTDefect(**d) for d in t.get("dangerous", [])]
+            records.append(MOTTestRecord(
+                test_number=t.get("test_number", 0),
+                test_id=t.get("test_id", ""),
+                date=t.get("date", ""),
+                result=t.get("result", ""),
+                odometer=t.get("odometer"),
+                odometer_unit=t.get("odometer_unit", "mi"),
+                expiry_date=t.get("expiry_date"),
+                advisories=advisories,
+                failures=failures,
+                dangerous=dangerous,
+                total_defects=t.get("total_defects", 0),
+            ))
+        return records
+
+    def _build_tax_calculation(self, dvla_data: Optional[Dict]) -> Optional[TaxCalculation]:
+        if not dvla_data:
+            return None
+        result = calculate_tax(
+            dvla_data.get("co2Emissions"),
+            dvla_data.get("fuelType"),
+        )
+        if not result:
+            return None
+        return TaxCalculation(**result)
+
+    def _build_safety_rating(self, dvla_data: Optional[Dict], mot_summary: Optional[Dict]) -> Optional[SafetyRating]:
+        make = None
+        model = None
+        if dvla_data:
+            make = dvla_data.get("make")
+        if mot_summary:
+            model = mot_summary.get("model")
+        if not make or not model:
+            return None
+        result = lookup_ncap_rating(make, model)
+        if not result:
+            return None
+        return SafetyRating(**result)
+
+    def _build_vehicle_stats(
+        self,
+        dvla_data: Optional[Dict],
+        raw_tests: List[Dict],
+        mileage_timeline: List[Dict],
+    ) -> Optional[VehicleStats]:
+        stats = calculate_vehicle_stats(dvla_data, raw_tests, mileage_timeline)
+        if not stats:
+            return None
+        return VehicleStats(**stats)
+
+    def _build_provenance_data(self, registration: str) -> Optional[Dict]:
+        """Build provenance data from demo service (future: UKVD API)."""
+        raw = get_demo_provenance(registration)
+        if not raw:
+            return None
+
+        result = {}
+
+        fc = raw.get("finance_check")
+        if fc:
+            records = [FinanceRecord(**r) for r in fc.get("records", [])]
+            result["finance_check"] = FinanceCheck(
+                finance_outstanding=fc["finance_outstanding"],
+                record_count=fc.get("record_count", 0),
+                records=records,
+                data_source=fc.get("data_source", "Demo"),
+            )
+
+        sc = raw.get("stolen_check")
+        if sc:
+            result["stolen_check"] = StolenCheck(**sc)
+
+        wc = raw.get("write_off_check")
+        if wc:
+            records = [WriteOffRecord(**r) for r in wc.get("records", [])]
+            result["write_off_check"] = WriteOffCheck(
+                written_off=wc["written_off"],
+                record_count=wc.get("record_count", 0),
+                records=records,
+                data_source=wc.get("data_source", "Demo"),
+            )
+
+        pc = raw.get("plate_changes")
+        if pc:
+            records = [PlateChangeRecord(**r) for r in pc.get("records", [])]
+            result["plate_changes"] = PlateChangeHistory(
+                changes_found=pc["changes_found"],
+                record_count=pc.get("record_count", 0),
+                records=records,
+                data_source=pc.get("data_source", "Demo"),
+            )
+
+        val = raw.get("valuation")
+        if val:
+            result["valuation"] = Valuation(**val)
+
+        return result
 
     async def close(self):
         await asyncio.gather(

@@ -51,9 +51,18 @@ function makeResponse(overrides: Partial<FreeCheckResponse> = {}): FreeCheckResp
     ulez_compliance: {
       compliant: true,
       status: "compliant",
-      reason: "Petrol vehicle with Euro 6 - meets Euro 4 requirement",
-      zones: { london_ulez: true, london_lez: true, clean_air_zone_d: true },
+      reason: "Petrol vehicle with Euro 6 — meets emission requirements for all 8 zones affecting cars",
+      zones: { london_ulez: true, birmingham_caz: true, bristol_caz: true },
     },
+    mot_tests: [],
+    tax_calculation: null,
+    safety_rating: null,
+    vehicle_stats: null,
+    finance_check: null,
+    stolen_check: null,
+    write_off_check: null,
+    plate_changes: null,
+    valuation: null,
     checked_at: "2024-01-15T12:00:00",
     data_sources: ["DVLA VES API", "DVSA MOT History API"],
     ...overrides,
@@ -92,12 +101,12 @@ describe("CheckResult", () => {
 
   it("shows ULEZ compliant badge", () => {
     render(<CheckResult data={makeResponse()} />);
-    expect(screen.getByText("COMPLIANT")).toBeInTheDocument();
+    expect(screen.getByText("ALL ZONES CLEAR")).toBeInTheDocument();
   });
 
   it("shows clocking detection clean status", () => {
     render(<CheckResult data={makeResponse()} />);
-    expect(screen.getByText("No Issues Found")).toBeInTheDocument();
+    expect(screen.getByText("No Clocking Detected")).toBeInTheDocument();
   });
 
   it("shows clocking detected when clocked", () => {
@@ -134,9 +143,9 @@ describe("CheckResult", () => {
           ulez_compliance: {
             compliant: false,
             status: "non_compliant",
-            reason: "Diesel vehicle with Euro 5 - does not meet Euro 6 requirement",
-            daily_charge: "£12.50 (London ULEZ)",
-            zones: { london_ulez: false, london_lez: true, clean_air_zone_d: false },
+            reason: "Diesel vehicle with Euro 5 — non-compliant in 7 zones",
+            daily_charge: "£12.50/day (London ULEZ) · £60+ penalty (Scottish LEZs)",
+            zones: { london_ulez: false, birmingham_caz: false, bristol_caz: false },
           },
         })}
       />

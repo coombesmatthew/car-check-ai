@@ -20,3 +20,28 @@
     @apply bg-background text-foreground antialiased;
   }
 }
+
+/* Score gauge animation */
+@layer components {
+  .gauge-track {
+    fill: none;
+    stroke: #e2e8f0;
+    stroke-width: 8;
+    stroke-linecap: round;
+  }
+
+  .gauge-fill {
+    fill: none;
+    stroke-width: 8;
+    stroke-linecap: round;
+    transform: rotate(-90deg);
+    transform-origin: center;
+    transition: stroke-dashoffset 1s ease-out;
+  }
+
+  .gauge-text {
+    font-weight: 700;
+    text-anchor: middle;
+    dominant-baseline: central;
+  }
+}
