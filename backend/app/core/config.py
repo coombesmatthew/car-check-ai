@@ -1,6 +1,4 @@
-from pydantic import field_validator
 from pydantic_settings import BaseSettings
-from typing import List
 
 
 class Settings(BaseSettings):
@@ -65,16 +63,8 @@ class Settings(BaseSettings):
     GUMTREE_CACHE_TTL: int = 1800
     GUMTREE_USER_AGENT: str = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
 
-    # CORS
-    ALLOWED_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:3001"]
-
-    @field_validator("ALLOWED_ORIGINS", mode="before")
-    @classmethod
-    def parse_allowed_origins(cls, v):
-        if isinstance(v, str):
-            # Handle comma-separated strings (e.g. from Railway env vars)
-            return [origin.strip() for origin in v.split(",") if origin.strip()]
-        return v
+    # CORS (comma-separated string, parsed in main.py)
+    ALLOWED_ORIGINS: str = "http://localhost:3000,http://localhost:3001"
 
     # Security
     SECRET_KEY: str = "your-secret-key-change-in-production"
