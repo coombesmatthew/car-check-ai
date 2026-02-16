@@ -27,11 +27,18 @@ setup_logging()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup
-    await cache.connect()
+    # Startup — Redis is optional, don't crash if unavailable
+    try:
+        await cache.connect()
+    except Exception as e:
+        import logging
+        logging.getLogger("carcheck").warning(f"Redis connection failed (non-fatal): {e}")
     yield
     # Shutdown
-    await cache.close()
+    try:
+        await cache.close()
+    except Exception:
+        pass
 
 
 # Create FastAPI app
