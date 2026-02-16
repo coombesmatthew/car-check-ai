@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import Response
 from pydantic import BaseModel, EmailStr
 from typing import Optional, List
@@ -9,7 +9,7 @@ from app.services.check.orchestrator import CheckOrchestrator
 from app.services.ai.report_generator import generate_ai_report
 from app.services.report.pdf_generator import generate_pdf, _extract_verdict
 from app.services.notification.email_sender import send_report_email
-from app.services.payment.stripe_service import create_checkout_session, retrieve_session
+from app.services.payment.stripe_service import create_checkout_session, retrieve_session, verify_webhook_signature
 from app.services.listing.scraper import scrape_listing
 
 router = APIRouter()
@@ -332,6 +332,42 @@ async def fulfil_basic_report(session_id: str):
         raise HTTPException(status_code=500, detail="Report generation failed after payment - please contact support")
     finally:
         await orchestrator.close()
+
+
+# --- Stripe Webhook ---
+
+
+@router.post("/basic/webhook")
+async def stripe_webhook(request: Request):
+    """Handle Stripe webhook events.
+
+    Stripe sends events here when payments complete, fail, etc.
+    This is a backup for the redirect-based fulfilment flow.
+    """
+    payload = await request.body()
+    sig_header = request.headers.get("stripe-signature", "")
+
+    try:
+        event = verify_webhook_signature(payload, sig_header)
+    except RuntimeError as e:
+        logger.error(f"Webhook secret not configured: {e}")
+        raise HTTPException(status_code=500, detail="Webhook not configured")
+    except Exception as e:
+        logger.warning(f"Webhook signature verification failed: {e}")
+        raise HTTPException(status_code=400, detail="Invalid signature")
+
+    if event["type"] == "checkout.session.completed":
+        session = event["data"]["object"]
+        logger.info(
+            f"Webhook: checkout.session.completed for "
+            f"{session.get('metadata', {}).get('registration', 'unknown')} "
+            f"(session: {session.get('id')})"
+        )
+        # The success page handles fulfilment via /basic/fulfil.
+        # This webhook logs the event for monitoring.
+        # Future: add idempotent fulfilment here as a fallback.
+
+    return {"received": True}
 
 
 # --- Listing Check (paste a URL) ---

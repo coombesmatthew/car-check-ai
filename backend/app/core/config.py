@@ -55,6 +55,9 @@ class Settings(BaseSettings):
     RESEND_API_KEY: str = ""
     FROM_EMAIL: str = "reports@vericar.co.uk"
 
+    # Site URL (frontend base URL for Stripe redirects etc.)
+    SITE_URL: str = "http://localhost:3001"
+
     # Gumtree Scraping
     GUMTREE_TIMEOUT: float = 20.0
     GUMTREE_REQUEST_DELAY: float = 1.5

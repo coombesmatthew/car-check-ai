@@ -18,8 +18,8 @@ def create_checkout_session(
     email: str,
     listing_url: str | None = None,
     listing_price: int | None = None,
-    success_url: str = "http://localhost:3001/report/success?session_id={CHECKOUT_SESSION_ID}",
-    cancel_url: str = "http://localhost:3001/report/cancel",
+    success_url: str | None = None,
+    cancel_url: str | None = None,
 ) -> dict:
     """Create a Stripe Checkout Session for a BASIC tier report.
 
@@ -35,6 +35,12 @@ def create_checkout_session(
         Dict with session_id and checkout_url.
     """
     _init_stripe()
+
+    base_url = settings.SITE_URL.rstrip("/")
+    if not success_url:
+        success_url = f"{base_url}/report/success?session_id={{CHECKOUT_SESSION_ID}}"
+    if not cancel_url:
+        cancel_url = f"{base_url}/report/cancel"
 
     metadata = {
         "registration": registration,

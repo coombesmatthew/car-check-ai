@@ -45,6 +45,7 @@ services:
       - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
       - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
       - RESEND_API_KEY=${RESEND_API_KEY}
+      - SITE_URL=${SITE_URL:-http://localhost:3001}
       - DEBUG=true
     volumes:
       - ./backend:/app
