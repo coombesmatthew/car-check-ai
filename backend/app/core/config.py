@@ -1,3 +1,4 @@
+from pydantic import field_validator
 from pydantic_settings import BaseSettings
 from typing import List
 
@@ -66,6 +67,14 @@ class Settings(BaseSettings):
 
     # CORS
     ALLOWED_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:3001"]
+
+    @field_validator("ALLOWED_ORIGINS", mode="before")
+    @classmethod
+    def parse_allowed_origins(cls, v):
+        if isinstance(v, str):
+            # Handle comma-separated strings (e.g. from Railway env vars)
+            return [origin.strip() for origin in v.split(",") if origin.strip()]
+        return v
 
     # Security
     SECRET_KEY: str = "your-secret-key-change-in-production"
