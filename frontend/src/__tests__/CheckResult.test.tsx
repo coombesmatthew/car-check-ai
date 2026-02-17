@@ -104,12 +104,12 @@ describe("CheckResult", () => {
     expect(screen.getByText("ALL ZONES CLEAR")).toBeInTheDocument();
   });
 
-  it("shows clocking detection clean status", () => {
+  it("shows mileage consistent status", () => {
     render(<CheckResult data={makeResponse()} />);
-    expect(screen.getByText("No Clocking Detected")).toBeInTheDocument();
+    expect(screen.getByText("Mileage Consistent")).toBeInTheDocument();
   });
 
-  it("shows clocking detected when clocked", () => {
+  it("shows mileage discrepancy when detected", () => {
     render(
       <CheckResult
         data={makeResponse({
@@ -130,7 +130,7 @@ describe("CheckResult", () => {
         })}
       />
     );
-    expect(screen.getByText("CLOCKING DETECTED")).toBeInTheDocument();
+    expect(screen.getByText("MILEAGE DISCREPANCY FOUND")).toBeInTheDocument();
     expect(
       screen.getByText(/Mileage dropped from 60,000 to 45,000/)
     ).toBeInTheDocument();

@@ -3,7 +3,7 @@
 Pure logic, no external dependencies. Scoring factors (0-100 scale):
   - Price anomaly: suspiciously cheap/expensive for age (+0-25)
   - Mileage anomaly: too high or suspiciously low for age (+0-20)
-  - Clocking detected by Car Check AI (+0-30)
+  - Mileage discrepancy detected (+0-30)
   - Poor condition score from MOT (+0-15)
   - Recurring MOT failure patterns (+0-10)
 """

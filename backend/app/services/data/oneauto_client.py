@@ -1,7 +1,9 @@
 """One Auto API client for premium vehicle provenance data.
 
-Provides access to Experian checks (finance, stolen, write-off, plates, mileage)
-and Brego valuations through a single API integration.
+Uses 3 API calls per check:
+  1. Experian AutoCheck — finance, stolen, write-off, plates, keepers, high risk
+  2. Brego Valuation — current market value
+  3. CarGuide Salvage — unrecorded write-off detection
 
 Sandbox: sandbox.oneautoapi.com (free, returns dummy data)
 Live: api.oneautoapi.com (requires credit card, returns real data)
@@ -9,7 +11,7 @@ Live: api.oneautoapi.com (requires credit card, returns real data)
 
 import httpx
 from datetime import date
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 from app.core.config import settings
 from app.core.logging import logger
@@ -40,38 +42,11 @@ class OneAutoClient:
             logger.error(f"One Auto API request failed on {path}: {e}")
             return None
 
-    async def get_finance(self, registration: str) -> Optional[Dict]:
-        """Experian finance records check."""
+    async def get_autocheck(self, registration: str) -> Optional[Dict]:
+        """Experian AutoCheck — single call covering finance, stolen, write-off,
+        plates, keepers, colour changes, high risk, previous searches, V5C history."""
         return await self._get(
-            "/experian/financerecords/v3",
-            {"vehicle_registration_mark": registration},
-        )
-
-    async def get_stolen(self, registration: str) -> Optional[Dict]:
-        """Experian stolen vehicle check."""
-        return await self._get(
-            "/experian/stolenvehiclecheck/v3",
-            {"vehicle_registration_mark": registration},
-        )
-
-    async def get_condition(self, registration: str) -> Optional[Dict]:
-        """Experian condition check (write-off / MIAFTR data)."""
-        return await self._get(
-            "/experian/conditioncheck/v3",
-            {"vehicle_registration_mark": registration},
-        )
-
-    async def get_plate_changes(self, registration: str) -> Optional[Dict]:
-        """Experian plate change history."""
-        return await self._get(
-            "/experian/platechanges/v3",
-            {"vehicle_registration_mark": registration},
-        )
-
-    async def get_mileage(self, registration: str) -> Optional[Dict]:
-        """Experian mileage observations from trusted sources."""
-        return await self._get(
-            "/experian/mileagecheck/v3",
+            "/experian/autocheck/v3",
             {"vehicle_registration_mark": registration},
         )
 
@@ -96,17 +71,32 @@ class OneAutoClient:
         await self._client.aclose()
 
 
-def parse_finance(raw: Optional[Dict]) -> Dict:
-    """Map One Auto finance response to our FinanceCheck schema."""
-    if not raw:
-        return {
-            "finance_outstanding": False,
-            "record_count": 0,
-            "records": [],
-            "data_source": "Experian",
-        }
+# ---------------------------------------------------------------------------
+# Parsers — extract structured data from AutoCheck / Brego / CarGuide
+# ---------------------------------------------------------------------------
 
-    items = raw.get("finance_data_items", [])
+
+def parse_autocheck(raw: Optional[Dict]) -> Dict:
+    """Parse a single AutoCheck response into all provenance sub-dicts."""
+    return {
+        "finance_check": _parse_finance(raw),
+        "stolen_check": _parse_stolen(raw),
+        "write_off_check": _parse_condition(raw),
+        "plate_changes": _parse_plate_changes(raw),
+        "keeper_history": _parse_keepers(raw),
+        "high_risk": _parse_high_risk(raw),
+        "previous_searches": _parse_previous_searches(raw),
+        "v5c_history": _parse_v5c(raw),
+        "vehicle_id": _parse_vehicle_id(raw),
+    }
+
+
+def _parse_finance(raw: Optional[Dict]) -> Dict:
+    """Extract finance records from AutoCheck response."""
+    if not raw:
+        return _empty_finance()
+
+    items = raw.get("finance_data_items") or []
     records = []
     for item in items:
         records.append({
@@ -125,18 +115,12 @@ def parse_finance(raw: Optional[Dict]) -> Dict:
     }
 
 
-def parse_stolen(raw: Optional[Dict]) -> Dict:
-    """Map One Auto stolen response to our StolenCheck schema."""
+def _parse_stolen(raw: Optional[Dict]) -> Dict:
+    """Extract stolen status from AutoCheck response."""
     if not raw:
-        return {
-            "stolen": False,
-            "reported_date": None,
-            "police_force": None,
-            "reference": None,
-            "data_source": "Experian",
-        }
+        return _empty_stolen()
 
-    items = raw.get("stolen_vehicle_data_items", [])
+    items = raw.get("stolen_vehicle_data_items") or []
     if items:
         item = items[0]
         return {
@@ -147,35 +131,22 @@ def parse_stolen(raw: Optional[Dict]) -> Dict:
             "data_source": "Experian",
         }
 
-    return {
-        "stolen": False,
-        "reported_date": None,
-        "police_force": None,
-        "reference": None,
-        "data_source": "Experian",
-    }
+    return _empty_stolen()
 
 
-def parse_condition(raw: Optional[Dict]) -> Dict:
-    """Map One Auto condition/write-off response to our WriteOffCheck schema."""
+def _parse_condition(raw: Optional[Dict]) -> Dict:
+    """Extract write-off / condition data from AutoCheck response."""
     if not raw:
-        return {
-            "written_off": False,
-            "record_count": 0,
-            "records": [],
-            "data_source": "Experian",
-        }
+        return _empty_writeoff()
 
-    items = raw.get("condition_data_items", [])
+    items = raw.get("condition_data_items") or []
     records = []
     for item in items:
-        category = item.get("recovered_category", "")
-        if category:
-            records.append({
-                "category": category,
-                "date": item.get("date_of_loss", ""),
-                "loss_type": item.get("loss_type"),
-            })
+        records.append({
+            "category": item.get("recovered_category", ""),
+            "date": item.get("date_of_loss", ""),
+            "loss_type": item.get("loss_type") or item.get("cause_of_damage"),
+        })
 
     return {
         "written_off": len(records) > 0,
@@ -185,22 +156,16 @@ def parse_condition(raw: Optional[Dict]) -> Dict:
     }
 
 
-def parse_plate_changes(raw: Optional[Dict]) -> Dict:
-    """Map One Auto plate changes response to our PlateChangeHistory schema."""
+def _parse_plate_changes(raw: Optional[Dict]) -> Dict:
+    """Extract plate change history from AutoCheck response."""
     if not raw:
-        return {
-            "changes_found": False,
-            "record_count": 0,
-            "records": [],
-            "data_source": "Experian",
-        }
+        return _empty_plates()
 
-    items = raw.get("cherished_data_items", [])
+    items = raw.get("cherished_data_items") or []
     records = []
     for item in items:
         prev = item.get("previous_vehicle_registration_mark", "")
         curr = item.get("current_vehicle_registration_mark", "")
-        # Only include if there's an actual plate change
         if prev and curr and prev != curr:
             records.append({
                 "previous_plate": prev,
@@ -213,6 +178,98 @@ def parse_plate_changes(raw: Optional[Dict]) -> Dict:
         "record_count": len(records),
         "records": records,
         "data_source": "Experian",
+    }
+
+
+def _parse_keepers(raw: Optional[Dict]) -> Dict:
+    """Extract keeper change history from AutoCheck response."""
+    if not raw:
+        return {"keeper_count": None, "last_change_date": None, "data_source": "Experian"}
+
+    items = raw.get("keeper_data_items") or []
+    if items:
+        item = items[0]
+        return {
+            "keeper_count": item.get("number_previous_keepers"),
+            "last_change_date": item.get("date_of_last_keeper_change"),
+            "data_source": "Experian",
+        }
+
+    return {"keeper_count": None, "last_change_date": None, "data_source": "Experian"}
+
+
+def _parse_high_risk(raw: Optional[Dict]) -> Dict:
+    """Extract high risk markers from AutoCheck response."""
+    if not raw:
+        return {"flagged": False, "records": [], "data_source": "Experian"}
+
+    items = raw.get("high_risk_data_items") or []
+    records = []
+    for item in items:
+        records.append({
+            "risk_type": item.get("high_risk_type", ""),
+            "date": item.get("date_of_interest"),
+            "detail": item.get("extra_information"),
+            "company": item.get("company_name"),
+            "contact": item.get("company_contact_number"),
+        })
+
+    return {
+        "flagged": len(records) > 0,
+        "records": records,
+        "data_source": "Experian",
+    }
+
+
+def _parse_previous_searches(raw: Optional[Dict]) -> Dict:
+    """Extract previous search history from AutoCheck response."""
+    if not raw:
+        return {"search_count": 0, "records": [], "data_source": "Experian"}
+
+    items = raw.get("previous_search_items") or []
+    records = []
+    for item in items:
+        records.append({
+            "date": item.get("date_of_search"),
+            "business_type": item.get("business_type_searching"),
+        })
+
+    return {
+        "search_count": len(records),
+        "records": records,
+        "data_source": "Experian",
+    }
+
+
+def _parse_v5c(raw: Optional[Dict]) -> Dict:
+    """Extract V5C certificate history from AutoCheck response."""
+    if not raw:
+        return {"v5c_count": 0, "records": [], "data_source": "Experian"}
+
+    items = raw.get("v5c_data_items") or []
+    records = [{"date_issued": item.get("date_v5c_issued")} for item in items]
+
+    return {
+        "v5c_count": len(records),
+        "records": records,
+        "data_source": "Experian",
+    }
+
+
+def _parse_vehicle_id(raw: Optional[Dict]) -> Dict:
+    """Extract vehicle identity extras from AutoCheck response."""
+    if not raw:
+        return {}
+    return {
+        "vin": raw.get("vehicle_identification_number"),
+        "engine_number": raw.get("engine_number"),
+        "is_scrapped": raw.get("is_scrapped"),
+        "scrapped_date": raw.get("scrapped_date"),
+        "is_imported": raw.get("is_imported"),
+        "is_exported": raw.get("is_exported"),
+        "colour": raw.get("colour"),
+        "original_colour": raw.get("original_colour"),
+        "number_previous_colours": raw.get("number_previous_colours"),
     }
 
 
@@ -240,3 +297,33 @@ def parse_valuation(raw: Optional[Dict], mileage: int) -> Dict:
         "condition": "Mileage-adjusted",
         "data_source": "Brego",
     }
+
+
+def parse_salvage(raw: Optional[Dict]) -> Dict:
+    """Map CarGuide salvage check response."""
+    if not raw:
+        return {"salvage_found": False, "data_source": "CarGuide"}
+
+    # CarGuide returns salvage auction records if found
+    return {
+        "salvage_found": bool(raw.get("salvage_data_items")),
+        "records": raw.get("salvage_data_items", []),
+        "data_source": "CarGuide",
+    }
+
+
+# ---------------------------------------------------------------------------
+# Empty defaults
+# ---------------------------------------------------------------------------
+
+def _empty_finance() -> Dict:
+    return {"finance_outstanding": False, "record_count": 0, "records": [], "data_source": "Experian"}
+
+def _empty_stolen() -> Dict:
+    return {"stolen": False, "reported_date": None, "police_force": None, "reference": None, "data_source": "Experian"}
+
+def _empty_writeoff() -> Dict:
+    return {"written_off": False, "record_count": 0, "records": [], "data_source": "Experian"}
+
+def _empty_plates() -> Dict:
+    return {"changes_found": False, "record_count": 0, "records": [], "data_source": "Experian"}

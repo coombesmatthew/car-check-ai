@@ -240,6 +240,43 @@ class Valuation(BaseModel):
     data_source: str = "Demo"
 
 
+class KeeperHistory(BaseModel):
+    keeper_count: Optional[int] = None
+    last_change_date: Optional[str] = None
+    data_source: str = "Experian"
+
+
+class HighRiskRecord(BaseModel):
+    risk_type: str
+    date: Optional[str] = None
+    detail: Optional[str] = None
+    company: Optional[str] = None
+    contact: Optional[str] = None
+
+
+class HighRiskCheck(BaseModel):
+    flagged: bool = False
+    records: List[HighRiskRecord] = []
+    data_source: str = "Experian"
+
+
+class PreviousSearchRecord(BaseModel):
+    date: Optional[str] = None
+    business_type: Optional[str] = None
+
+
+class PreviousSearches(BaseModel):
+    search_count: int = 0
+    records: List[PreviousSearchRecord] = []
+    data_source: str = "Experian"
+
+
+class SalvageCheck(BaseModel):
+    salvage_found: bool = False
+    records: List[Dict] = []
+    data_source: str = "CarGuide"
+
+
 class VehicleIdentity(BaseModel):
     registration: Optional[str] = None
     make: Optional[str] = None
@@ -280,6 +317,10 @@ class FreeCheckResponse(BaseModel):
     write_off_check: Optional[WriteOffCheck] = None
     plate_changes: Optional[PlateChangeHistory] = None
     valuation: Optional[Valuation] = None
+    keeper_history: Optional[KeeperHistory] = None
+    high_risk: Optional[HighRiskCheck] = None
+    previous_searches: Optional[PreviousSearches] = None
+    salvage_check: Optional[SalvageCheck] = None
     checked_at: datetime = Field(default_factory=datetime.utcnow)
     data_sources: List[str] = []
 

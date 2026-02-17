@@ -310,7 +310,7 @@ class TestContentScorer:
 
 class TestTikTokScriptGenerator:
     @pytest.mark.asyncio
-    async def test_demo_script_clocking(self):
+    async def test_demo_script_mileage_discrepancy(self):
         from app.services.ai.tiktok_script_generator import generate_tiktok_script
 
         listing = GumtreeListing(
@@ -320,12 +320,15 @@ class TestTikTokScriptGenerator:
         scored = ContentScore(
             listing=listing,
             total_score=45,
-            factors=[ScoreFactor(name="clocking_detected", points=30, detail="Mileage clocking detected")],
+            factors=[ScoreFactor(name="clocking_detected", points=30, detail="Mileage discrepancy detected")],
             clocking_detected=True,
+            check_result={"clocking_analysis": {"clocked": True, "flags": [{"type": "mileage_drop", "detail": "Mileage dropped from 80,000 to 45,000"}]}},
         )
         script = await generate_tiktok_script(scored, angle="auto")
-        assert script.angle == "clocking_expose"
-        assert "CLOCKED" in script.hook.upper() or "clocked" in script.hook.lower()
+        assert script.angle == "mileage_discrepancy"
+        assert "mileage" in script.hook.lower() or "MOT" in script.hook
+        assert "clocked" not in script.hook.lower()
+        assert "scam" not in script.script.lower()
         assert len(script.hashtags) > 0
 
     @pytest.mark.asyncio

@@ -90,7 +90,7 @@ describe("SearchSection", () => {
   it("renders the page heading", () => {
     render(<SearchSection />);
     expect(
-      screen.getByText("Don't buy a clocked car.")
+      screen.getByText("Check any car in seconds.")
     ).toBeInTheDocument();
   });
 

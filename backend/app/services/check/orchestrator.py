@@ -15,11 +15,9 @@ from app.services.data.demo import get_demo_data
 from app.services.data.provenance_demo import get_demo_provenance
 from app.services.data.oneauto_client import (
     OneAutoClient,
-    parse_finance,
-    parse_stolen,
-    parse_condition,
-    parse_plate_changes,
+    parse_autocheck,
     parse_valuation,
+    parse_salvage,
 )
 from app.schemas.check import (
     FreeCheckResponse,
@@ -44,6 +42,12 @@ from app.schemas.check import (
     PlateChangeHistory,
     PlateChangeRecord,
     Valuation,
+    KeeperHistory,
+    HighRiskCheck,
+    HighRiskRecord,
+    PreviousSearches,
+    PreviousSearchRecord,
+    SalvageCheck,
 )
 
 
@@ -165,6 +169,10 @@ class CheckOrchestrator:
             write_off_check=provenance.get("write_off_check") if provenance else None,
             plate_changes=provenance.get("plate_changes") if provenance else None,
             valuation=provenance.get("valuation") if provenance else None,
+            keeper_history=provenance.get("keeper_history") if provenance else None,
+            high_risk=provenance.get("high_risk") if provenance else None,
+            previous_searches=provenance.get("previous_searches") if provenance else None,
+            salvage_check=provenance.get("salvage_check") if provenance else None,
             checked_at=datetime.utcnow(),
             data_sources=data_sources,
         )
@@ -298,6 +306,7 @@ class CheckOrchestrator:
                 return await self._fetch_oneauto_provenance(registration, current_mileage)
             except Exception as e:
                 logger.error(f"One Auto API failed for {registration}: {e}")
+                # Fall through to demo fallback
 
         # Fallback: demo data (returns None for non-demo registrations)
         raw = get_demo_provenance(registration)
@@ -307,33 +316,27 @@ class CheckOrchestrator:
 
     async def _fetch_oneauto_provenance(self, registration: str, current_mileage: Optional[int] = None) -> Optional[Dict]:
         """Fetch real provenance data from One Auto API (Experian + Brego)."""
-        finance_raw, stolen_raw, condition_raw, plates_raw, valuation_raw = await asyncio.gather(
-            self.oneauto_client.get_finance(registration),
-            self.oneauto_client.get_stolen(registration),
-            self.oneauto_client.get_condition(registration),
-            self.oneauto_client.get_plate_changes(registration),
+        autocheck_raw, valuation_raw, salvage_raw = await asyncio.gather(
+            self.oneauto_client.get_autocheck(registration),
             self.oneauto_client.get_valuation(registration, current_mileage or 0),
+            self.oneauto_client.get_salvage(registration),
             return_exceptions=True,
         )
 
-        # Handle exceptions from gather
-        for i, raw in enumerate([finance_raw, stolen_raw, condition_raw, plates_raw, valuation_raw]):
-            if isinstance(raw, Exception):
-                logger.warning(f"One Auto provenance call {i} failed: {raw}")
+        if isinstance(autocheck_raw, Exception):
+            logger.warning(f"One Auto AutoCheck failed: {autocheck_raw}")
+            autocheck_raw = None
+        if isinstance(valuation_raw, Exception):
+            logger.warning(f"One Auto Brego valuation failed: {valuation_raw}")
+            valuation_raw = None
+        if isinstance(salvage_raw, Exception):
+            logger.warning(f"One Auto CarGuide salvage failed: {salvage_raw}")
+            salvage_raw = None
 
-        finance_raw = None if isinstance(finance_raw, Exception) else finance_raw
-        stolen_raw = None if isinstance(stolen_raw, Exception) else stolen_raw
-        condition_raw = None if isinstance(condition_raw, Exception) else condition_raw
-        plates_raw = None if isinstance(plates_raw, Exception) else plates_raw
-        valuation_raw = None if isinstance(valuation_raw, Exception) else valuation_raw
-
-        parsed = {
-            "finance_check": parse_finance(finance_raw),
-            "stolen_check": parse_stolen(stolen_raw),
-            "write_off_check": parse_condition(condition_raw),
-            "plate_changes": parse_plate_changes(plates_raw),
-            "valuation": parse_valuation(valuation_raw, current_mileage or 0),
-        }
+        # AutoCheck returns all Experian data in one response
+        parsed = parse_autocheck(autocheck_raw)
+        parsed["valuation"] = parse_valuation(valuation_raw, current_mileage or 0)
+        parsed["salvage_check"] = parse_salvage(salvage_raw)
 
         return self._build_provenance_from_raw(parsed, "Experian via One Auto API")
 
@@ -381,6 +384,36 @@ class CheckOrchestrator:
         val = raw.get("valuation")
         if val:
             result["valuation"] = Valuation(**val)
+
+        kh = raw.get("keeper_history")
+        if kh:
+            result["keeper_history"] = KeeperHistory(**kh)
+
+        hr = raw.get("high_risk")
+        if hr:
+            records = [HighRiskRecord(**r) for r in hr.get("records", [])]
+            result["high_risk"] = HighRiskCheck(
+                flagged=hr.get("flagged", False),
+                records=records,
+                data_source=hr.get("data_source", source),
+            )
+
+        ps = raw.get("previous_searches")
+        if ps:
+            records = [PreviousSearchRecord(**r) for r in ps.get("records", [])]
+            result["previous_searches"] = PreviousSearches(
+                search_count=ps.get("search_count", 0),
+                records=records,
+                data_source=ps.get("data_source", source),
+            )
+
+        sv = raw.get("salvage_check")
+        if sv:
+            result["salvage_check"] = SalvageCheck(
+                salvage_found=sv.get("salvage_found", False),
+                records=sv.get("records", []),
+                data_source=sv.get("data_source", "CarGuide"),
+            )
 
         return result
 

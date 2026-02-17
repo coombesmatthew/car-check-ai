@@ -80,7 +80,7 @@ export default function SearchSection() {
       <section id="search" className="mx-auto max-w-5xl px-4 pt-12 pb-8 w-full">
         <div className="text-center mb-8">
           <h1 className="text-3xl sm:text-5xl font-bold text-slate-900 mb-4 leading-tight">
-            Don&apos;t buy a clocked car.
+            Check any car in seconds.
           </h1>
           <p className="text-slate-500 text-lg max-w-2xl mx-auto leading-relaxed">
             Free instant vehicle check using official DVLA &amp; DVSA data.
