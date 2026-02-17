@@ -424,7 +424,7 @@ class MOTAnalyzer:
                 "date": test.get("completedDate", "")[:10],
                 "result": test.get("testResult", ""),
                 "odometer": odometer_int,
-                "odometer_unit": test.get("odometerUnit", "mi"),
+                "odometer_unit": test.get("odometerUnit") or "mi",
                 "expiry_date": test.get("expiryDate"),
                 "advisories": advisories,
                 "failures": failures,

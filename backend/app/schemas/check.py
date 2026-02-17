@@ -92,7 +92,7 @@ class MOTTestRecord(BaseModel):
     date: str
     result: str
     odometer: Optional[int] = None
-    odometer_unit: str = "mi"
+    odometer_unit: Optional[str] = "mi"
     expiry_date: Optional[str] = None
     advisories: List[MOTDefect] = []
     failures: List[MOTDefect] = []
