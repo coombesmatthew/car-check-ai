@@ -34,17 +34,9 @@ class Settings(BaseSettings):
     ANTHROPIC_API_KEY: str = ""
     ANTHROPIC_MODEL: str = "claude-sonnet-4-5-20250929"
 
-    # Brego Valuations (Basic+ tier)
-    BREGO_API_KEY: str = ""
-    BREGO_API_URL: str = ""
-
-    # Percayso/Cazana Valuations (Premium tier)
-    PERCAYSO_API_KEY: str = ""
-    PERCAYSO_API_URL: str = ""
-
-    # Experian AutoCheck (Premium tier)
-    EXPERIAN_API_KEY: str = ""
-    EXPERIAN_API_URL: str = ""
+    # One Auto API (Experian + Brego via single integration)
+    ONEAUTO_API_KEY: str = ""
+    ONEAUTO_API_URL: str = "https://sandbox.oneautoapi.com"
 
     # Stripe
     STRIPE_SECRET_KEY: str = ""

@@ -10,8 +10,17 @@ from app.services.mot.analyzer import MOTAnalyzer
 from app.services.data.tax_calculator import calculate_tax
 from app.services.data.ncap_ratings import lookup_ncap_rating
 from app.services.data.vehicle_stats import calculate_vehicle_stats
+from app.core.config import settings
 from app.services.data.demo import get_demo_data
 from app.services.data.provenance_demo import get_demo_provenance
+from app.services.data.oneauto_client import (
+    OneAutoClient,
+    parse_finance,
+    parse_stolen,
+    parse_condition,
+    parse_plate_changes,
+    parse_valuation,
+)
 from app.schemas.check import (
     FreeCheckResponse,
     VehicleIdentity,
@@ -51,6 +60,7 @@ class CheckOrchestrator:
         self.dvla_client = DVLAClient()
         self.mot_client = MOTClient()
         self.mot_analyzer = MOTAnalyzer()
+        self.oneauto_client = OneAutoClient() if settings.ONEAUTO_API_KEY else None
 
     async def run_free_check(self, registration: str) -> FreeCheckResponse:
         """Execute a free-tier vehicle check.
@@ -126,9 +136,15 @@ class CheckOrchestrator:
         )
 
         # Build provenance data (finance, stolen, write-off, plates, valuation)
-        provenance = self._build_provenance_data(clean_reg)
+        current_mileage = None
+        if (mot_analysis.get("mot_summary") or {}).get("current_odometer"):
+            try:
+                current_mileage = int(mot_analysis["mot_summary"]["current_odometer"])
+            except (ValueError, TypeError):
+                pass
+        provenance = await self._build_provenance_data(clean_reg, current_mileage)
         if provenance:
-            data_sources.append("Provenance Check (Demo)")
+            data_sources.append(provenance.pop("_source", "Provenance Check"))
 
         response = FreeCheckResponse(
             registration=clean_reg,
@@ -268,13 +284,65 @@ class CheckOrchestrator:
             return None
         return VehicleStats(**stats)
 
-    def _build_provenance_data(self, registration: str) -> Optional[Dict]:
-        """Build provenance data from demo service (future: UKVD API)."""
+    async def _build_provenance_data(self, registration: str, current_mileage: Optional[int] = None) -> Optional[Dict]:
+        """Build provenance data from One Auto API, falling back to demo."""
+        # Demo vehicles always use demo data
+        if registration.upper().startswith("DEMO"):
+            return self._build_provenance_from_raw(
+                get_demo_provenance(registration), "Provenance Check (Demo)"
+            )
+
+        # Use One Auto API if configured
+        if self.oneauto_client:
+            try:
+                return await self._fetch_oneauto_provenance(registration, current_mileage)
+            except Exception as e:
+                logger.error(f"One Auto API failed for {registration}: {e}")
+
+        # Fallback: demo data (returns None for non-demo registrations)
         raw = get_demo_provenance(registration)
+        if raw:
+            return self._build_provenance_from_raw(raw, "Provenance Check (Demo)")
+        return None
+
+    async def _fetch_oneauto_provenance(self, registration: str, current_mileage: Optional[int] = None) -> Optional[Dict]:
+        """Fetch real provenance data from One Auto API (Experian + Brego)."""
+        finance_raw, stolen_raw, condition_raw, plates_raw, valuation_raw = await asyncio.gather(
+            self.oneauto_client.get_finance(registration),
+            self.oneauto_client.get_stolen(registration),
+            self.oneauto_client.get_condition(registration),
+            self.oneauto_client.get_plate_changes(registration),
+            self.oneauto_client.get_valuation(registration, current_mileage or 0),
+            return_exceptions=True,
+        )
+
+        # Handle exceptions from gather
+        for i, raw in enumerate([finance_raw, stolen_raw, condition_raw, plates_raw, valuation_raw]):
+            if isinstance(raw, Exception):
+                logger.warning(f"One Auto provenance call {i} failed: {raw}")
+
+        finance_raw = None if isinstance(finance_raw, Exception) else finance_raw
+        stolen_raw = None if isinstance(stolen_raw, Exception) else stolen_raw
+        condition_raw = None if isinstance(condition_raw, Exception) else condition_raw
+        plates_raw = None if isinstance(plates_raw, Exception) else plates_raw
+        valuation_raw = None if isinstance(valuation_raw, Exception) else valuation_raw
+
+        parsed = {
+            "finance_check": parse_finance(finance_raw),
+            "stolen_check": parse_stolen(stolen_raw),
+            "write_off_check": parse_condition(condition_raw),
+            "plate_changes": parse_plate_changes(plates_raw),
+            "valuation": parse_valuation(valuation_raw, current_mileage or 0),
+        }
+
+        return self._build_provenance_from_raw(parsed, "Experian via One Auto API")
+
+    def _build_provenance_from_raw(self, raw: Optional[Dict], source: str) -> Optional[Dict]:
+        """Convert raw provenance dict into typed schema objects."""
         if not raw:
             return None
 
-        result = {}
+        result = {"_source": source}
 
         fc = raw.get("finance_check")
         if fc:
@@ -283,7 +351,7 @@ class CheckOrchestrator:
                 finance_outstanding=fc["finance_outstanding"],
                 record_count=fc.get("record_count", 0),
                 records=records,
-                data_source=fc.get("data_source", "Demo"),
+                data_source=fc.get("data_source", source),
             )
 
         sc = raw.get("stolen_check")
@@ -297,7 +365,7 @@ class CheckOrchestrator:
                 written_off=wc["written_off"],
                 record_count=wc.get("record_count", 0),
                 records=records,
-                data_source=wc.get("data_source", "Demo"),
+                data_source=wc.get("data_source", source),
             )
 
         pc = raw.get("plate_changes")
@@ -307,7 +375,7 @@ class CheckOrchestrator:
                 changes_found=pc["changes_found"],
                 record_count=pc.get("record_count", 0),
                 records=records,
-                data_source=pc.get("data_source", "Demo"),
+                data_source=pc.get("data_source", source),
             )
 
         val = raw.get("valuation")
@@ -317,7 +385,7 @@ class CheckOrchestrator:
         return result
 
     async def close(self):
-        await asyncio.gather(
-            self.dvla_client.close(),
-            self.mot_client.close(),
-        )
+        tasks = [self.dvla_client.close(), self.mot_client.close()]
+        if self.oneauto_client:
+            tasks.append(self.oneauto_client.close())
+        await asyncio.gather(*tasks)

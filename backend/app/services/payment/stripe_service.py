@@ -1,4 +1,5 @@
 """Stripe payment integration for BASIC tier reports."""
+from __future__ import annotations
 
 import stripe
 
