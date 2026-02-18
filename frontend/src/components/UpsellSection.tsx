@@ -342,6 +342,11 @@ export default function UpsellSection({
               </div>
             </div>
 
+            {/* One-off payment note */}
+            <p className="text-center text-sm text-slate-500 mb-4">
+              One-off payment. No subscriptions.
+            </p>
+
             {/* Trust badges */}
             <TrustBadges />
           </div>

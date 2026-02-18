@@ -223,6 +223,20 @@ export interface Valuation {
   data_source: string;
 }
 
+export interface SalvageRecord {
+  lot_number?: string;
+  auction_date?: string;
+  damage_description?: string;
+  category?: string;
+  images?: string[];
+}
+
+export interface SalvageCheck {
+  salvage_found: boolean;
+  records: SalvageRecord[];
+  data_source: string;
+}
+
 export interface FreeCheckResponse {
   registration: string;
   tier: string;
@@ -242,6 +256,7 @@ export interface FreeCheckResponse {
   write_off_check: WriteOffCheck | null;
   plate_changes: PlateChangeHistory | null;
   valuation: Valuation | null;
+  salvage_check: SalvageCheck | null;
   checked_at: string;
   data_sources: string[];
 }
