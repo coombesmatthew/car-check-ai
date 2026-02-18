@@ -151,9 +151,15 @@ export default function SearchSection() {
         </form>
 
         {checkCount !== null && checkCount > 0 && (
-          <p className="text-center text-sm text-slate-400 mt-4">
-            <span className="font-semibold text-slate-600">{checkCount.toLocaleString()}</span> vehicles checked and counting
-          </p>
+          <div className="flex items-center justify-center gap-2 mt-4">
+            <span className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-medium px-3 py-1.5 rounded-full">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+              </span>
+              {checkCount.toLocaleString()} vehicles checked
+            </span>
+          </div>
         )}
 
         <div className="mt-6">
