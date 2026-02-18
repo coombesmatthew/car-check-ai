@@ -61,8 +61,11 @@ function DetailRow({ label, value }: { label: string; value: React.ReactNode }) 
   );
 }
 
-/* Mini SVG line chart for mileage readings */
+/* Mini SVG line chart for mileage readings with hover tooltips */
 function MileageChart({ readings }: { readings: { date: string; miles: number }[] }) {
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
+
   if (readings.length < 2) return null;
 
   const width = 300;
@@ -75,11 +78,12 @@ function MileageChart({ readings }: { readings: { date: string; miles: number }[
   const maxMiles = Math.max(...readings.map((r) => r.miles));
   const range = maxMiles - minMiles || 1;
 
-  const points = readings.map((r, i) => {
-    const x = padding.left + (i / (readings.length - 1)) * innerW;
-    const y = padding.top + innerH - ((r.miles - minMiles) / range) * innerH;
-    return `${x},${y}`;
-  });
+  const pointCoords = readings.map((r, i) => ({
+    x: padding.left + (i / (readings.length - 1)) * innerW,
+    y: padding.top + innerH - ((r.miles - minMiles) / range) * innerH,
+  }));
+
+  const points = pointCoords.map((p) => `${p.x},${p.y}`);
 
   const areaPoints = [
     `${padding.left},${height - padding.bottom}`,
@@ -87,27 +91,78 @@ function MileageChart({ readings }: { readings: { date: string; miles: number }[
     `${padding.left + innerW},${height - padding.bottom}`,
   ];
 
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const relativeX = (e.clientX - rect.left) / rect.width;
+
+    let closestIdx = 0;
+    let closestDist = Infinity;
+    pointCoords.forEach((p, i) => {
+      const dist = Math.abs(relativeX - p.x / width);
+      if (dist < closestDist) {
+        closestDist = dist;
+        closestIdx = i;
+      }
+    });
+
+    setHoveredIndex(closestIdx);
+    setTooltipPos({
+      x: (pointCoords[closestIdx].x / width) * rect.width,
+      y: (pointCoords[closestIdx].y / height) * rect.height,
+    });
+  };
+
+  const hovered = hoveredIndex !== null ? readings[hoveredIndex] : null;
+
   return (
-    <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-20" preserveAspectRatio="none">
-      <polygon
-        points={areaPoints.join(" ")}
-        fill="url(#mileageGradient)"
-      />
-      <polyline
-        points={points.join(" ")}
-        fill="none"
-        stroke="#2563eb"
-        strokeWidth="2"
-        strokeLinejoin="round"
-        strokeLinecap="round"
-      />
-      <defs>
-        <linearGradient id="mileageGradient" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#2563eb" stopOpacity="0.15" />
-          <stop offset="100%" stopColor="#2563eb" stopOpacity="0" />
-        </linearGradient>
-      </defs>
-    </svg>
+    <div
+      className="relative cursor-crosshair"
+      onMouseMove={handleMouseMove}
+      onMouseLeave={() => setHoveredIndex(null)}
+    >
+      <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-20" preserveAspectRatio="none">
+        <polygon points={areaPoints.join(" ")} fill="url(#mileageGradient)" />
+        <polyline points={points.join(" ")} fill="none" stroke="#2563eb" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
+        <defs>
+          <linearGradient id="mileageGradient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#2563eb" stopOpacity="0.15" />
+            <stop offset="100%" stopColor="#2563eb" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+      </svg>
+
+      {hoveredIndex !== null && (
+        <>
+          {/* Vertical guide line */}
+          <div
+            className="absolute top-0 bottom-0 w-px bg-blue-300 pointer-events-none"
+            style={{ left: tooltipPos.x }}
+          />
+          {/* Dot on data point */}
+          <div
+            className="absolute w-3 h-3 bg-blue-600 rounded-full border-2 border-white shadow-md pointer-events-none"
+            style={{ left: tooltipPos.x - 6, top: tooltipPos.y - 6 }}
+          />
+        </>
+      )}
+
+      {hovered && hoveredIndex !== null && (
+        <div
+          className="absolute bg-slate-900 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-lg pointer-events-none whitespace-nowrap z-10"
+          style={{
+            left: Math.max(60, Math.min(tooltipPos.x, (typeof window !== "undefined" ? 240 : 240))),
+            top: Math.max(0, tooltipPos.y - 36),
+            transform: "translateX(-50%)",
+          }}
+        >
+          <span className="text-blue-300">
+            {new Date(hovered.date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+          </span>
+          <span className="mx-1.5 text-slate-500">&middot;</span>
+          <span className="font-semibold">{hovered.miles.toLocaleString()} mi</span>
+        </div>
+      )}
+    </div>
   );
 }
 
