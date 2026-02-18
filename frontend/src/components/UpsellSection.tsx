@@ -106,9 +106,9 @@ function SampleReportModal({ onClose }: { onClose: () => void }) {
         <div className="overflow-y-auto max-h-[58vh] px-5 py-5 space-y-3">
           {/* --- Full Report cards (shown in both tabs) --- */}
 
-          {/* AI Verdict */}
+          {/* Should You Buy This Car? */}
           <SampleCard
-            title="AI Buyer&apos;s Verdict"
+            title="Should You Buy This Car?"
             accent="emerald"
             icon={<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" /></svg>}
           >
@@ -117,46 +117,52 @@ function SampleReportModal({ onClose }: { onClose: () => void }) {
               <span className="text-xs text-slate-500">AI Verdict</span>
             </div>
             <p className="text-xs text-slate-600 leading-relaxed">
-              This 2019 Volkswagen Golf 1.5 TSI is a well-maintained vehicle with consistent mileage, 100% MOT pass rate, and no red flags. Below-average mileage and strong service history suggest a reliable purchase.
+              This 2019 Golf is a solid choice. 100% MOT pass rate, 42,318 below-average miles, and no signs of clocking. The recurring tyre wear is typical for this model and age — not a red flag.
             </p>
           </SampleCard>
 
-          {/* Condition Score */}
+          {/* 12-Month Cost Forecast */}
           <SampleCard
-            title="Condition Score"
+            title="What Will It Cost You?"
             accent="blue"
-            icon={<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg>}
+            icon={<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
           >
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full border-4 border-emerald-500 flex items-center justify-center">
-                <span className="text-sm font-bold text-emerald-700">87</span>
-              </div>
-              <div>
-                <p className="text-xs font-semibold text-slate-800">Excellent condition</p>
-                <p className="text-xs text-slate-500">Based on MOT history, defects, and mileage patterns</p>
+            <div className="space-y-1.5 text-xs text-slate-600">
+              <p className="font-semibold text-slate-800">Immediate: Brake pads approaching limit &rarr; &pound;100-200</p>
+              <div className="grid grid-cols-2 gap-x-3 gap-y-1 bg-white rounded-md px-2.5 py-2 border border-blue-100">
+                <span>Annual service</span><span className="font-medium text-right">&pound;180-280</span>
+                <span>Road tax (Band F)</span><span className="font-medium text-right">&pound;190/yr</span>
+                <span>Predicted repairs</span><span className="font-medium text-right">&pound;100-350</span>
+                <span className="font-semibold text-slate-800 border-t border-slate-100 pt-1">12-month total</span>
+                <span className="font-bold text-right text-slate-900 border-t border-slate-100 pt-1">&pound;525 - &pound;875</span>
               </div>
             </div>
           </SampleCard>
 
-          {/* Negotiation Points */}
+          {/* Negotiation Playbook */}
           <SampleCard
-            title="Negotiation Points"
+            title="Negotiation Playbook"
             accent="amber"
-            icon={<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
+            icon={<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 01-.825-.242m9.345-8.334a2.126 2.126 0 00-.476-.095 48.64 48.64 0 00-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0011.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" /></svg>}
           >
-            <ul className="space-y-1.5">
-              <li className="flex items-start gap-2 text-xs text-slate-600">
-                <span className="text-amber-500 mt-0.5">&#9679;</span>
-                Brake pad wear advisory noted — factor in ~&pound;150 for replacement
-              </li>
-              <li className="flex items-start gap-2 text-xs text-slate-600">
-                <span className="text-amber-500 mt-0.5">&#9679;</span>
-                MOT due in 47 days — leverage for &pound;50-100 discount
-              </li>
-              <li className="flex items-start gap-2 text-xs text-slate-600">
-                <span className="text-emerald-500 mt-0.5">&#9679;</span>
-                Below-average mileage (42,318 mi) — supports asking price
-              </li>
+            <div className="space-y-1.5 text-xs text-slate-600">
+              <p><span className="font-semibold text-slate-800">Opening line:</span> <em>&ldquo;I&apos;ve had an independent check done and I&apos;m interested, but...&rdquo;</em></p>
+              <p><span className="font-semibold text-slate-800">Raise:</span> <em>&ldquo;The brakes are flagged as wearing — that&apos;s &pound;150-200 I&apos;ll need to spend. MOT is due in 47 days too.&rdquo;</em></p>
+              <p><span className="font-semibold text-slate-800">Your offer:</span> <strong>&pound;8,750</strong> (asking &pound;8,995 &minus; &pound;245 for brake work + MOT risk)</p>
+            </div>
+          </SampleCard>
+
+          {/* Test Drive Checklist */}
+          <SampleCard
+            title="Test Drive Checklist"
+            accent="blue"
+            icon={<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
+          >
+            <ul className="space-y-1 text-xs text-slate-600">
+              <li className="flex items-start gap-1.5"><span className="text-blue-500 mt-0.5">&#10003;</span> Brake firmly from 40mph — pads were flagged as worn</li>
+              <li className="flex items-start gap-1.5"><span className="text-blue-500 mt-0.5">&#10003;</span> Listen for tyre noise on motorway — tyres wearing unevenly</li>
+              <li className="flex items-start gap-1.5"><span className="text-blue-500 mt-0.5">&#10003;</span> Check V5C name matches seller&apos;s ID</li>
+              <li className="flex items-start gap-1.5"><span className="text-blue-500 mt-0.5">&#10003;</span> Test AC — compressor failure costs &pound;400+</li>
             </ul>
           </SampleCard>
 

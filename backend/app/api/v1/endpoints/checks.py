@@ -87,6 +87,7 @@ async def basic_check_preview(request: BasicCheckPreviewRequest):
             ulez_data=orchestrator._raw_ulez_data if hasattr(orchestrator, '_raw_ulez_data') else None,
             listing_price=request.listing_price,
             listing_url=request.listing_url,
+            check_result=free_result.model_dump(),
         )
 
         return BasicCheckPreviewResponse(
@@ -138,6 +139,7 @@ async def generate_basic_report(request: BasicReportRequest):
             ulez_data=orchestrator._raw_ulez_data if hasattr(orchestrator, '_raw_ulez_data') else None,
             listing_price=request.listing_price,
             listing_url=request.listing_url,
+            check_result=free_result.model_dump(),
         )
 
         # 3. Build check data dict for PDF/email
@@ -201,6 +203,7 @@ async def download_basic_pdf(request: BasicReportRequest):
             ulez_data=orchestrator._raw_ulez_data if hasattr(orchestrator, '_raw_ulez_data') else None,
             listing_price=request.listing_price,
             listing_url=request.listing_url,
+            check_result=free_result.model_dump(),
         )
 
         # 3. Generate PDF
@@ -305,6 +308,8 @@ async def fulfil_basic_report(session_id: str):
     try:
         free_result = await orchestrator.run_free_check(registration, tier=tier)
 
+        check_data = free_result.model_dump()
+
         ai_report = await generate_ai_report(
             registration=registration,
             vehicle_data=orchestrator._raw_dvla_data if hasattr(orchestrator, '_raw_dvla_data') else None,
@@ -312,9 +317,8 @@ async def fulfil_basic_report(session_id: str):
             ulez_data=orchestrator._raw_ulez_data if hasattr(orchestrator, '_raw_ulez_data') else None,
             listing_price=listing_price,
             listing_url=listing_url,
+            check_result=check_data,
         )
-
-        check_data = free_result.model_dump()
         pdf_bytes = generate_pdf(check_data, ai_report)
         verdict = _extract_verdict(ai_report) if ai_report else None
 
@@ -478,6 +482,7 @@ async def check_listing(request: ListingCheckRequest):
                 ulez_data=orchestrator._raw_ulez_data if orchestrator and hasattr(orchestrator, '_raw_ulez_data') else None,
                 listing_price=listing_data.price_pence,
                 listing_url=request.url,
+                check_result=free_check.model_dump() if free_check else None,
             )
         except Exception as e:
             logger.warning(f"AI report generation failed for listing: {e}")
