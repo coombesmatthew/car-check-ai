@@ -6,6 +6,52 @@ import Badge from "@/components/ui/Badge";
 import Card from "@/components/ui/Card";
 import ScoreGauge from "@/components/ui/ScoreGauge";
 
+/* Locked/blurred preview card for paid tier data */
+function LockedCard({
+  title,
+  icon,
+  tier,
+  children,
+}: {
+  title: string;
+  icon: JSX.Element;
+  tier: "basic" | "premium";
+  children: React.ReactNode;
+}) {
+  const isPremium = tier === "premium";
+  const tierLabel = isPremium ? "Premium" : "Full Report";
+  const tierPrice = isPremium ? "\u00A39.99" : "\u00A33.99";
+
+  return (
+    <div className="relative bg-white border border-slate-200 rounded-xl overflow-hidden">
+      {/* Card header */}
+      <div className="flex items-center gap-2 px-4 py-3 border-b border-slate-100 bg-slate-50">
+        <span className="text-slate-400">{icon}</span>
+        <h3 className="text-sm font-semibold text-slate-400">{title}</h3>
+        <span className={`ml-auto text-xs font-medium px-2 py-0.5 rounded-full ${isPremium ? "bg-purple-100 text-purple-700" : "bg-blue-100 text-blue-700"}`}>
+          {tierLabel}
+        </span>
+      </div>
+      {/* Blurred content */}
+      <div className="p-4 select-none" style={{ filter: "blur(5px)" }}>
+        {children}
+      </div>
+      {/* Unlock overlay */}
+      <div className="absolute inset-0 top-[44px] bg-gradient-to-t from-white via-white/90 to-white/60 flex flex-col items-center justify-center">
+        <svg className={`w-8 h-8 mb-2 ${isPremium ? "text-purple-400" : "text-blue-400"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+        </svg>
+        <a
+          href="#full-report"
+          className={`px-4 py-2 text-white text-xs font-semibold rounded-lg transition-colors ${isPremium ? "bg-purple-600 hover:bg-purple-700" : "bg-blue-600 hover:bg-blue-700"}`}
+        >
+          Unlock with {tierLabel} &mdash; {tierPrice}
+        </a>
+      </div>
+    </div>
+  );
+}
+
 function DetailRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="flex justify-between py-1.5 border-b border-slate-100 last:border-0">
@@ -1101,6 +1147,75 @@ export default function CheckResult({ data }: { data: FreeCheckResponse }) {
               ))}
             </div>
           </Card>
+        )}
+        {/* --- Locked premium previews (shown when data not present) --- */}
+
+        {!finance_check && (
+          <LockedCard title="Finance Check" icon={icons.document} tier="premium">
+            <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2 mb-3">
+              <span className="text-sm font-semibold text-emerald-800">NO FINANCE OUTSTANDING</span>
+            </div>
+            <div className="space-y-1.5">
+              <div className="flex justify-between py-1.5"><span className="text-sm text-slate-500">Agreement Type</span><span className="text-sm text-slate-700">Hire Purchase</span></div>
+              <div className="flex justify-between py-1.5"><span className="text-sm text-slate-500">Finance Company</span><span className="text-sm text-slate-700">Close Brothers Ltd</span></div>
+              <div className="flex justify-between py-1.5"><span className="text-sm text-slate-500">Agreement Date</span><span className="text-sm text-slate-700">14/03/2022</span></div>
+            </div>
+          </LockedCard>
+        )}
+
+        {!stolen_check && (
+          <LockedCard title="Stolen Vehicle Check" icon={icons.shield} tier="premium">
+            <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2 mb-3">
+              <span className="text-sm font-semibold text-emerald-800">NOT REPORTED STOLEN</span>
+            </div>
+            <div className="space-y-1.5">
+              <div className="flex justify-between py-1.5"><span className="text-sm text-slate-500">Police Database</span><span className="text-sm text-slate-700">Checked</span></div>
+              <div className="flex justify-between py-1.5"><span className="text-sm text-slate-500">Status</span><span className="text-sm text-slate-700">Clear</span></div>
+            </div>
+          </LockedCard>
+        )}
+
+        {!write_off_check && (
+          <LockedCard title="Write-off &amp; Insurance" icon={icons.alert} tier="premium">
+            <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2 mb-3">
+              <span className="text-sm font-semibold text-emerald-800">NOT WRITTEN OFF</span>
+            </div>
+            <div className="space-y-1.5">
+              <div className="flex justify-between py-1.5"><span className="text-sm text-slate-500">Category</span><span className="text-sm text-slate-700">None</span></div>
+              <div className="flex justify-between py-1.5"><span className="text-sm text-slate-500">Insurance Claims</span><span className="text-sm text-slate-700">0 records</span></div>
+            </div>
+          </LockedCard>
+        )}
+
+        {!valuation && (
+          <LockedCard title="Market Valuation" icon={icons.currency} tier="premium">
+            <div className="space-y-2 mb-3">
+              <div className="flex items-center justify-between"><span className="text-sm text-slate-500">Private Sale</span><span className="text-lg font-bold text-slate-900">&pound;8,450</span></div>
+              <div className="flex items-center justify-between"><span className="text-sm text-slate-500">Dealer Forecourt</span><span className="text-lg font-bold text-slate-900">&pound;10,200</span></div>
+              <div className="flex items-center justify-between"><span className="text-sm text-slate-500">Trade-in</span><span className="text-lg font-bold text-slate-900">&pound;7,100</span></div>
+            </div>
+            <div className="h-3 bg-gradient-to-r from-amber-200 via-emerald-300 to-blue-300 rounded-full" />
+          </LockedCard>
+        )}
+
+        {!salvage_check && (
+          <LockedCard title="Salvage Auction Check" icon={icons.alert} tier="premium">
+            <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2 mb-3">
+              <span className="text-sm font-semibold text-emerald-800">NO SALVAGE RECORDS</span>
+            </div>
+            <p className="text-xs text-slate-500">Checked against UK salvage auction databases.</p>
+          </LockedCard>
+        )}
+
+        {!plate_changes && (
+          <LockedCard title="Plate &amp; Keeper History" icon={icons.swap} tier="premium">
+            <div className="space-y-1.5">
+              <div className="flex justify-between py-1.5"><span className="text-sm text-slate-500">Plate Changes</span><span className="text-sm text-slate-700">1 change found</span></div>
+              <div className="flex justify-between py-1.5"><span className="text-sm text-slate-500">Previous Plate</span><span className="inline-block bg-yellow-50 border border-yellow-300 font-mono font-bold px-2 py-0.5 rounded text-slate-900 text-xs">AB18 XYZ</span></div>
+              <div className="flex justify-between py-1.5"><span className="text-sm text-slate-500">Registered Keepers</span><span className="text-sm text-slate-700">3 keepers</span></div>
+              <div className="flex justify-between py-1.5"><span className="text-sm text-slate-500">Last Change</span><span className="text-sm text-slate-700">12/06/2023</span></div>
+            </div>
+          </LockedCard>
         )}
       </div>
 
