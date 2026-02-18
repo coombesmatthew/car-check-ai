@@ -515,10 +515,11 @@ export default function Home() {
               <ul className="space-y-3 mb-6">
                 {[
                   "Everything in Full Report",
-                  "Market Price Comparison",
-                  "Insurance Group Data",
-                  "Dealer Listing Analysis",
-                  "Extended Vehicle History",
+                  "Finance &amp; Outstanding Debt Check",
+                  "Stolen Vehicle Check",
+                  "Write-off &amp; Salvage History",
+                  "Market Valuation (Brego)",
+                  "Plate Change &amp; Keeper History",
                 ].map((item, i) => (
                   <li
                     key={item}
@@ -539,15 +540,18 @@ export default function Home() {
                         d="M4.5 12.75l6 6 9-13.5"
                       />
                     </svg>
-                    <span className={i > 0 ? "font-medium" : ""}>{item}</span>
+                    <span
+                      className={i > 0 ? "font-medium" : ""}
+                      dangerouslySetInnerHTML={{ __html: item }}
+                    />
                   </li>
                 ))}
               </ul>
               <a
                 href="#search"
-                className="block text-center py-2.5 border-2 border-purple-300 text-purple-700 font-semibold rounded-lg hover:bg-purple-50 transition-colors text-sm"
+                className="block text-center py-2.5 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors text-sm"
               >
-                Coming Soon
+                Get Premium Check &mdash; &pound;9.99
               </a>
             </div>
           </div>

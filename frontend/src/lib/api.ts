@@ -301,6 +301,7 @@ export interface CheckoutResponse {
 export async function createCheckout(
   registration: string,
   email: string,
+  tier: string = "basic",
   listingUrl?: string,
   listingPrice?: number
 ): Promise<CheckoutResponse> {
@@ -310,6 +311,7 @@ export async function createCheckout(
     body: JSON.stringify({
       registration,
       email,
+      tier,
       listing_url: listingUrl || null,
       listing_price: listingPrice || null,
     }),

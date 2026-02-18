@@ -48,6 +48,7 @@ export default function UpsellSection({
       const { checkout_url } = await createCheckout(
         registration,
         email,
+        "basic",
         listingUrl || undefined,
         priceInPence
       );

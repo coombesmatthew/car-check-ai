@@ -14,19 +14,35 @@ def _init_stripe():
     stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
+TIER_CONFIG = {
+    "basic": {
+        "amount": 399,
+        "name": "VeriCar Report",
+        "description": "AI-powered buyer's report with condition score, risk assessment, and negotiation points. PDF delivered to your email.",
+    },
+    "premium": {
+        "amount": 999,
+        "name": "VeriCar Premium Check",
+        "description": "Full vehicle history: finance, stolen, write-off, valuation, keeper history, plus AI buyer's report. PDF delivered to your email.",
+    },
+}
+
+
 def create_checkout_session(
     registration: str,
     email: str,
+    tier: str = "basic",
     listing_url: str | None = None,
     listing_price: int | None = None,
     success_url: str | None = None,
     cancel_url: str | None = None,
 ) -> dict:
-    """Create a Stripe Checkout Session for a BASIC tier report.
+    """Create a Stripe Checkout Session for a paid tier.
 
     Args:
         registration: Vehicle registration number
         email: Customer email for receipt + report delivery
+        tier: "basic" (£3.99) or "premium" (£9.99)
         listing_url: Optional listing URL for the AI report
         listing_price: Optional listing price in pence
         success_url: URL to redirect on successful payment
@@ -37,6 +53,8 @@ def create_checkout_session(
     """
     _init_stripe()
 
+    config = TIER_CONFIG.get(tier, TIER_CONFIG["basic"])
+
     base_url = settings.SITE_URL.rstrip("/")
     if not success_url:
         success_url = f"{base_url}/report/success?session_id={{CHECKOUT_SESSION_ID}}"
@@ -45,7 +63,7 @@ def create_checkout_session(
 
     metadata = {
         "registration": registration,
-        "tier": "basic",
+        "tier": tier,
         "email": email,
     }
     if listing_url:
@@ -60,10 +78,10 @@ def create_checkout_session(
                 "price_data": {
                     "currency": "gbp",
                     "product_data": {
-                        "name": f"VeriCar Report — {registration}",
-                        "description": "AI-powered vehicle buyer's report with condition score, risk assessment, and negotiation points. PDF delivered to your email.",
+                        "name": f"{config['name']} — {registration}",
+                        "description": config["description"],
                     },
-                    "unit_amount": 399,  # £3.99 in pence
+                    "unit_amount": config["amount"],
                 },
                 "quantity": 1,
             }
@@ -98,6 +116,7 @@ def retrieve_session(session_id: str) -> dict:
         "payment_status": session.payment_status,
         "registration": session.metadata.get("registration", ""),
         "email": session.metadata.get("email", session.customer_email or ""),
+        "tier": session.metadata.get("tier", "basic"),
         "listing_url": session.metadata.get("listing_url"),
         "listing_price": int(session.metadata["listing_price"]) if session.metadata.get("listing_price") else None,
         "amount_total": session.amount_total,

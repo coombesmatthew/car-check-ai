@@ -66,13 +66,14 @@ class CheckOrchestrator:
         self.mot_analyzer = MOTAnalyzer()
         self.oneauto_client = OneAutoClient() if settings.ONEAUTO_API_KEY else None
 
-    async def run_free_check(self, registration: str) -> FreeCheckResponse:
-        """Execute a free-tier vehicle check.
+    async def run_free_check(self, registration: str, tier: str = "free") -> FreeCheckResponse:
+        """Execute a vehicle check.
 
-        Sources: DVSA MOT API + DVLA VES API only. Zero marginal cost.
+        tier="free": DVSA MOT + DVLA VES only (zero marginal cost)
+        tier="premium": + Experian AutoCheck + Brego + CarGuide (~£3.23/check)
         """
         clean_reg = registration.upper().replace(" ", "")
-        logger.info(f"Starting free check for {clean_reg}")
+        logger.info(f"Starting {tier} check for {clean_reg}")
 
         # Step 1: Fetch DVLA + MOT data in parallel
         dvla_data, mot_data = await asyncio.gather(
@@ -140,19 +141,22 @@ class CheckOrchestrator:
         )
 
         # Build provenance data (finance, stolen, write-off, plates, valuation)
-        current_mileage = None
-        if (mot_analysis.get("mot_summary") or {}).get("current_odometer"):
-            try:
-                current_mileage = int(mot_analysis["mot_summary"]["current_odometer"])
-            except (ValueError, TypeError):
-                pass
-        provenance = await self._build_provenance_data(clean_reg, current_mileage)
-        if provenance:
-            data_sources.append(provenance.pop("_source", "Provenance Check"))
+        # Only for premium tier — costs ~£3.23 per check via One Auto API
+        provenance = None
+        if tier == "premium":
+            current_mileage = None
+            if (mot_analysis.get("mot_summary") or {}).get("current_odometer"):
+                try:
+                    current_mileage = int(mot_analysis["mot_summary"]["current_odometer"])
+                except (ValueError, TypeError):
+                    pass
+            provenance = await self._build_provenance_data(clean_reg, current_mileage)
+            if provenance:
+                data_sources.append(provenance.pop("_source", "Provenance Check"))
 
         response = FreeCheckResponse(
             registration=clean_reg,
-            tier="free",
+            tier=tier,
             vehicle=vehicle,
             mot_summary=mot_summary,
             mot_tests=mot_tests,

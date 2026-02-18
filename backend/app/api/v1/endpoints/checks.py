@@ -217,6 +217,7 @@ async def download_basic_pdf(request: BasicReportRequest):
 class CheckoutRequest(BaseModel):
     registration: str
     email: str
+    tier: str = "basic"  # "basic" or "premium"
     listing_url: Optional[str] = None
     listing_price: Optional[int] = None
 
@@ -228,15 +229,17 @@ class CheckoutResponse(BaseModel):
 
 @router.post("/basic/checkout", response_model=CheckoutResponse)
 async def create_basic_checkout(request: CheckoutRequest):
-    """Create a Stripe Checkout Session for a BASIC tier report.
+    """Create a Stripe Checkout Session for a paid tier report.
 
+    Supports both basic (£3.99) and premium (£9.99) tiers.
     Returns a checkout URL that the frontend redirects the customer to.
-    On successful payment, Stripe redirects to the success URL with the session ID.
     """
+    tier = request.tier if request.tier in ("basic", "premium") else "basic"
     try:
         result = create_checkout_session(
             registration=request.registration,
             email=request.email,
+            tier=tier,
             listing_url=request.listing_url,
             listing_price=request.listing_price,
         )
@@ -282,11 +285,12 @@ async def fulfil_basic_report(session_id: str):
     email = session["email"]
     listing_url = session.get("listing_url")
     listing_price = session.get("listing_price")
+    tier = session.get("tier", "basic")
 
-    # 2. Generate the report
+    # 2. Generate the report (premium tier includes provenance data)
     orchestrator = CheckOrchestrator()
     try:
-        free_result = await orchestrator.run_free_check(registration)
+        free_result = await orchestrator.run_free_check(registration, tier=tier)
 
         ai_report = await generate_ai_report(
             registration=registration,
