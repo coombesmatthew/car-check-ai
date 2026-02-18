@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title:
     "Free Car Check UK | Finance, Stolen, MOT & Valuation | VeriCar",
   description:
-    "Free instant vehicle check with 15+ checks: finance outstanding, stolen, write-off, MOT history, mileage clocking, valuation, and ULEZ compliance. Official DVLA & DVSA data. No signup required.",
+    "Free instant MOT history, mileage clocking detection, and ULEZ check using official DVLA & DVSA data. Upgrade for AI verdicts, finance, stolen, write-off, and valuation checks. No signup required.",
   keywords: [
     "car check",
     "free car check",
@@ -25,9 +25,9 @@ export const metadata: Metadata = {
     "free HPI check",
   ],
   openGraph: {
-    title: "Free Car Check UK — 15+ Checks | VeriCar",
+    title: "Free Car Check UK | MOT, Mileage & ULEZ | VeriCar",
     description:
-      "Free vehicle check with finance, stolen, write-off, MOT history, mileage verification, valuation, and ULEZ compliance. No signup required.",
+      "Free MOT history, mileage clocking detection, and ULEZ check. Upgrade for AI verdicts, finance, stolen, write-off, and valuation checks. No signup required.",
     type: "website",
     locale: "en_GB",
   },
@@ -63,7 +63,7 @@ const faqItems = [
   {
     question: "Do you check for outstanding finance or stolen vehicles?",
     answer:
-      "Yes! Every check includes finance, stolen, and insurance write-off status, along with plate change history and a vehicle valuation. These are included free of charge.",
+      "Yes! Our Premium check (\u00A39.99) includes finance outstanding, stolen vehicle, insurance write-off, salvage history, plate changes, keeper history, and a market valuation \u2014 all powered by Experian data.",
   },
 ];
 
@@ -93,7 +93,7 @@ const jsonLd = {
           price: "0",
           priceCurrency: "GBP",
           description:
-            "Free vehicle check with MOT history, mileage verification, finance, stolen, write-off, valuation, and ULEZ compliance.",
+            "Free vehicle check with MOT history, mileage verification, condition scoring, and ULEZ compliance.",
         },
         {
           "@type": "Offer",
@@ -107,7 +107,7 @@ const jsonLd = {
           price: "9.99",
           priceCurrency: "GBP",
           description:
-            "Premium report with market price comparison, insurance data, dealer analysis, and extended history.",
+            "Premium check with finance, stolen, write-off, salvage, market valuation, keeper history, plus AI buyer's report.",
         },
       ],
       description:
@@ -140,10 +140,10 @@ export default function Home() {
         <div className="mx-auto max-w-5xl px-4">
           <div className="text-center mb-10">
             <h2 className="text-2xl font-bold text-slate-900">
-              Everything you need, completely free
+              Everything you need to buy with confidence
             </h2>
             <p className="text-slate-500 mt-2">
-              15 checks including finance, stolen, and valuation &mdash; no signup required
+              Free MOT &amp; mileage checks, plus paid tiers for AI verdicts and full history
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -211,6 +211,7 @@ export default function Home() {
               </div>
               <h3 className="font-semibold text-slate-900 mb-2">
                 Finance &amp; Stolen
+                <span className="ml-1.5 text-xs font-medium text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded">Premium</span>
               </h3>
               <p className="text-sm text-slate-500 leading-relaxed">
                 Outstanding finance, stolen vehicle, and insurance write-off
@@ -259,6 +260,7 @@ export default function Home() {
               </div>
               <h3 className="font-semibold text-slate-900 mb-2">
                 Vehicle Valuation
+                <span className="ml-1.5 text-xs font-medium text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded">Premium</span>
               </h3>
               <p className="text-sm text-slate-500 leading-relaxed">
                 Private sale, dealer, and trade-in valuations so you know
@@ -283,6 +285,7 @@ export default function Home() {
               </div>
               <h3 className="font-semibold text-slate-900 mb-2">
                 Plate Changes
+                <span className="ml-1.5 text-xs font-medium text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded">Premium</span>
               </h3>
               <p className="text-sm text-slate-500 leading-relaxed">
                 Full registration plate history to spot vehicles hiding
@@ -298,8 +301,8 @@ export default function Home() {
         <div className="mx-auto max-w-5xl px-4">
           <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16 text-center">
             <div>
-              <p className="text-3xl font-bold text-slate-900">15+</p>
-              <p className="text-sm text-slate-500 mt-1">Checks per vehicle</p>
+              <p className="text-3xl font-bold text-slate-900">3 Tiers</p>
+              <p className="text-sm text-slate-500 mt-1">Free, Basic &amp; Premium</p>
             </div>
             <div className="hidden md:block w-px h-12 bg-slate-200" />
             <div>
@@ -408,9 +411,9 @@ export default function Home() {
                   "DVLA Vehicle Data",
                   "Full MOT History",
                   "Mileage &amp; Clocking Detection",
-                  "Finance &amp; Stolen Check",
-                  "Write-off &amp; Plate History",
-                  "Valuation &amp; ULEZ Check",
+                  "Condition Score",
+                  "ULEZ &amp; Tax Check",
+                  "Safety Rating",
                 ].map((item) => (
                   <li
                     key={item}
