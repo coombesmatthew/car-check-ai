@@ -63,5 +63,26 @@ class CacheService:
         except Exception as e:
             logger.warning(f"Cache delete error: {e}")
 
+    async def increment(self, key: str, amount: int = 1) -> int:
+        """Atomically increment a counter. Returns the new value."""
+        if not self._redis:
+            return 0
+        try:
+            return await self._redis.incrby(f"carcheck:{key}", amount)
+        except Exception as e:
+            logger.warning(f"Counter increment error: {e}")
+            return 0
+
+    async def get_counter(self, key: str) -> int:
+        """Get the current value of a counter."""
+        if not self._redis:
+            return 0
+        try:
+            val = await self._redis.get(f"carcheck:{key}")
+            return int(val) if val else 0
+        except Exception as e:
+            logger.warning(f"Counter read error: {e}")
+            return 0
+
 
 cache = CacheService()

@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { runFreeCheck, runBasicCheckPreview, FreeCheckResponse } from "@/lib/api";
+import { useState, useEffect } from "react";
+import { runFreeCheck, runBasicCheckPreview, getCheckCount, FreeCheckResponse } from "@/lib/api";
 import TrustBar from "@/components/ui/TrustBar";
 import CheckResult from "@/components/CheckResult";
 import AIReport from "@/components/AIReport";
@@ -20,6 +20,13 @@ export default function SearchSection() {
   const [aiReport, setAiReport] = useState<string | null>(null);
   const [reportLoading, setReportLoading] = useState(false);
   const [reportError, setReportError] = useState<string | null>(null);
+  const [checkCount, setCheckCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    getCheckCount().then((count) => {
+      if (count > 0) setCheckCount(count);
+    });
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,6 +45,8 @@ export default function SearchSection() {
     try {
       const data = await runFreeCheck(cleaned);
       setResult(data);
+      // Refresh counter after successful check
+      getCheckCount().then((c) => { if (c > 0) setCheckCount(c); });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
@@ -141,7 +150,13 @@ export default function SearchSection() {
               )}
         </form>
 
-        <div className="mt-8">
+        {checkCount !== null && checkCount > 0 && (
+          <p className="text-center text-sm text-slate-400 mt-4">
+            <span className="font-semibold text-slate-600">{checkCount.toLocaleString()}</span> vehicles checked and counting
+          </p>
+        )}
+
+        <div className="mt-6">
           <TrustBar />
         </div>
       </section>

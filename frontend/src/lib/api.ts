@@ -268,6 +268,17 @@ export interface BasicCheckPreviewResponse {
   price: string;
 }
 
+export async function getCheckCount(): Promise<number> {
+  try {
+    const res = await fetch(`${API_URL}/api/v1/checks/count`);
+    if (!res.ok) return 0;
+    const data = await res.json();
+    return data.total_checks || 0;
+  } catch {
+    return 0;
+  }
+}
+
 export async function runFreeCheck(
   registration: string
 ): Promise<FreeCheckResponse> {

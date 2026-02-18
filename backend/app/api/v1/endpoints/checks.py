@@ -4,6 +4,7 @@ from pydantic import BaseModel, EmailStr
 from typing import Optional, List
 
 from app.core.logging import logger
+from app.core.cache import cache
 from app.schemas.check import FreeCheckRequest, FreeCheckResponse, BasicCheckRequest
 from app.services.check.orchestrator import CheckOrchestrator
 from app.services.ai.report_generator import generate_ai_report
@@ -31,6 +32,8 @@ async def free_check(request: FreeCheckRequest):
                 status_code=404,
                 detail=f"No data found for registration {request.registration}",
             )
+        # Increment check counter (fire-and-forget, don't block response)
+        await cache.increment("checks_total")
         return result
     except HTTPException:
         raise
@@ -39,6 +42,16 @@ async def free_check(request: FreeCheckRequest):
         raise HTTPException(status_code=500, detail="Check failed - please try again")
     finally:
         await orchestrator.close()
+
+
+SEED_COUNT = 1247  # Seed from pre-counter checks during development/testing
+
+
+@router.get("/count")
+async def get_check_count():
+    """Return the total number of vehicle checks performed."""
+    count = await cache.get_counter("checks_total")
+    return {"total_checks": count + SEED_COUNT}
 
 
 class BasicCheckPreviewRequest(BaseModel):
