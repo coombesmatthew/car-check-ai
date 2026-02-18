@@ -35,52 +35,41 @@ const Spinner = () => (
   </svg>
 );
 
-/* Sample report content for the preview modal */
-const sampleReports = {
-  lowRisk: {
-    label: "Low Risk Example",
-    verdict: "BUY",
-    verdictColor: "text-emerald-700",
-    verdictBg: "bg-emerald-50 border-emerald-200",
-    content: [
-      { heading: "Vehicle Summary", text: "This 2019 Volkswagen Golf 1.5 TSI presents as a well-maintained vehicle with consistent ownership history. The mileage of 42,318 miles is below average for its age." },
-      { heading: "Condition Assessment", text: "MOT pass rate of 100% across 4 tests with only minor advisories (tyre wear, brake pad wear). No failures or dangerous items recorded. Condition score: 87/100." },
-      { heading: "Mileage Verification", text: "All mileage readings are consistent and show steady annual usage of approximately 10,500 miles per year. No signs of clocking detected." },
-      { heading: "Risk Assessment", text: "No outstanding finance. Not reported stolen. No insurance write-off history. Clean plate history with no changes." },
-      { heading: "Verdict", text: "BUY \u2014 This vehicle is well-maintained with consistent mileage, clean history, and no red flags. The below-average mileage and strong MOT record suggest a reliable purchase." },
-    ],
-  },
-  highRisk: {
-    label: "High Risk Example",
-    verdict: "AVOID",
-    verdictColor: "text-red-700",
-    verdictBg: "bg-red-50 border-red-200",
-    content: [
-      { heading: "Vehicle Summary", text: "This 2016 BMW 320d has had 4 registered keepers in 8 years, which is above average. The current mileage of 89,241 miles requires scrutiny." },
-      { heading: "Condition Assessment", text: "MOT pass rate of 57% with 3 failures in 7 tests. Recurring issues with suspension components and brake discs. Two dangerous defects recorded. Condition score: 34/100." },
-      { heading: "Mileage Verification", text: "WARNING: Mileage dropped from 72,415 to 58,200 between 2022 and 2023 MOT tests. This is a strong indicator of mileage tampering (clocking)." },
-      { heading: "Risk Assessment", text: "Outstanding finance of \u00a38,450 with Close Brothers. Category N write-off recorded in March 2021. Two plate changes since 2020." },
-      { heading: "Verdict", text: "AVOID \u2014 Multiple red flags including suspected clocking, outstanding finance, insurance write-off, and frequent keeper changes. Do not purchase this vehicle." },
-    ],
-  },
-};
+/* Sample card used in the preview modal */
+function SampleCard({ title, icon, children, accent = "blue" }: { title: string; icon: React.ReactNode; children: React.ReactNode; accent?: "blue" | "purple" | "emerald" | "red" | "amber" }) {
+  const accentMap = {
+    blue: "border-blue-200 bg-blue-50/30",
+    purple: "border-purple-200 bg-purple-50/30",
+    emerald: "border-emerald-200 bg-emerald-50/30",
+    red: "border-red-200 bg-red-50/30",
+    amber: "border-amber-200 bg-amber-50/30",
+  };
+  return (
+    <div className={`border rounded-lg overflow-hidden ${accentMap[accent]}`}>
+      <div className="flex items-center gap-2 px-3 py-2 border-b border-slate-100 bg-white/60">
+        <span className="text-slate-500">{icon}</span>
+        <span className="text-xs font-semibold text-slate-700">{title}</span>
+      </div>
+      <div className="px-3 py-2.5">{children}</div>
+    </div>
+  );
+}
 
 function SampleReportModal({ onClose }: { onClose: () => void }) {
-  const [activeTab, setActiveTab] = useState<"lowRisk" | "highRisk">("lowRisk");
-  const report = sampleReports[activeTab];
+  const [activeTab, setActiveTab] = useState<"basic" | "premium">("basic");
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
       <div className="absolute inset-0 bg-black/50" />
       <div
-        className="relative bg-white rounded-xl max-w-2xl w-full max-h-[80vh] overflow-hidden shadow-2xl"
+        className="relative bg-white rounded-xl max-w-2xl w-full max-h-[85vh] overflow-hidden shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal header */}
         <div className="bg-gradient-to-r from-slate-800 to-slate-900 px-6 py-4 flex items-center justify-between">
           <div>
-            <h3 className="text-white font-semibold text-lg">Sample AI Report</h3>
-            <p className="text-slate-400 text-sm">See what you get before you buy</p>
+            <h3 className="text-white font-semibold text-lg">What&apos;s Included</h3>
+            <p className="text-slate-400 text-sm">See exactly what you get with each report</p>
           </div>
           <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors">
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -92,53 +81,208 @@ function SampleReportModal({ onClose }: { onClose: () => void }) {
         {/* Tab switcher */}
         <div className="flex border-b border-slate-200">
           <button
-            onClick={() => setActiveTab("lowRisk")}
+            onClick={() => setActiveTab("basic")}
             className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
-              activeTab === "lowRisk"
-                ? "text-emerald-700 border-b-2 border-emerald-600 bg-emerald-50/50"
+              activeTab === "basic"
+                ? "text-blue-700 border-b-2 border-blue-600 bg-blue-50/50"
                 : "text-slate-500 hover:text-slate-700"
             }`}
           >
-            Low Risk Car
+            Full Report &mdash; &pound;3.99
           </button>
           <button
-            onClick={() => setActiveTab("highRisk")}
+            onClick={() => setActiveTab("premium")}
             className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
-              activeTab === "highRisk"
-                ? "text-red-700 border-b-2 border-red-600 bg-red-50/50"
+              activeTab === "premium"
+                ? "text-purple-700 border-b-2 border-purple-600 bg-purple-50/50"
                 : "text-slate-500 hover:text-slate-700"
             }`}
           >
-            High Risk Car
+            Premium Check &mdash; &pound;9.99
           </button>
         </div>
 
-        {/* Report content */}
-        <div className="overflow-y-auto max-h-[55vh] px-6 py-5">
-          {/* Verdict banner */}
-          <div className={`${report.verdictBg} border rounded-lg px-4 py-3 mb-5 flex items-center gap-3`}>
-            <span className={`text-2xl font-bold ${report.verdictColor}`}>
-              {report.verdict}
-            </span>
-            <span className="text-sm text-slate-600">AI Verdict</span>
-          </div>
+        {/* Preview content */}
+        <div className="overflow-y-auto max-h-[58vh] px-5 py-5 space-y-3">
+          {/* --- Full Report cards (shown in both tabs) --- */}
 
-          {report.content.map((section, i) => (
-            <div key={i} className="mb-4">
-              <h4 className="text-sm font-semibold text-slate-900 mb-1">{section.heading}</h4>
-              <p className={`text-sm leading-relaxed ${
-                section.heading === "Verdict" ? `font-medium ${report.verdictColor}` : "text-slate-600"
-              }`}>
-                {section.text}
-              </p>
+          {/* AI Verdict */}
+          <SampleCard
+            title="AI Buyer&apos;s Verdict"
+            accent="emerald"
+            icon={<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" /></svg>}
+          >
+            <div className="bg-emerald-50 border border-emerald-200 rounded-md px-3 py-2 flex items-center gap-2 mb-2">
+              <span className="text-lg font-bold text-emerald-700">BUY</span>
+              <span className="text-xs text-slate-500">AI Verdict</span>
             </div>
-          ))}
+            <p className="text-xs text-slate-600 leading-relaxed">
+              This 2019 Volkswagen Golf 1.5 TSI is a well-maintained vehicle with consistent mileage, 100% MOT pass rate, and no red flags. Below-average mileage and strong service history suggest a reliable purchase.
+            </p>
+          </SampleCard>
+
+          {/* Condition Score */}
+          <SampleCard
+            title="Condition Score"
+            accent="blue"
+            icon={<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg>}
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-full border-4 border-emerald-500 flex items-center justify-center">
+                <span className="text-sm font-bold text-emerald-700">87</span>
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-slate-800">Excellent condition</p>
+                <p className="text-xs text-slate-500">Based on MOT history, defects, and mileage patterns</p>
+              </div>
+            </div>
+          </SampleCard>
+
+          {/* Negotiation Points */}
+          <SampleCard
+            title="Negotiation Points"
+            accent="amber"
+            icon={<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
+          >
+            <ul className="space-y-1.5">
+              <li className="flex items-start gap-2 text-xs text-slate-600">
+                <span className="text-amber-500 mt-0.5">&#9679;</span>
+                Brake pad wear advisory noted — factor in ~&pound;150 for replacement
+              </li>
+              <li className="flex items-start gap-2 text-xs text-slate-600">
+                <span className="text-amber-500 mt-0.5">&#9679;</span>
+                MOT due in 47 days — leverage for &pound;50-100 discount
+              </li>
+              <li className="flex items-start gap-2 text-xs text-slate-600">
+                <span className="text-emerald-500 mt-0.5">&#9679;</span>
+                Below-average mileage (42,318 mi) — supports asking price
+              </li>
+            </ul>
+          </SampleCard>
+
+          {/* PDF delivery */}
+          <SampleCard
+            title="PDF Report Emailed"
+            accent="blue"
+            icon={<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" /></svg>}
+          >
+            <p className="text-xs text-slate-600">Full report delivered as a professional PDF to your inbox within 60 seconds. Take it to the dealer or share with your mechanic.</p>
+          </SampleCard>
+
+          {/* --- Premium-only cards --- */}
+          {activeTab === "premium" && (
+            <>
+              <div className="flex items-center gap-2 mt-3 mb-1">
+                <div className="flex-1 h-px bg-purple-200" />
+                <span className="text-xs font-semibold text-purple-600 uppercase tracking-wide">Premium extras</span>
+                <div className="flex-1 h-px bg-purple-200" />
+              </div>
+
+              {/* Finance Check */}
+              <SampleCard
+                title="Finance &amp; Outstanding Debt"
+                accent="purple"
+                icon={<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></svg>}
+              >
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center">
+                    <CheckIcon className="w-3 h-3 text-emerald-600" />
+                  </span>
+                  <span className="text-xs font-semibold text-emerald-700">No outstanding finance</span>
+                </div>
+                <p className="text-xs text-slate-500">Checked against all major UK finance providers. Safe to purchase.</p>
+              </SampleCard>
+
+              {/* Stolen Check */}
+              <SampleCard
+                title="Stolen Vehicle Check"
+                accent="purple"
+                icon={<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>}
+              >
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center">
+                    <CheckIcon className="w-3 h-3 text-emerald-600" />
+                  </span>
+                  <span className="text-xs font-semibold text-emerald-700">Not reported stolen</span>
+                </div>
+                <p className="text-xs text-slate-500">Checked against the Police National Computer (PNC) database.</p>
+              </SampleCard>
+
+              {/* Write-off */}
+              <SampleCard
+                title="Insurance Write-off"
+                accent="purple"
+                icon={<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" /></svg>}
+              >
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center">
+                    <CheckIcon className="w-3 h-3 text-emerald-600" />
+                  </span>
+                  <span className="text-xs font-semibold text-emerald-700">No write-off history</span>
+                </div>
+                <p className="text-xs text-slate-500">No Category A, B, N, or S insurance write-off records found.</p>
+              </SampleCard>
+
+              {/* Valuation */}
+              <SampleCard
+                title="Market Valuation"
+                accent="purple"
+                icon={<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
+              >
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="bg-white rounded-md px-2.5 py-2 border border-purple-100">
+                    <p className="text-[10px] text-slate-400 uppercase">Private Sale</p>
+                    <p className="text-sm font-bold text-slate-900">&pound;14,250</p>
+                  </div>
+                  <div className="bg-white rounded-md px-2.5 py-2 border border-purple-100">
+                    <p className="text-[10px] text-slate-400 uppercase">Dealer</p>
+                    <p className="text-sm font-bold text-slate-900">&pound;15,800</p>
+                  </div>
+                  <div className="bg-white rounded-md px-2.5 py-2 border border-purple-100">
+                    <p className="text-[10px] text-slate-400 uppercase">Trade-in</p>
+                    <p className="text-sm font-bold text-slate-900">&pound;12,100</p>
+                  </div>
+                  <div className="bg-white rounded-md px-2.5 py-2 border border-purple-100">
+                    <p className="text-[10px] text-slate-400 uppercase">Part Exchange</p>
+                    <p className="text-sm font-bold text-slate-900">&pound;11,500</p>
+                  </div>
+                </div>
+              </SampleCard>
+
+              {/* Plate & Keeper */}
+              <SampleCard
+                title="Plate &amp; Keeper History"
+                accent="purple"
+                icon={<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5zm6-10.125a1.875 1.875 0 11-3.75 0 1.875 1.875 0 013.75 0zm1.294 6.336a6.721 6.721 0 01-3.17.789 6.721 6.721 0 01-3.168-.789 3.376 3.376 0 016.338 0z" /></svg>}
+              >
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center">
+                    <CheckIcon className="w-3 h-3 text-emerald-600" />
+                  </span>
+                  <span className="text-xs font-semibold text-emerald-700">No plate changes found</span>
+                </div>
+                <p className="text-xs text-slate-500">2 registered keepers since first registration. V5C issued 14 months ago.</p>
+              </SampleCard>
+            </>
+          )}
+
+          {activeTab === "basic" && (
+            <div className="mt-2 bg-purple-50 border border-purple-200 rounded-lg p-3 text-center">
+              <p className="text-xs text-purple-700 font-medium mb-1">Want finance, stolen, write-off &amp; valuation checks?</p>
+              <button
+                onClick={() => setActiveTab("premium")}
+                className="text-xs font-semibold text-purple-600 hover:text-purple-800 underline underline-offset-2"
+              >
+                See what Premium includes &rarr;
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Modal footer */}
         <div className="border-t border-slate-200 px-6 py-4 bg-slate-50">
           <p className="text-xs text-slate-400 text-center">
-            Actual reports are generated from real DVLA, DVSA, and Experian data for the specific vehicle you&apos;re checking.
+            Sample data shown above. Actual reports use real DVLA, DVSA, and provider data for your specific vehicle.
           </p>
         </div>
       </div>
@@ -323,23 +467,17 @@ export default function UpsellSection({
             </div>
 
             {/* Sample report preview */}
-            <div className="relative mb-6 rounded-lg overflow-hidden border border-slate-200">
-              <div className="p-4 bg-slate-50">
-                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">Sample AI Verdict</p>
-                <div className="space-y-1.5 select-none" style={{ filter: "blur(3px)" }}>
-                  <p className="text-sm text-slate-700">This 2018 Ford Fiesta presents as a low-risk purchase. The mileage readings are consistent across all 6 MOT tests with no signs of clocking.</p>
-                  <p className="text-sm text-slate-700">The vehicle has a strong MOT pass rate of 83% with only minor advisories related to tyre wear.</p>
-                  <p className="text-sm font-semibold text-emerald-700">Verdict: BUY — This vehicle is well-maintained with no red flags.</p>
-                </div>
-              </div>
-              <div className="absolute inset-0 bg-gradient-to-t from-white via-white/80 to-transparent flex items-end justify-center pb-4">
-                <button
-                  onClick={() => setShowSampleReport(true)}
-                  className="px-4 py-2 bg-white border border-slate-300 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 transition-colors shadow-sm"
-                >
-                  View Sample Report
-                </button>
-              </div>
+            <div className="text-center mb-6">
+              <button
+                onClick={() => setShowSampleReport(true)}
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-300 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 hover:border-slate-400 transition-colors shadow-sm"
+              >
+                <svg className="w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                See What&apos;s Included
+              </button>
             </div>
 
             {/* One-off payment note */}
