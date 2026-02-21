@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { FreeCheckResponse, MOTTestRecord, SalvageCheck } from "@/lib/api";
+import { FreeCheckResponse, MOTTestRecord, SalvageCheck, KeeperHistory, HighRiskCheck, PreviousSearches } from "@/lib/api";
 import Badge from "@/components/ui/Badge";
 import Card from "@/components/ui/Card";
 import ScoreGauge from "@/components/ui/ScoreGauge";
@@ -249,6 +249,16 @@ const icons = {
       <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
     </svg>
   ),
+  users: (
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+    </svg>
+  ),
+  search: (
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+    </svg>
+  ),
 };
 
 /* Star rating display for NCAP */
@@ -336,7 +346,7 @@ export default function CheckResult({ data }: { data: FreeCheckResponse }) {
     ulez_compliance, mileage_timeline, failure_patterns,
     tax_calculation, safety_rating, vehicle_stats,
     finance_check, stolen_check, write_off_check, plate_changes, valuation,
-    salvage_check,
+    salvage_check, keeper_history, high_risk, previous_searches,
   } = data;
 
   return (
@@ -365,6 +375,31 @@ export default function CheckResult({ data }: { data: FreeCheckResponse }) {
           <ScoreGauge score={condition_score} size={110} />
         )}
       </div>
+
+      {/* EV Cross-sell Banner */}
+      {vehicle?.fuel_type && ["ELECTRICITY", "ELECTRIC DIESEL", "ELECTRIC PETROL"].includes(vehicle.fuel_type.toUpperCase()) && (
+        <a
+          href="/ev"
+          className="block bg-emerald-50 border border-emerald-200 rounded-xl p-4 hover:bg-emerald-100 transition-colors group"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
+              <svg className="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+              </svg>
+            </div>
+            <div className="flex-1">
+              <p className="font-semibold text-emerald-800">This is an electric vehicle</p>
+              <p className="text-sm text-emerald-700 mt-0.5">
+                Try our EV Health Check for battery health, real-world range, and charging cost analysis.
+              </p>
+            </div>
+            <svg className="w-5 h-5 text-emerald-400 group-hover:translate-x-1 transition-transform flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+            </svg>
+          </div>
+        </a>
+      )}
 
       {/* Outstanding Recall Warning */}
       {mot_summary?.has_outstanding_recall === "Yes" && (
@@ -699,6 +734,129 @@ export default function CheckResult({ data }: { data: FreeCheckResponse }) {
             )}
             <div className="mt-2 text-xs text-slate-400 bg-slate-50 rounded px-2 py-1">
               Source: {salvage_check.data_source}
+            </div>
+          </Card>
+        )}
+
+        {/* 6c. Keeper History */}
+        {keeper_history && (
+          <Card title="Keeper History" icon={icons.users} status="neutral">
+            <div className="mb-3">
+              {keeper_history.keeper_count !== null ? (
+                <div className="flex items-center gap-3">
+                  <div className="text-3xl font-bold text-slate-900">{keeper_history.keeper_count}</div>
+                  <div>
+                    <p className="text-sm font-medium text-slate-700">
+                      Registered keeper{keeper_history.keeper_count !== 1 ? "s" : ""}
+                    </p>
+                    {keeper_history.last_change_date && (
+                      <p className="text-xs text-slate-500">
+                        Last change: {keeper_history.last_change_date}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm text-slate-500">Keeper information not available</p>
+              )}
+            </div>
+            {keeper_history.keeper_count !== null && keeper_history.keeper_count > 5 && (
+              <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+                <svg className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                </svg>
+                <p className="text-xs text-amber-700">
+                  High number of keepers — may indicate issues with the vehicle or frequent reselling.
+                </p>
+              </div>
+            )}
+            <div className="mt-2 text-xs text-slate-400 bg-slate-50 rounded px-2 py-1">
+              Source: {keeper_history.data_source}
+            </div>
+          </Card>
+        )}
+
+        {/* 6d. High Risk Indicators */}
+        {high_risk && (
+          <Card
+            title="High Risk Indicators"
+            icon={icons.alert}
+            status={high_risk.flagged ? "fail" : "pass"}
+          >
+            <div className="mb-3">
+              {high_risk.flagged ? (
+                <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+                  <svg className="w-5 h-5 text-red-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                  </svg>
+                  <span className="text-sm font-semibold text-red-800">HIGH RISK FLAGS FOUND</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
+                  <svg className="w-5 h-5 text-emerald-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span className="text-sm font-semibold text-emerald-800">NO HIGH RISK FLAGS</span>
+                </div>
+              )}
+            </div>
+            {high_risk.records.length > 0 && (
+              <div className="space-y-2">
+                {high_risk.records.map((r, i) => (
+                  <div key={i} className="bg-red-50 rounded-lg p-3">
+                    <DetailRow label="Risk Type" value={r.risk_type} />
+                    {r.date && <DetailRow label="Date" value={r.date} />}
+                    {r.detail && <DetailRow label="Detail" value={r.detail} />}
+                    {r.company && <DetailRow label="Company" value={r.company} />}
+                    {r.contact && <DetailRow label="Contact" value={r.contact} />}
+                  </div>
+                ))}
+              </div>
+            )}
+            <div className="mt-2 text-xs text-slate-400 bg-slate-50 rounded px-2 py-1">
+              Source: {high_risk.data_source}
+            </div>
+          </Card>
+        )}
+
+        {/* 6e. Previous Searches */}
+        {previous_searches && (
+          <Card title="Previous Checks" icon={icons.search} status="neutral">
+            <div className="mb-3">
+              <div className="flex items-center gap-3">
+                <div className="text-3xl font-bold text-slate-900">{previous_searches.search_count}</div>
+                <p className="text-sm text-slate-700">
+                  previous check{previous_searches.search_count !== 1 ? "s" : ""} on this vehicle
+                </p>
+              </div>
+            </div>
+            {previous_searches.search_count > 10 && (
+              <div className="flex items-start gap-2 bg-blue-50 border border-blue-200 rounded-lg px-3 py-2 mb-2">
+                <svg className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+                </svg>
+                <p className="text-xs text-blue-700">
+                  High search activity may indicate the vehicle is actively being marketed or has attracted buyer interest.
+                </p>
+              </div>
+            )}
+            {previous_searches.records.length > 0 && (
+              <div className="space-y-1">
+                {previous_searches.records.slice(0, 5).map((r, i) => (
+                  <div key={i} className="flex justify-between py-1.5 border-b border-slate-100 last:border-0">
+                    <span className="text-sm text-slate-500">{r.date || "Unknown date"}</span>
+                    <span className="text-sm text-slate-700">{r.business_type || "Check"}</span>
+                  </div>
+                ))}
+                {previous_searches.records.length > 5 && (
+                  <p className="text-xs text-slate-400 pt-1">
+                    + {previous_searches.records.length - 5} more
+                  </p>
+                )}
+              </div>
+            )}
+            <div className="mt-2 text-xs text-slate-400 bg-slate-50 rounded px-2 py-1">
+              Source: {previous_searches.data_source}
             </div>
           </Card>
         )}
@@ -1263,12 +1421,42 @@ export default function CheckResult({ data }: { data: FreeCheckResponse }) {
         )}
 
         {!plate_changes && (
-          <LockedCard title="Plate &amp; Keeper History" icon={icons.swap} tier="premium">
+          <LockedCard title="Plate Change History" icon={icons.swap} tier="premium">
             <div className="space-y-1.5">
               <div className="flex justify-between py-1.5"><span className="text-sm text-slate-500">Plate Changes</span><span className="text-sm text-slate-700">1 change found</span></div>
               <div className="flex justify-between py-1.5"><span className="text-sm text-slate-500">Previous Plate</span><span className="inline-block bg-yellow-50 border border-yellow-300 font-mono font-bold px-2 py-0.5 rounded text-slate-900 text-xs">AB18 XYZ</span></div>
+              <div className="flex justify-between py-1.5"><span className="text-sm text-slate-500">Change Date</span><span className="text-sm text-slate-700">12/06/2023</span></div>
+            </div>
+          </LockedCard>
+        )}
+
+        {!keeper_history && (
+          <LockedCard title="Keeper History" icon={icons.users} tier="premium">
+            <div className="space-y-1.5">
               <div className="flex justify-between py-1.5"><span className="text-sm text-slate-500">Registered Keepers</span><span className="text-sm text-slate-700">3 keepers</span></div>
               <div className="flex justify-between py-1.5"><span className="text-sm text-slate-500">Last Change</span><span className="text-sm text-slate-700">12/06/2023</span></div>
+            </div>
+          </LockedCard>
+        )}
+
+        {!high_risk && (
+          <LockedCard title="High Risk Indicators" icon={icons.alert} tier="premium">
+            <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2 mb-3">
+              <span className="text-sm font-semibold text-emerald-800">NO HIGH RISK FLAGS</span>
+            </div>
+            <div className="space-y-1.5">
+              <div className="flex justify-between py-1.5"><span className="text-sm text-slate-500">Scrapped Marker</span><span className="text-sm text-slate-700">Clear</span></div>
+              <div className="flex justify-between py-1.5"><span className="text-sm text-slate-500">Import/Export</span><span className="text-sm text-slate-700">Clear</span></div>
+            </div>
+          </LockedCard>
+        )}
+
+        {!previous_searches && (
+          <LockedCard title="Previous Checks" icon={icons.search} tier="premium">
+            <div className="space-y-1.5">
+              <div className="flex justify-between py-1.5"><span className="text-sm text-slate-500">Previous Checks</span><span className="text-sm text-slate-700">7 checks found</span></div>
+              <div className="flex justify-between py-1.5"><span className="text-sm text-slate-500">Last Checked</span><span className="text-sm text-slate-700">14/01/2025</span></div>
+              <div className="flex justify-between py-1.5"><span className="text-sm text-slate-500">Checked By</span><span className="text-sm text-slate-700">Dealer / Finance</span></div>
             </div>
           </LockedCard>
         )}

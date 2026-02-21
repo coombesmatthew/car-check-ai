@@ -7,6 +7,9 @@ jest.mock("@/lib/api");
 const mockRunFreeCheck = api.runFreeCheck as jest.MockedFunction<
   typeof api.runFreeCheck
 >;
+const mockGetCheckCount = api.getCheckCount as jest.MockedFunction<
+  typeof api.getCheckCount
+>;
 
 const MOCK_RESPONSE: api.FreeCheckResponse = {
   registration: "AB12CDE",
@@ -44,6 +47,7 @@ const MOCK_RESPONSE: api.FreeCheckResponse = {
       expiry_date: "2024-03-14",
     },
     current_odometer: "39000",
+    has_outstanding_recall: null,
   },
   clocking_analysis: {
     clocked: false,
@@ -72,6 +76,10 @@ const MOCK_RESPONSE: api.FreeCheckResponse = {
   write_off_check: null,
   plate_changes: null,
   valuation: null,
+  salvage_check: null,
+  keeper_history: null,
+  high_risk: null,
+  previous_searches: null,
   checked_at: "2024-01-15T12:00:00",
   data_sources: ["DVLA VES API", "DVSA MOT History API"],
 };
@@ -79,6 +87,7 @@ const MOCK_RESPONSE: api.FreeCheckResponse = {
 describe("SearchSection", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockGetCheckCount.mockResolvedValue(0);
   });
 
   it("renders the search form", () => {

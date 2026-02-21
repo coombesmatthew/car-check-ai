@@ -150,8 +150,8 @@ export default function SearchSection() {
               )}
         </form>
 
-        {checkCount !== null && checkCount > 0 && (
-          <div className="flex items-center justify-center gap-2 mt-4">
+        <div className="flex items-center justify-center gap-3 mt-4 flex-wrap">
+          {checkCount !== null && checkCount > 0 && (
             <span className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-medium px-3 py-1.5 rounded-full">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
@@ -159,8 +159,17 @@ export default function SearchSection() {
               </span>
               {checkCount.toLocaleString()} vehicles checked
             </span>
-          </div>
-        )}
+          )}
+          <a
+            href="/ev"
+            className="inline-flex items-center gap-1.5 bg-emerald-600 text-white text-xs font-semibold px-3.5 py-1.5 rounded-full hover:bg-emerald-700 transition-colors"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+            </svg>
+            Buying an EV? Try our Full EV Check
+          </a>
+        </div>
 
         <div className="mt-6">
           <TrustBar />
@@ -171,6 +180,30 @@ export default function SearchSection() {
       {result && (
         <section className="mx-auto max-w-5xl px-4 pb-8 w-full">
           <CheckResult data={result} />
+        </section>
+      )}
+
+      {/* EV cross-sell — shown when the checked vehicle is electric */}
+      {result && result.vehicle?.fuel_type?.toUpperCase() === "ELECTRICITY" && (
+        <section className="mx-auto max-w-5xl px-4 pb-6 w-full">
+          <a href={`/ev?reg=${result.registration}`} className="block bg-gradient-to-r from-emerald-600 to-emerald-700 rounded-xl p-5 text-white hover:from-emerald-700 hover:to-emerald-800 transition-all group">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="bg-white/20 rounded-lg p-2">
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="font-bold text-lg">This is an electric vehicle!</p>
+                  <p className="text-emerald-100 text-sm">Get battery health, real-world range, and charging costs with our dedicated EV Health Check.</p>
+                </div>
+              </div>
+              <svg className="w-5 h-5 text-emerald-200 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+              </svg>
+            </div>
+          </a>
         </section>
       )}
 

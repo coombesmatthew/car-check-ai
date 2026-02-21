@@ -34,6 +34,9 @@ export default function Footer() {
               <a href="#how-it-works" className="block text-sm text-slate-500 hover:text-slate-700 transition-colors">
                 How It Works
               </a>
+              <a href="/ev" className="block text-sm text-emerald-600 hover:text-emerald-700 transition-colors">
+                EV Health Check
+              </a>
               <a href="#" className="block text-sm text-slate-500 hover:text-slate-700 transition-colors">
                 Privacy Policy
               </a>
