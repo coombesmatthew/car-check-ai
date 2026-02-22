@@ -5,7 +5,6 @@ by providing genuine insight, actionable negotiation advice, and cost
 projections that the buyer can't get from reading the free data cards.
 """
 
-import json
 from datetime import datetime
 from typing import Dict, List, Optional
 

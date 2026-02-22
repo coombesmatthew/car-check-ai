@@ -7,7 +7,7 @@ interface Props {
 }
 
 export default function EVCheckResult({ result }: Props) {
-  const { vehicle, mot_summary, clocking_analysis, condition_score, vehicle_stats } = result;
+  const { vehicle, mot_summary, clocking_analysis, condition_score } = result;
 
   return (
     <div className="space-y-4">

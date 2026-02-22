@@ -128,8 +128,10 @@ export default function EVAIReport({ report, registration }: EVAIReportProps) {
       }
       const linkMatch = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
       if (linkMatch) {
+        const href = linkMatch[2];
+        if (!/^https?:\/\//i.test(href)) return <span key={i}>{part}</span>;
         return (
-          <a key={i} href={linkMatch[2]} target="_blank" rel="noopener noreferrer" className="text-emerald-600 hover:text-emerald-800 underline">
+          <a key={i} href={href} target="_blank" rel="noopener noreferrer" className="text-emerald-600 hover:text-emerald-800 underline">
             {linkMatch[1]}
           </a>
         );

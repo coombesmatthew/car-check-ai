@@ -240,12 +240,12 @@ export default function EVPage() {
                 <span className="text-3xl font-bold text-slate-900">&pound;0</span>
               </div>
               <ul className="space-y-2.5 mb-6">
-                {["EV Detection", "MOT History", "Mileage Verification", "Condition Score", "Tax &amp; ULEZ Status"].map((item) => (
+                {["EV Detection", "MOT History", "Mileage Verification", "Condition Score", "Tax & ULEZ Status"].map((item) => (
                   <li key={item} className="flex items-center gap-2 text-sm text-slate-600">
                     <svg className="w-4 h-4 text-emerald-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                     </svg>
-                    <span dangerouslySetInnerHTML={{ __html: item }} />
+                    <span>{item}</span>
                   </li>
                 ))}
               </ul>
@@ -262,12 +262,12 @@ export default function EVPage() {
                 <span className="text-3xl font-bold text-slate-900">&pound;7.99</span>
               </div>
               <ul className="space-y-2.5 mb-6">
-                {["Everything in Free", "Battery Health Score", "Real-World Range", "Charging Cost Comparison", "Lifespan Prediction", "AI Expert Verdict", "PDF Report &amp; Email"].map((item, i) => (
+                {["Everything in Free", "Battery Health Score", "Real-World Range", "Charging Cost Comparison", "Lifespan Prediction", "AI Expert Verdict", "PDF Report & Email"].map((item, i) => (
                   <li key={item} className="flex items-center gap-2 text-sm text-slate-700">
                     <svg className={`w-4 h-4 flex-shrink-0 ${i === 0 ? "text-emerald-500" : "text-emerald-600"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                     </svg>
-                    <span className={i > 0 ? "font-medium" : ""} dangerouslySetInnerHTML={{ __html: item }} />
+                    <span className={i > 0 ? "font-medium" : ""}>{item}</span>
                   </li>
                 ))}
               </ul>

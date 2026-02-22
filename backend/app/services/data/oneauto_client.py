@@ -11,7 +11,7 @@ Live: api.oneautoapi.com (requires credit card, returns real data)
 
 import httpx
 from datetime import date
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 
 from app.core.config import settings
 from app.core.logging import logger

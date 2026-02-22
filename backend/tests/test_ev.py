@@ -1,7 +1,7 @@
 """Tests for EV Health Check endpoints and EV detection logic."""
 
 import pytest
-from unittest.mock import AsyncMock, patch, MagicMock
+from unittest.mock import AsyncMock, patch
 from datetime import datetime
 
 from app.schemas.ev import EVCheckResponse

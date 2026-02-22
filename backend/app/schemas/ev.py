@@ -1,7 +1,7 @@
 """Pydantic schemas for EV Health Check product."""
 
 from pydantic import BaseModel, Field, field_validator
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Any
 from datetime import datetime
 import re
 

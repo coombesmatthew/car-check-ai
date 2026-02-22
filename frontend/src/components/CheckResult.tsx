@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { FreeCheckResponse, MOTTestRecord, SalvageCheck, KeeperHistory, HighRiskCheck, PreviousSearches } from "@/lib/api";
+import { FreeCheckResponse, MOTTestRecord } from "@/lib/api";
 import Badge from "@/components/ui/Badge";
 import Card from "@/components/ui/Card";
 import ScoreGauge from "@/components/ui/ScoreGauge";
@@ -150,7 +150,7 @@ function MileageChart({ readings }: { readings: { date: string; miles: number }[
         <div
           className="absolute bg-slate-900 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-lg pointer-events-none whitespace-nowrap z-10"
           style={{
-            left: Math.max(60, Math.min(tooltipPos.x, (typeof window !== "undefined" ? 240 : 240))),
+            left: Math.max(60, Math.min(tooltipPos.x, 240)),
             top: Math.max(0, tooltipPos.y - 36),
             transform: "translateX(-50%)",
           }}

@@ -232,10 +232,12 @@ export default function AIReport({ report, registration }: AIReportProps) {
       // Markdown link [text](url)
       const linkMatch = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
       if (linkMatch) {
+        const href = linkMatch[2];
+        if (!/^https?:\/\//i.test(href)) return <span key={i}>{part}</span>;
         return (
           <a
             key={i}
-            href={linkMatch[2]}
+            href={href}
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-600 hover:text-blue-800 underline"

@@ -7,16 +7,9 @@ Reuses the same WeasyPrint + Jinja2 approach as the car check PDF.
 import re
 import uuid
 from datetime import datetime
-from io import BytesIO
-from pathlib import Path
 from typing import Dict, List, Optional
 
-from jinja2 import Environment, FileSystemLoader
-
 from app.core.logging import logger
-
-# Template directory — same location as car check templates
-TEMPLATE_DIR = Path(__file__).resolve().parents[3] / "templates" / "pdf"
 
 
 def _parse_ai_sections(report_text: str) -> List[Dict[str, str]]:
