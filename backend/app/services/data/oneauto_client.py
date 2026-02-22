@@ -11,7 +11,7 @@ Live: api.oneautoapi.com (requires credit card, returns real data)
 
 import httpx
 from datetime import date
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 
 from app.core.config import settings
 from app.core.logging import logger
@@ -65,6 +65,78 @@ class OneAutoClient:
         return await self._get(
             "/carguide/salvagecheck/v2",
             {"vehicle_registration_mark": registration},
+        )
+
+    # --- EV-specific endpoints ---
+
+    async def get_clearwatt(self, registration: str, mileage: int) -> Optional[Dict]:
+        """ClearWatt expected range from VRM — battery health + range degradation."""
+        return await self._get(
+            "/clearwatt/expectedrangefromvrm/",
+            {"vehicle_registration_mark": registration, "current_mileage": mileage},
+        )
+
+    async def get_autopredict_predict(self, registration: str) -> Optional[Dict]:
+        """AutoPredict predict — years remaining on road."""
+        return await self._get(
+            "/autopredict/predict/v2",
+            {"vehicle_registration_mark": registration},
+        )
+
+    async def get_autopredict_statistics(self, registration: str) -> Optional[Dict]:
+        """AutoPredict statistics — manufacturer/model survival data."""
+        return await self._get(
+            "/autopredict/statistics/v2",
+            {"vehicle_registration_mark": registration},
+        )
+
+    async def get_evdb_search(self, registration: str) -> Optional[Dict]:
+        """EV Database VRM search — returns evdb_vehicle_id + confidence scoring."""
+        return await self._get(
+            "/evdatabase/uk/searchfromvrm/",
+            {"vehicle_registration_mark": registration},
+        )
+
+    async def get_evdb_coredata(self, vehicle_id: int) -> Optional[Dict]:
+        """EV Database core data — battery size, availability, fuel type."""
+        return await self._get(
+            "/evdatabase/uk/car/coredata/",
+            {"evdb_vehicle_id": vehicle_id},
+        )
+
+    async def get_evdb_range_efficiency(self, vehicle_id: int) -> Optional[Dict]:
+        """EV Database range, efficiency & battery — real-world range + specs."""
+        return await self._get(
+            "/evdatabase/uk/car/rangeefficiencybattery/",
+            {"evdb_vehicle_id": vehicle_id},
+        )
+
+    async def get_evdb_fast_charging(self, vehicle_id: int) -> Optional[Dict]:
+        """EV Database fast charging — DC charge times + speeds."""
+        return await self._get(
+            "/evdatabase/uk/car/fastcharging/",
+            {"evdb_vehicle_id": vehicle_id},
+        )
+
+    async def get_evdb_onboard_charging(self, vehicle_id: int) -> Optional[Dict]:
+        """EV Database onboard charging — home charge times + speeds."""
+        return await self._get(
+            "/evdatabase/uk/car/onboardcharging/",
+            {"evdb_vehicle_id": vehicle_id},
+        )
+
+    async def get_evdb_pence_per_mile(self, vehicle_id: int) -> Optional[Dict]:
+        """EV Database pence per mile — running costs + range by weather/driving."""
+        return await self._get(
+            "/evdatabase/uk/car/pencepermile/",
+            {"evdb_vehicle_id": vehicle_id},
+        )
+
+    async def get_evdb_vehicle_data(self, vehicle_id: int) -> Optional[Dict]:
+        """EV Database vehicle data — dimensions, performance, safety."""
+        return await self._get(
+            "/evdatabase/uk/car/vehicledata/",
+            {"evdb_vehicle_id": vehicle_id},
         )
 
     async def close(self):

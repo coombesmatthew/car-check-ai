@@ -30,9 +30,16 @@
                       </tr>
                     </table>
                   </td>
+                  <td style="text-align: right;">
+                    {% if tier == "premium" %}
+                    <span style="background-color: #7c3aed; color: #ffffff; font-size: 11px; font-weight: 600; padding: 4px 12px; border-radius: 20px;">PREMIUM</span>
+                    {% elif tier == "basic" %}
+                    <span style="background-color: #2563eb; color: #ffffff; font-size: 11px; font-weight: 600; padding: 4px 12px; border-radius: 20px;">BASIC</span>
+                    {% endif %}
+                  </td>
                 </tr>
                 <tr>
-                  <td style="padding-top: 12px;">
+                  <td colspan="2" style="padding-top: 12px;">
                     <span style="color: #ffffff; font-size: 20px; font-weight: 600;">Your Vehicle Report is Ready</span>
                   </td>
                 </tr>
@@ -51,7 +58,7 @@
                   <td style="text-align: right;">
                     <span style="color: #1e293b; font-weight: 600; font-size: 14px;">{{ make }} {{ model }}</span>
                     <br>
-                    <span style="color: #64748b; font-size: 13px;">{{ year }}</span>
+                    <span style="color: #64748b; font-size: 13px;">{{ year }}{% if vehicle %} &bull; {{ vehicle.colour }} &bull; {{ vehicle.fuel_type }}{% endif %}</span>
                   </td>
                 </tr>
               </table>
@@ -81,7 +88,7 @@
 
           <!-- Key findings -->
           <tr>
-            <td style="padding: 24px 32px;">
+            <td style="padding: 24px 32px; border-bottom: 1px solid #e2e8f0;">
               <h2 style="margin: 0 0 16px 0; color: #1e293b; font-size: 16px; font-weight: 600;">Key Findings</h2>
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                 {% for finding in key_findings %}
@@ -98,22 +105,559 @@
             </td>
           </tr>
 
-          <!-- CTA button -->
+          <!-- ==================== FULL DATA BREAKDOWN ==================== -->
+
+          <!-- Vehicle Details -->
+          {% if vehicle %}
           <tr>
-            <td style="padding: 0 32px 24px 32px; text-align: center;">
-              <a href="{{ report_url }}" style="display: inline-block; background-color: #2563eb; color: #ffffff; font-size: 14px; font-weight: 600; text-decoration: none; padding: 12px 32px; border-radius: 8px;">
-                View Full Report
-              </a>
-              <p style="margin: 12px 0 0 0; color: #94a3b8; font-size: 12px;">
-                Your full PDF report is also attached to this email.
-              </p>
+            <td style="padding: 24px 32px; border-bottom: 1px solid #e2e8f0;">
+              <h2 style="margin: 0 0 12px 0; color: #1e293b; font-size: 15px; font-weight: 600; border-bottom: 2px solid #2563eb; padding-bottom: 6px;">Vehicle Details</h2>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size: 13px;">
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b; width: 40%;">Registration</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">{{ registration }}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b;">Make</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">{{ vehicle.make }}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b;">Colour</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">{{ vehicle.colour }}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b;">Fuel Type</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">{{ vehicle.fuel_type }}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b;">Year</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">{{ vehicle.year_of_manufacture }}</td>
+                </tr>
+                {% if vehicle.engine_capacity %}
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b;">Engine</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">{{ vehicle.engine_capacity }}cc</td>
+                </tr>
+                {% endif %}
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b;">Tax Status</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">{{ vehicle.tax_status }}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b;">MOT Status</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">{{ vehicle.mot_status }}</td>
+                </tr>
+                {% if vehicle.euro_status %}
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b;">Euro Standard</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">{{ vehicle.euro_status }}</td>
+                </tr>
+                {% endif %}
+                {% if vehicle.co2_emissions %}
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b;">CO2 Emissions</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">{{ vehicle.co2_emissions }} g/km</td>
+                </tr>
+                {% endif %}
+              </table>
             </td>
           </tr>
+          {% endif %}
 
-          <!-- Divider -->
+          <!-- Mileage & Clocking -->
+          {% if mileage_timeline %}
           <tr>
-            <td style="padding: 0 32px;">
-              <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 0;">
+            <td style="padding: 24px 32px; border-bottom: 1px solid #e2e8f0;">
+              <h2 style="margin: 0 0 12px 0; color: #1e293b; font-size: 15px; font-weight: 600; border-bottom: 2px solid #2563eb; padding-bottom: 6px;">Mileage History</h2>
+              {% if clocking_analysis %}
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 12px;">
+                <tr>
+                  <td>
+                    {% if clocking_analysis.clocked %}
+                    <span style="display: inline-block; background-color: #fee2e2; color: #991b1b; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 4px;">&#10060; MILEAGE DISCREPANCY DETECTED</span>
+                    {% else %}
+                    <span style="display: inline-block; background-color: #d1fae5; color: #065f46; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 4px;">&#9989; NO CLOCKING DETECTED</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              </table>
+              {% endif %}
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size: 13px;">
+                <tr>
+                  <td style="padding: 6px 12px; background-color: #f1f5f9; font-weight: 600; color: #475569; width: 50%;">Date</td>
+                  <td style="padding: 6px 12px; background-color: #f1f5f9; font-weight: 600; color: #475569;">Mileage</td>
+                </tr>
+                {% for reading in mileage_timeline %}
+                <tr>
+                  <td style="padding: 5px 12px; border-bottom: 1px solid #f1f5f9; color: #334155;">{{ reading.date }}</td>
+                  <td style="padding: 5px 12px; border-bottom: 1px solid #f1f5f9; color: #1e293b; font-weight: 500;">{{ "{:,}".format(reading.miles) }} miles</td>
+                </tr>
+                {% endfor %}
+              </table>
+            </td>
+          </tr>
+          {% endif %}
+
+          <!-- MOT History -->
+          {% if mot_tests %}
+          <tr>
+            <td style="padding: 24px 32px; border-bottom: 1px solid #e2e8f0;">
+              <h2 style="margin: 0 0 12px 0; color: #1e293b; font-size: 15px; font-weight: 600; border-bottom: 2px solid #2563eb; padding-bottom: 6px;">MOT History ({{ mot_tests|length }} tests)</h2>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size: 12px;">
+                <tr>
+                  <td style="padding: 6px 8px; background-color: #f1f5f9; font-weight: 600; color: #475569;">#</td>
+                  <td style="padding: 6px 8px; background-color: #f1f5f9; font-weight: 600; color: #475569;">Date</td>
+                  <td style="padding: 6px 8px; background-color: #f1f5f9; font-weight: 600; color: #475569;">Result</td>
+                  <td style="padding: 6px 8px; background-color: #f1f5f9; font-weight: 600; color: #475569;">Mileage</td>
+                  <td style="padding: 6px 8px; background-color: #f1f5f9; font-weight: 600; color: #475569;">Defects</td>
+                </tr>
+                {% for test in mot_tests %}
+                <tr>
+                  <td style="padding: 5px 8px; border-bottom: 1px solid #f1f5f9; color: #334155;">{{ test.test_number }}</td>
+                  <td style="padding: 5px 8px; border-bottom: 1px solid #f1f5f9; color: #334155;">{{ test.date }}</td>
+                  <td style="padding: 5px 8px; border-bottom: 1px solid #f1f5f9;">
+                    {% if test.result == 'PASSED' %}
+                    <span style="display: inline-block; background-color: #d1fae5; color: #065f46; font-size: 11px; font-weight: 600; padding: 1px 8px; border-radius: 4px;">PASS</span>
+                    {% else %}
+                    <span style="display: inline-block; background-color: #fee2e2; color: #991b1b; font-size: 11px; font-weight: 600; padding: 1px 8px; border-radius: 4px;">FAIL</span>
+                    {% endif %}
+                  </td>
+                  <td style="padding: 5px 8px; border-bottom: 1px solid #f1f5f9; color: #334155;">{% if test.odometer is not none %}{{ "{:,}".format(test.odometer) }} mi{% else %}&mdash;{% endif %}</td>
+                  <td style="padding: 5px 8px; border-bottom: 1px solid #f1f5f9; color: #334155;">{{ test.total_defects }}</td>
+                </tr>
+                {% endfor %}
+              </table>
+              {% if failure_patterns %}
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top: 10px; font-size: 13px;">
+                <tr>
+                  <td style="color: #64748b; font-size: 12px; font-weight: 600; padding-bottom: 6px;">Recurring Issues:</td>
+                </tr>
+                {% for p in failure_patterns %}
+                <tr>
+                  <td style="padding: 3px 0; color: #334155;">
+                    <span style="display: inline-block; background-color: {{ '#fee2e2' if p.concern_level == 'high' else '#fef3c7' if p.concern_level == 'medium' else '#f1f5f9' }}; color: {{ '#991b1b' if p.concern_level == 'high' else '#92400e' if p.concern_level == 'medium' else '#475569' }}; font-size: 11px; font-weight: 600; padding: 1px 8px; border-radius: 4px;">{{ p.category|upper }}</span>
+                    &nbsp; {{ p.occurrences }}x occurrences
+                  </td>
+                </tr>
+                {% endfor %}
+              </table>
+              {% endif %}
+            </td>
+          </tr>
+          {% endif %}
+
+          <!-- ULEZ / Clean Air Zones -->
+          {% if ulez and ulez.compliant is not none %}
+          <tr>
+            <td style="padding: 24px 32px; border-bottom: 1px solid #e2e8f0;">
+              <h2 style="margin: 0 0 12px 0; color: #1e293b; font-size: 15px; font-weight: 600; border-bottom: 2px solid #2563eb; padding-bottom: 6px;">Clean Air Zone Compliance</h2>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size: 13px;">
+                <tr>
+                  <td style="padding: 5px 0;">
+                    {% if ulez.compliant %}
+                    <span style="display: inline-block; background-color: #d1fae5; color: #065f46; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 4px;">&#9989; COMPLIANT — ALL ZONES CLEAR</span>
+                    {% else %}
+                    <span style="display: inline-block; background-color: #fee2e2; color: #991b1b; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 4px;">&#10060; NON-COMPLIANT</span>
+                    {% endif %}
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b;">{{ ulez.reason }}</td>
+                </tr>
+                {% if ulez.daily_charge %}
+                <tr>
+                  <td style="padding: 5px 0; color: #dc2626; font-weight: 600;">Daily charge: {{ ulez.daily_charge }}</td>
+                </tr>
+                {% endif %}
+              </table>
+            </td>
+          </tr>
+          {% endif %}
+
+          <!-- Road Tax (VED) -->
+          {% if tax %}
+          <tr>
+            <td style="padding: 24px 32px; border-bottom: 1px solid #e2e8f0;">
+              <h2 style="margin: 0 0 12px 0; color: #1e293b; font-size: 15px; font-weight: 600; border-bottom: 2px solid #2563eb; padding-bottom: 6px;">Road Tax (VED)</h2>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size: 13px;">
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b; width: 40%;">Tax Band</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">Band {{ tax.band }} ({{ tax.band_range }})</td>
+                </tr>
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b;">First Year Rate</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">&pound;{{ tax.first_year_rate }}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b;">Annual Rate</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">&pound;{{ tax.annual_rate }}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b;">6-Month Payment</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">&pound;{{ tax.six_month_rate }}</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          {% endif %}
+
+          <!-- Safety Rating -->
+          {% if safety %}
+          <tr>
+            <td style="padding: 24px 32px; border-bottom: 1px solid #e2e8f0;">
+              <h2 style="margin: 0 0 12px 0; color: #1e293b; font-size: 15px; font-weight: 600; border-bottom: 2px solid #2563eb; padding-bottom: 6px;">Safety Rating ({{ safety.source }})</h2>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size: 13px;">
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b; width: 40%;">Rating</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">{{ safety.stars }}/5 Stars ({{ safety.year_range }})</td>
+                </tr>
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b;">Adult Occupant</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">{{ safety.adult }}%</td>
+                </tr>
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b;">Child Occupant</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">{{ safety.child }}%</td>
+                </tr>
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b;">Pedestrian</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">{{ safety.pedestrian }}%</td>
+                </tr>
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b;">Safety Assist</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">{{ safety.safety_assist }}%</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          {% endif %}
+
+          <!-- Vehicle Statistics -->
+          {% if stats %}
+          <tr>
+            <td style="padding: 24px 32px; border-bottom: 1px solid #e2e8f0;">
+              <h2 style="margin: 0 0 12px 0; color: #1e293b; font-size: 15px; font-weight: 600; border-bottom: 2px solid #2563eb; padding-bottom: 6px;">Vehicle Statistics</h2>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size: 13px;">
+                {% if stats.vehicle_age_years is not none %}
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b; width: 40%;">Vehicle Age</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">{{ stats.vehicle_age_years }} years</td>
+                </tr>
+                {% endif %}
+                {% if stats.estimated_annual_mileage is not none %}
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b;">Est. Annual Mileage</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">{{ "{:,}".format(stats.estimated_annual_mileage) }} mi/yr ({{ stats.mileage_assessment }})</td>
+                </tr>
+                {% endif %}
+                {% if stats.total_recorded_mileage is not none %}
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b;">Total Mileage</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">{{ "{:,}".format(stats.total_recorded_mileage) }} miles</td>
+                </tr>
+                {% endif %}
+                {% if stats.mot_status_detail %}
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b;">MOT</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">{{ stats.mot_status_detail }}</td>
+                </tr>
+                {% endif %}
+                {% if stats.tax_status_detail %}
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b;">Tax</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">{{ stats.tax_status_detail }}</td>
+                </tr>
+                {% endif %}
+                {% if stats.v5c_insight %}
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b;">V5C</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">{{ stats.v5c_insight }}</td>
+                </tr>
+                {% endif %}
+                {% if stats.total_advisory_items is not none %}
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b;">Lifetime Advisories</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">{{ stats.total_advisory_items }}</td>
+                </tr>
+                {% endif %}
+                {% if stats.total_failure_items is not none %}
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b;">Lifetime Failures</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">{{ stats.total_failure_items }}</td>
+                </tr>
+                {% endif %}
+              </table>
+            </td>
+          </tr>
+          {% endif %}
+
+          <!-- ==================== PREMIUM SECTIONS ==================== -->
+
+          <!-- Valuation -->
+          {% if valuation %}
+          <tr>
+            <td style="padding: 24px 32px; border-bottom: 1px solid #e2e8f0;">
+              <h2 style="margin: 0 0 12px 0; color: #1e293b; font-size: 15px; font-weight: 600; border-bottom: 2px solid #7c3aed; padding-bottom: 6px;">
+                <span style="color: #7c3aed;">&#9830;</span> Valuation
+              </h2>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size: 13px;">
+                {% if valuation.private_sale is not none %}
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b; width: 40%;">Private Sale</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 600; font-size: 15px;">&pound;{{ "{:,}".format(valuation.private_sale) }}</td>
+                </tr>
+                {% endif %}
+                {% if valuation.dealer_forecourt is not none %}
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b;">Dealer Forecourt</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">&pound;{{ "{:,}".format(valuation.dealer_forecourt) }}</td>
+                </tr>
+                {% endif %}
+                {% if valuation.trade_in is not none %}
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b;">Trade-in</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">&pound;{{ "{:,}".format(valuation.trade_in) }}</td>
+                </tr>
+                {% endif %}
+                {% if valuation.part_exchange is not none %}
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b;">Part Exchange</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">&pound;{{ "{:,}".format(valuation.part_exchange) }}</td>
+                </tr>
+                {% endif %}
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b;">Condition</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">{{ valuation.condition }}</td>
+                </tr>
+                {% if valuation.mileage_used is not none %}
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b;">Mileage Used</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">{{ "{:,}".format(valuation.mileage_used) }} miles</td>
+                </tr>
+                {% endif %}
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b;">Valuation Date</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">{{ valuation.valuation_date }}</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          {% endif %}
+
+          <!-- Finance Check -->
+          {% if finance %}
+          <tr>
+            <td style="padding: 24px 32px; border-bottom: 1px solid #e2e8f0;">
+              <h2 style="margin: 0 0 12px 0; color: #1e293b; font-size: 15px; font-weight: 600; border-bottom: 2px solid #7c3aed; padding-bottom: 6px;">
+                <span style="color: #7c3aed;">&#9830;</span> Finance Check
+              </h2>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 8px;">
+                <tr>
+                  <td>
+                    {% if finance.finance_outstanding %}
+                    <span style="display: inline-block; background-color: #fee2e2; color: #991b1b; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 4px;">&#10060; FINANCE OUTSTANDING</span>
+                    {% else %}
+                    <span style="display: inline-block; background-color: #d1fae5; color: #065f46; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 4px;">&#9989; NO FINANCE</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              </table>
+              {% if finance.records %}
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size: 12px;">
+                <tr>
+                  <td style="padding: 6px 8px; background-color: #f1f5f9; font-weight: 600; color: #475569;">Type</td>
+                  <td style="padding: 6px 8px; background-color: #f1f5f9; font-weight: 600; color: #475569;">Company</td>
+                  <td style="padding: 6px 8px; background-color: #f1f5f9; font-weight: 600; color: #475569;">Date</td>
+                  <td style="padding: 6px 8px; background-color: #f1f5f9; font-weight: 600; color: #475569;">Term</td>
+                </tr>
+                {% for r in finance.records %}
+                <tr>
+                  <td style="padding: 5px 8px; border-bottom: 1px solid #f1f5f9; color: #334155;">{{ r.agreement_type }}</td>
+                  <td style="padding: 5px 8px; border-bottom: 1px solid #f1f5f9; color: #334155;">{{ r.finance_company }}</td>
+                  <td style="padding: 5px 8px; border-bottom: 1px solid #f1f5f9; color: #334155;">{{ r.agreement_date or '&mdash;' }}</td>
+                  <td style="padding: 5px 8px; border-bottom: 1px solid #f1f5f9; color: #334155;">{{ r.agreement_term or '&mdash;' }}</td>
+                </tr>
+                {% endfor %}
+              </table>
+              {% endif %}
+            </td>
+          </tr>
+          {% endif %}
+
+          <!-- Stolen Check -->
+          {% if stolen %}
+          <tr>
+            <td style="padding: 24px 32px; border-bottom: 1px solid #e2e8f0;">
+              <h2 style="margin: 0 0 12px 0; color: #1e293b; font-size: 15px; font-weight: 600; border-bottom: 2px solid #7c3aed; padding-bottom: 6px;">
+                <span style="color: #7c3aed;">&#9830;</span> Stolen Check
+              </h2>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td>
+                    {% if stolen.stolen %}
+                    <span style="display: inline-block; background-color: #fee2e2; color: #991b1b; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 4px;">&#10060; REPORTED STOLEN</span>
+                    {% else %}
+                    <span style="display: inline-block; background-color: #d1fae5; color: #065f46; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 4px;">&#9989; NOT STOLEN</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              </table>
+              {% if stolen.stolen %}
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top: 8px; font-size: 13px;">
+                {% if stolen.reported_date %}
+                <tr><td style="padding: 5px 0; color: #64748b; width: 40%;">Reported</td><td style="padding: 5px 0; color: #1e293b;">{{ stolen.reported_date }}</td></tr>
+                {% endif %}
+                {% if stolen.police_force %}
+                <tr><td style="padding: 5px 0; color: #64748b;">Police Force</td><td style="padding: 5px 0; color: #1e293b;">{{ stolen.police_force }}</td></tr>
+                {% endif %}
+              </table>
+              {% endif %}
+            </td>
+          </tr>
+          {% endif %}
+
+          <!-- Write-off Check -->
+          {% if writeoff %}
+          <tr>
+            <td style="padding: 24px 32px; border-bottom: 1px solid #e2e8f0;">
+              <h2 style="margin: 0 0 12px 0; color: #1e293b; font-size: 15px; font-weight: 600; border-bottom: 2px solid #7c3aed; padding-bottom: 6px;">
+                <span style="color: #7c3aed;">&#9830;</span> Insurance Write-off
+              </h2>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td>
+                    {% if writeoff.written_off %}
+                    <span style="display: inline-block; background-color: #fee2e2; color: #991b1b; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 4px;">&#10060; WRITE-OFF RECORDED</span>
+                    {% else %}
+                    <span style="display: inline-block; background-color: #d1fae5; color: #065f46; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 4px;">&#9989; NOT WRITTEN OFF</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              </table>
+              {% if writeoff.records %}
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top: 8px; font-size: 12px;">
+                <tr>
+                  <td style="padding: 6px 8px; background-color: #f1f5f9; font-weight: 600; color: #475569;">Category</td>
+                  <td style="padding: 6px 8px; background-color: #f1f5f9; font-weight: 600; color: #475569;">Date</td>
+                  <td style="padding: 6px 8px; background-color: #f1f5f9; font-weight: 600; color: #475569;">Loss Type</td>
+                </tr>
+                {% for r in writeoff.records %}
+                <tr>
+                  <td style="padding: 5px 8px; border-bottom: 1px solid #f1f5f9;"><span style="display: inline-block; background-color: #fee2e2; color: #991b1b; font-size: 11px; font-weight: 600; padding: 1px 8px; border-radius: 4px;">Cat {{ r.category }}</span></td>
+                  <td style="padding: 5px 8px; border-bottom: 1px solid #f1f5f9; color: #334155;">{{ r.date }}</td>
+                  <td style="padding: 5px 8px; border-bottom: 1px solid #f1f5f9; color: #334155;">{{ r.loss_type or '&mdash;' }}</td>
+                </tr>
+                {% endfor %}
+              </table>
+              {% endif %}
+            </td>
+          </tr>
+          {% endif %}
+
+          <!-- Plate Changes -->
+          {% if plates %}
+          <tr>
+            <td style="padding: 24px 32px; border-bottom: 1px solid #e2e8f0;">
+              <h2 style="margin: 0 0 12px 0; color: #1e293b; font-size: 15px; font-weight: 600; border-bottom: 2px solid #7c3aed; padding-bottom: 6px;">
+                <span style="color: #7c3aed;">&#9830;</span> Plate Changes
+              </h2>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td>
+                    {% if plates.changes_found %}
+                    <span style="display: inline-block; background-color: #fef3c7; color: #92400e; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 4px;">{{ plates.record_count }} CHANGE{{ 'S' if plates.record_count != 1 else '' }} FOUND</span>
+                    {% else %}
+                    <span style="display: inline-block; background-color: #f1f5f9; color: #475569; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 4px;">NO PLATE CHANGES</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              </table>
+              {% if plates.records %}
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top: 8px; font-size: 12px;">
+                <tr>
+                  <td style="padding: 6px 8px; background-color: #f1f5f9; font-weight: 600; color: #475569;">Previous Plate</td>
+                  <td style="padding: 6px 8px; background-color: #f1f5f9; font-weight: 600; color: #475569;">Date</td>
+                  <td style="padding: 6px 8px; background-color: #f1f5f9; font-weight: 600; color: #475569;">Type</td>
+                </tr>
+                {% for r in plates.records %}
+                <tr>
+                  <td style="padding: 5px 8px; border-bottom: 1px solid #f1f5f9; color: #1e293b; font-weight: 600;">{{ r.previous_plate }}</td>
+                  <td style="padding: 5px 8px; border-bottom: 1px solid #f1f5f9; color: #334155;">{{ r.change_date }}</td>
+                  <td style="padding: 5px 8px; border-bottom: 1px solid #f1f5f9; color: #334155;">{{ r.change_type }}</td>
+                </tr>
+                {% endfor %}
+              </table>
+              {% endif %}
+            </td>
+          </tr>
+          {% endif %}
+
+          <!-- Keeper History -->
+          {% if keeper_history %}
+          <tr>
+            <td style="padding: 24px 32px; border-bottom: 1px solid #e2e8f0;">
+              <h2 style="margin: 0 0 12px 0; color: #1e293b; font-size: 15px; font-weight: 600; border-bottom: 2px solid #7c3aed; padding-bottom: 6px;">
+                <span style="color: #7c3aed;">&#9830;</span> Keeper History
+              </h2>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size: 13px; margin-bottom: 8px;">
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b; width: 40%;">Total Keepers</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 600; font-size: 15px;">{{ keeper_history.total_keepers }}</td>
+                </tr>
+              </table>
+              {% if keeper_history.keepers %}
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size: 12px;">
+                <tr>
+                  <td style="padding: 6px 8px; background-color: #f1f5f9; font-weight: 600; color: #475569;">From</td>
+                  <td style="padding: 6px 8px; background-color: #f1f5f9; font-weight: 600; color: #475569;">To</td>
+                  <td style="padding: 6px 8px; background-color: #f1f5f9; font-weight: 600; color: #475569;">Type</td>
+                </tr>
+                {% for k in keeper_history.keepers %}
+                <tr>
+                  <td style="padding: 5px 8px; border-bottom: 1px solid #f1f5f9; color: #334155;">{{ k.start_date }}</td>
+                  <td style="padding: 5px 8px; border-bottom: 1px solid #f1f5f9; color: #334155;">{{ k.end_date or 'Present' }}</td>
+                  <td style="padding: 5px 8px; border-bottom: 1px solid #f1f5f9; color: #334155;">{{ k.keeper_type }}</td>
+                </tr>
+                {% endfor %}
+              </table>
+              {% endif %}
+            </td>
+          </tr>
+          {% endif %}
+
+          <!-- Salvage Check -->
+          {% if salvage %}
+          <tr>
+            <td style="padding: 24px 32px; border-bottom: 1px solid #e2e8f0;">
+              <h2 style="margin: 0 0 12px 0; color: #1e293b; font-size: 15px; font-weight: 600; border-bottom: 2px solid #7c3aed; padding-bottom: 6px;">
+                <span style="color: #7c3aed;">&#9830;</span> Salvage Check
+              </h2>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td>
+                    {% if salvage.salvage_found %}
+                    <span style="display: inline-block; background-color: #fee2e2; color: #991b1b; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 4px;">&#10060; SALVAGE RECORD FOUND</span>
+                    {% else %}
+                    <span style="display: inline-block; background-color: #d1fae5; color: #065f46; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 4px;">&#9989; NO SALVAGE RECORDS</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          {% endif %}
+
+          <!-- ==================== END DATA SECTIONS ==================== -->
+
+          <!-- CTA button -->
+          <tr>
+            <td style="padding: 24px 32px; text-align: center; border-bottom: 1px solid #e2e8f0;">
+              <p style="margin: 0 0 12px 0; color: #64748b; font-size: 13px;">
+                Your full PDF report is attached to this email.
+              </p>
+              <a href="https://vericar.co.uk" style="display: inline-block; background-color: #2563eb; color: #ffffff; font-size: 14px; font-weight: 600; text-decoration: none; padding: 12px 32px; border-radius: 8px;">
+                Visit VeriCar
+              </a>
             </td>
           </tr>
 
@@ -121,7 +665,7 @@
           <tr>
             <td style="padding: 16px 32px;">
               <p style="margin: 0; color: #94a3b8; font-size: 11px; line-height: 1.6;">
-                <strong>Data sources:</strong> DVLA Vehicle Enquiry Service, DVSA MOT History API.<br>
+                <strong>Data sources:</strong> DVLA Vehicle Enquiry Service, DVSA MOT History API{% if finance or valuation %}, Experian AutoCheck{% endif %}{% if valuation %}, Brego Valuations{% endif %}{% if salvage %}, CarGuide Salvage{% endif %}.<br>
                 This report is AI-generated and advisory only. It should not replace a professional vehicle inspection.
                 Always verify details independently before making a purchase decision.
               </p>
@@ -137,7 +681,7 @@
                     <span style="color: #64748b; font-size: 12px;">&copy; {{ year_now }} VeriCar &mdash; vericar.co.uk</span>
                   </td>
                   <td style="text-align: right;">
-                    <a href="{{ unsubscribe_url }}" style="color: #94a3b8; font-size: 12px; text-decoration: underline;">Unsubscribe</a>
+                    <span style="color: #94a3b8; font-size: 11px;">Ref: {{ report_ref }}</span>
                   </td>
                 </tr>
               </table>

@@ -37,6 +37,7 @@ class VehicleCheck(Base):
     market_data = Column(JSONB)
     analysis_result = Column(JSONB)
 
+    product = Column(String(20), default="car", nullable=False)
     status = Column(String(50), default="pending")
     tier = Column(String(20))
     price_paid = Column(Integer)
@@ -51,6 +52,7 @@ class VehicleCheck(Base):
     __table_args__ = (
         Index("idx_vehicle_checks_registration", "registration"),
         Index("idx_vehicle_checks_status", "status"),
+        Index("idx_vehicle_checks_product", "product"),
     )
 
 

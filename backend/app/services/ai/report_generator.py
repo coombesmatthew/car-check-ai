@@ -5,7 +5,6 @@ by providing genuine insight, actionable negotiation advice, and cost
 projections that the buyer can't get from reading the free data cards.
 """
 
-import json
 from datetime import datetime
 from typing import Dict, List, Optional
 
@@ -15,32 +14,242 @@ from app.core.config import settings
 from app.core.logging import logger
 
 
+_UPPERCASE_MAKES = {"BMW", "MG", "TVR", "DS", "BYD", "GWM", "JAC", "MAN"}
+
+
+def _format_make(make: str) -> str:
+    """Format make name — keep known acronyms uppercase, title-case the rest."""
+    upper = make.upper().strip()
+    if upper in _UPPERCASE_MAKES:
+        return upper
+    return make.title()
+
+
+# Repair cost estimates sourced from RAC published guides (rac.co.uk).
+# Per-manufacturer averages from RAC/WhoCanFixMyCar data (2025/26).
+# Categories without an RAC guide use UK independent garage averages.
 REPAIR_COST_ESTIMATES = {
-    "brake": {"component": "Brake pads/discs", "low": 100, "high": 350, "per": "per axle"},
-    "tyre": {"component": "Tyre replacement", "low": 50, "high": 120, "per": "each"},
-    "suspension": {"component": "Suspension repair", "low": 150, "high": 400, "per": "per corner"},
-    "exhaust": {"component": "Exhaust repair", "low": 100, "high": 500, "per": ""},
-    "emission": {"component": "Emissions system", "low": 200, "high": 1500, "per": ""},
-    "lighting": {"component": "Lighting repair", "low": 30, "high": 200, "per": ""},
-    "steering": {"component": "Steering repair", "low": 200, "high": 600, "per": ""},
-    "corrosion": {"component": "Corrosion treatment", "low": 200, "high": 1000, "per": ""},
-    "windscreen": {"component": "Windscreen repair/replace", "low": 50, "high": 400, "per": ""},
-    "clutch": {"component": "Clutch replacement", "low": 400, "high": 800, "per": ""},
-    "battery": {"component": "Battery replacement", "low": 80, "high": 200, "per": ""},
-    "oil": {"component": "Oil leak repair", "low": 100, "high": 400, "per": ""},
-    "coolant": {"component": "Cooling system repair", "low": 100, "high": 500, "per": ""},
-    "drive shaft": {"component": "Drive shaft/CV joint", "low": 150, "high": 350, "per": "per side"},
-    "wheel bearing": {"component": "Wheel bearing", "low": 120, "high": 300, "per": "each"},
+    "brake": {
+        "component": "Brake pads/discs", "low": 150, "high": 700, "per": "per axle",
+        "url": "https://www.rac.co.uk/drive/advice/car-maintenance/how-much-does-it-cost-to-replace-brake-pads/",
+        "by_make": {
+            "AUDI": 350, "BMW": 317, "FORD": 293, "KIA": 299,
+            "LAND ROVER": 376, "MERCEDES": 415, "MINI": 259,
+            "NISSAN": 275, "VAUXHALL": 280, "VOLKSWAGEN": 305,
+        },
+    },
+    "tyre": {"component": "Tyre replacement", "low": 50, "high": 150, "per": "each"},
+    "suspension": {
+        "component": "Suspension repair", "low": 100, "high": 600, "per": "per corner",
+        "url": "https://www.rac.co.uk/drive/advice/car-maintenance/shock-absorber-replacement-cost-and-maintenance-guide/",
+        "by_make": {
+            "FORD": 358, "AUDI": 428, "VOLKSWAGEN": 453,
+            "MERCEDES": 626, "BMW": 631,
+        },
+    },
+    "exhaust": {
+        "component": "Exhaust repair", "low": 100, "high": 300, "per": "",
+        "url": "https://www.rac.co.uk/drive/advice/car-maintenance/common-exhaust-problems-you-need-to-be-aware-of/",
+        "by_make": {
+            "VOLVO": 125, "MERCEDES": 133, "BMW": 135, "VOLKSWAGEN": 145,
+            "FORD": 149, "AUDI": 153, "VAUXHALL": 165,
+        },
+    },
+    "emission": {
+        "component": "Catalytic converter", "low": 500, "high": 2200, "per": "",
+        "url": "https://www.rac.co.uk/drive/advice/car-maintenance/catalytic-converters/",
+    },
+    "lighting": {
+        "component": "Lighting repair", "low": 20, "high": 200, "per": "",
+        "url": "https://www.rac.co.uk/drive/news/motoring-news/drivers-dazzled-by-massive-headlight-costs/",
+    },
+    "steering": {
+        "component": "Steering repair", "low": 220, "high": 660, "per": "",
+        "url": "https://www.rac.co.uk/drive/advice/car-maintenance/guide-to-steering-rack-replacements-cost-symptoms-and-diagnostics/",
+        "by_make": {
+            "FIAT": 221, "PEUGEOT": 261, "MERCEDES": 262, "NISSAN": 268,
+            "KIA": 290, "VAUXHALL": 293, "CITROEN": 310, "RENAULT": 331,
+            "FORD": 352, "BMW": 361, "AUDI": 392, "MITSUBISHI": 659,
+        },
+    },
+    "corrosion": {
+        "component": "Corrosion/bodywork repair", "low": 350, "high": 1000, "per": "",
+        "url": "https://www.rac.co.uk/drive/advice/car-maintenance/cost-to-respray-a-car/",
+    },
+    "windscreen": {
+        "component": "Windscreen repair/replace", "low": 150, "high": 400, "per": "",
+        "url": "https://www.rac.co.uk/drive/advice/car-maintenance/windscreen-replacement-cost/",
+        "by_make": {
+            "FORD": 221, "CITROEN": 225, "PEUGEOT": 236, "VAUXHALL": 274,
+            "VOLKSWAGEN": 298, "MINI": 310, "BMW": 392, "NISSAN": 392,
+            "MERCEDES": 412, "AUDI": 487, "RENAULT": 530,
+        },
+    },
+    "clutch": {
+        "component": "Clutch replacement", "low": 500, "high": 1000, "per": "",
+        "url": "https://www.rac.co.uk/drive/advice/car-maintenance/clutch-replacement-cost-how-much-will-you-have-to-pay/",
+        "by_make": {
+            "TOYOTA": 603, "BMW": 603, "NISSAN": 614, "FORD": 632,
+            "PEUGEOT": 674, "CITROEN": 677, "VOLKSWAGEN": 679,
+            "VAUXHALL": 722, "MINI": 727, "VOLVO": 782,
+            "AUDI": 820, "MERCEDES": 877, "RENAULT": 899,
+        },
+    },
+    "battery": {
+        "component": "Battery replacement", "low": 150, "high": 350, "per": "",
+        "url": "https://www.rac.co.uk/drive/advice/car-maintenance/car-battery-fitted-at-home/",
+    },
+    "oil": {"component": "Oil leak repair", "low": 150, "high": 500, "per": ""},
+    "coolant": {
+        "component": "Cooling system repair", "low": 200, "high": 700, "per": "",
+        "url": "https://www.rac.co.uk/car-care/car-repairs/car-radiator-repair",
+    },
+    "drive shaft": {"component": "Drive shaft/CV joint", "low": 150, "high": 400, "per": "per side"},
+    "wheel bearing": {
+        "component": "Wheel bearing", "low": 150, "high": 300, "per": "each",
+        "url": "https://www.rac.co.uk/drive/advice/car-maintenance/what-is-a-car-wheel-bearing-how-do-you-replace-them/",
+        "by_make": {
+            "VAUXHALL": 200, "MINI": 206, "RENAULT": 221, "FORD": 235,
+            "BMW": 262, "AUDI": 272, "VOLKSWAGEN": 282, "PEUGEOT": 284,
+            "NISSAN": 288, "CITROEN": 295, "VOLVO": 320,
+        },
+    },
 }
 
 
-def _estimate_repair_cost(category: str) -> Optional[Dict]:
-    """Look up estimated repair cost for a defect category."""
+def _estimate_repair_cost(category: str, make: Optional[str] = None) -> Optional[Dict]:
+    """Look up estimated repair cost for a defect category, with optional make-specific average."""
     cat_lower = category.lower()
     for key, estimate in REPAIR_COST_ESTIMATES.items():
         if key in cat_lower:
-            return estimate
+            result = {
+                "component": estimate["component"],
+                "low": estimate["low"],
+                "high": estimate["high"],
+                "per": estimate["per"],
+            }
+            if make and estimate.get("by_make"):
+                make_upper = make.upper().strip()
+                make_avg = estimate["by_make"].get(make_upper)
+                if make_avg:
+                    result["make_avg"] = make_avg
+                    result["make_name"] = _format_make(make)
+            return result
     return None
+
+
+DATA_SOURCE_REGISTRY = {
+    "dvla_ves": {
+        "name": "DVLA Vehicle Enquiry Service",
+        "site": "gov.uk",
+        "desc": "Vehicle identity, tax status, MOT status, V5C date",
+    },
+    "dvsa_mot": {
+        "name": "DVSA MOT History",
+        "site": "gov.uk",
+        "desc": "Full MOT test history, advisories, failures, and mileage readings",
+    },
+    "gov_uk_ved": {
+        "name": "gov.uk VED Rate Tables (2025/26)",
+        "site": "gov.uk",
+        "desc": "Vehicle Excise Duty bands and annual rates",
+    },
+    "euro_ncap": {
+        "name": "Euro NCAP",
+        "site": "euroncap.com",
+        "desc": "Independent crash test safety ratings",
+    },
+    "experian": {
+        "name": "Experian AutoCheck",
+        "site": "experian.co.uk",
+        "desc": "Finance, stolen, write-off, plate changes, and keeper history",
+    },
+    "brego": {
+        "name": "Brego",
+        "site": "brego.ai",
+        "desc": "Current market valuations based on age, mileage, and condition",
+    },
+    "carguide": {
+        "name": "CarGuide",
+        "site": "carguide.co.uk",
+        "desc": "Salvage auction records",
+    },
+    "rac": {
+        "name": "RAC Repair Cost Guides",
+        "site": "rac.co.uk",
+        "url": "https://www.rac.co.uk/drive/advice/car-maintenance/",
+        "desc": "UK average repair costs with per-manufacturer breakdowns (2025/26)",
+    },
+}
+
+
+def _collect_active_sources(
+    vehicle_data: Optional[Dict],
+    mot_analysis: Dict,
+    check_result: Optional[Dict] = None,
+) -> List[str]:
+    """Return source keys that were actually used to compile the report."""
+    sources = []
+
+    if vehicle_data:
+        sources.append("dvla_ves")
+
+    if mot_analysis.get("mot_summary") or mot_analysis.get("mot_tests"):
+        sources.append("dvsa_mot")
+
+    if check_result:
+        if check_result.get("tax_calculation"):
+            sources.append("gov_uk_ved")
+        if check_result.get("safety_rating"):
+            sources.append("euro_ncap")
+
+        # Provenance sources — check data_source fields or presence
+        provenance_keys = ("finance_check", "stolen_check", "write_off_check", "plate_changes", "keeper_history")
+        if any(check_result.get(k) for k in provenance_keys):
+            sources.append("experian")
+        if check_result.get("valuation"):
+            sources.append("brego")
+        if check_result.get("salvage_check"):
+            sources.append("carguide")
+
+    # RAC repair cost guides are cited whenever there are failure patterns
+    if mot_analysis.get("failure_patterns"):
+        sources.append("rac")
+
+    return sources
+
+
+def _source_ref(source_keys: List[str], key: str) -> str:
+    """Return ' [N]' for the given source key, or '' if not present."""
+    try:
+        return f" [{source_keys.index(key) + 1}]"
+    except ValueError:
+        return ""
+
+
+def _build_sources_section(source_keys: List[str]) -> str:
+    """Render a numbered markdown Data Sources footer from active source keys."""
+    lines = [
+        "\n---",
+        "## Data Sources",
+        "This report was compiled using the following data sources:\n",
+    ]
+    for i, key in enumerate(source_keys, 1):
+        src = DATA_SOURCE_REGISTRY.get(key)
+        if not src:
+            continue
+        url = src.get("url")
+        if url:
+            name_part = f"[{src['name']}]({url})"
+        else:
+            name_part = f"**{src['name']}**"
+        site_part = f" ({src['site']})" if src["site"] else ""
+        lines.append(f"{i}. {name_part}{site_part} — {src['desc']}")
+
+    if "rac" in source_keys:
+        lines.append("\n*Repair cost estimates are based on RAC published data and may vary by region and garage.*")
+
+    return "\n".join(lines)
 
 
 SYSTEM_PROMPT = """You are an expert independent used car advisor writing a paid buyer's report for a prospective buyer in the UK.
@@ -66,21 +275,16 @@ A detailed narrative analysis covering:
 Be specific to THIS car. Reference actual defect text from the MOT history. Don't just restate numbers.
 
 ## What Will It Cost You?
-A concrete cost breakdown for the next 12 months:
+A concrete cost breakdown for the next 12 months. Use markdown tables for cost items:
 
 **Immediate costs (within 30 days):**
-- List any advisories likely to become failures at next MOT, with £ estimates
-- Factor in anything the buyer will need to fix to pass the next MOT
+Use a table with columns "Issue" and "Est. Cost". List any advisories likely to become failures at next MOT. Use the make-specific RAC average from the context if available (e.g. "~£317 (BMW avg)"), otherwise use the range.
 
 **Annual running costs:**
-- Road tax: use the actual VED band data if available
-- Estimated annual service cost for this specific make/model
-- Insurance group estimate if you know the model
-- ULEZ/CAZ charges if non-compliant
+Use a table with columns "Item" and "Cost". Include road tax, service cost, MOT fee, and ULEZ/CAZ if non-compliant.
 
 **Predicted repairs (next 12 months):**
-- Based on the advisory pattern trajectory, what's likely to need doing?
-- Give specific £ ranges for each item using UK independent garage rates
+Use a table with columns "Repair", "Est. Cost", and "Frequency". Based on the advisory pattern trajectory, list what's likely to need doing with make-specific costs where available.
 
 **Total 12-month ownership cost estimate:** £X,XXX - £X,XXX (excluding fuel and insurance)
 
@@ -107,7 +311,37 @@ Things the buyer should check that aren't in the data:
 - What to look for on the V5C document
 - Questions about service history specific to this car's age/mileage
 
-Keep the report 800-1200 words. Every sentence should provide value the buyer couldn't get from reading the free data cards. If the car is genuinely clean with no issues, say so briefly and focus the report on future maintenance planning and negotiation strategy."""
+Keep the report 800-1200 words. Every sentence should provide value the buyer couldn't get from reading the free data cards. If the car is genuinely clean with no issues, say so briefly and focus the report on future maintenance planning and negotiation strategy.
+
+IMPORTANT: If PROVENANCE data is provided (finance, stolen, write-off, valuation, plate changes), this is a PREMIUM report (£9.99). Include these additional sections:
+
+## Provenance Check
+Summarise the results of the finance, stolen, write-off, and salvage checks in plain language.
+If there are issues (outstanding finance, stolen marker, write-off category), explain what they mean for the buyer in practical terms — can they legally buy it? What are the risks?
+If everything is clear, confirm it strongly — this is the peace of mind the buyer is paying for.
+
+## Market Valuation
+If valuation data is provided, compare the listing price against the valuations:
+- Is the asking price fair, overpriced, or a good deal?
+- What should the buyer actually pay? Reference the private sale, dealer, and trade-in values.
+- Calculate exactly how much above/below market value the listing is.
+
+## Ownership History
+Analyse the V5C issue date and plate change history. What does the ownership pattern tell you?
+- Frequent keeper changes or recent V5C can be a red flag
+- Stable ownership is positive
+- Any plate changes should be explained
+
+IMPORTANT: Use numbered inline references [1], [2], etc. to cite data sources throughout the report, then list them in a numbered ## Data Sources footer at the very end. Only cite sources listed in the DATA SOURCES USED block in the context. Place each reference after the first key mention of data from that source — e.g. "passed 6 of 7 MOT tests [2]" or "valued at £12,750 for private sale [6]". Don't over-reference — one or two per source is enough. Use this footer format:
+
+---
+## Data Sources
+This report was compiled using the following data sources:
+
+1. **Source Name** (website) — What data it provided
+2. **Source Name** (website) — What data it provided
+
+If repair cost estimates are included, add at the end: *Repair cost estimates are indicative and may vary by region and garage.*"""
 
 
 def _build_full_context(
@@ -168,11 +402,17 @@ Risk Level: {clocking.get('risk_level', 'unknown')}""")
 
     # Failure patterns
     patterns = mot_analysis.get("failure_patterns", [])
+    ctx_make = vehicle_data.get("make") if vehicle_data else None
     if patterns:
         parts.append("\nRECURRING DEFECT PATTERNS:")
         for p in patterns:
-            est = _estimate_repair_cost(p["category"])
-            cost_str = f" — estimated repair: £{est['low']}-£{est['high']}" if est else ""
+            est = _estimate_repair_cost(p["category"], ctx_make)
+            if est:
+                cost_str = f" — estimated repair: £{est['low']}-£{est['high']}"
+                if est.get("make_avg"):
+                    cost_str += f" (avg £{est['make_avg']} for {est['make_name']}, RAC data)"
+            else:
+                cost_str = ""
             parts.append(f"  {p['category']}: {p['occurrences']}x ({p['concern_level']} concern){cost_str}")
 
     # Full MOT test history with every defect
@@ -249,13 +489,95 @@ Lifetime Advisories: {stats.get('total_advisory_items', '?')}
 Lifetime Failures: {stats.get('total_failure_items', '?')}
 Lifetime Dangerous Items: {stats.get('total_dangerous_items', '?')}""")
 
+    # Provenance data (premium tier only)
+    if check_result:
+        finance = check_result.get("finance_check")
+        if finance:
+            parts.append(f"""
+FINANCE CHECK (source: Experian AutoCheck):
+Outstanding Finance: {finance.get('finance_outstanding', '?')}
+Records: {finance.get('record_count', 0)}""")
+            for r in finance.get("records", []):
+                parts.append(f"  - {r.get('agreement_type', '?')} with {r.get('finance_company', '?')} (date: {r.get('agreement_date', '?')}, term: {r.get('agreement_term', '?')})")
+
+        stolen = check_result.get("stolen_check")
+        if stolen:
+            parts.append(f"""
+STOLEN CHECK (source: Experian AutoCheck):
+Reported Stolen: {stolen.get('stolen', '?')}""")
+            if stolen.get("stolen"):
+                parts.append(f"Date: {stolen.get('reported_date', '?')}, Force: {stolen.get('police_force', '?')}")
+
+        writeoff = check_result.get("write_off_check")
+        if writeoff:
+            parts.append(f"""
+WRITE-OFF CHECK (source: Experian AutoCheck):
+Written Off: {writeoff.get('written_off', '?')}
+Records: {writeoff.get('record_count', 0)}""")
+            for r in writeoff.get("records", []):
+                parts.append(f"  - Category {r.get('category', '?')} on {r.get('date', '?')} ({r.get('loss_type', '?')})")
+
+        valuation = check_result.get("valuation")
+        if valuation:
+            parts.append(f"""
+VALUATION (source: Brego):
+Private Sale: £{valuation.get('private_sale', '?'):,}
+Dealer Forecourt: £{valuation.get('dealer_forecourt', '?'):,}
+Trade-in: £{valuation.get('trade_in', '?'):,}
+Part Exchange: £{valuation.get('part_exchange', '?'):,}
+Condition: {valuation.get('condition', '?')}
+Mileage Used: {valuation.get('mileage_used', '?'):,} miles""")
+
+        plates = check_result.get("plate_changes")
+        if plates:
+            parts.append(f"""
+PLATE CHANGES (source: Experian AutoCheck):
+Changes Found: {plates.get('changes_found', False)}
+Records: {plates.get('record_count', 0)}""")
+            for r in plates.get("records", []):
+                parts.append(f"  - {r.get('previous_plate', '?')} changed on {r.get('change_date', '?')} ({r.get('change_type', '?')})")
+
+        salvage = check_result.get("salvage_check")
+        if salvage:
+            parts.append(f"""
+SALVAGE CHECK (source: CarGuide):
+Salvage Found: {salvage.get('salvage_found', False)}""")
+
+        keeper = check_result.get("keeper_history")
+        if keeper:
+            parts.append(f"""
+KEEPER HISTORY (source: Experian AutoCheck):
+Total Keepers: {keeper.get('total_keepers', '?')}""")
+            for r in keeper.get("keepers", []):
+                parts.append(f"  - Keeper from {r.get('start_date', '?')} to {r.get('end_date', '?')} ({r.get('keeper_type', '?')})")
+
     # Listing info
     if listing_price:
         parts.append(f"\nLISTING PRICE: £{listing_price / 100:,.2f}")
     if listing_url:
         parts.append(f"LISTING URL: {listing_url}")
 
+    # Tier indicator
+    has_provenance = check_result and any(
+        check_result.get(k) for k in ("finance_check", "stolen_check", "write_off_check", "valuation", "plate_changes")
+    )
+    if has_provenance:
+        parts.append("\nREPORT TIER: PREMIUM (£9.99) — include Provenance Check, Market Valuation, and Ownership History sections")
+    else:
+        parts.append("\nREPORT TIER: FULL REPORT (£3.99)")
+
     parts.append(f"\nTODAY'S DATE: {datetime.utcnow().strftime('%d %B %Y')}")
+
+    # Tell Claude which sources to cite (numbered for inline references)
+    source_keys = _collect_active_sources(vehicle_data, mot_analysis, check_result)
+    if source_keys:
+        parts.append("\nDATA SOURCES USED (use [N] inline references in the report):")
+        for i, key in enumerate(source_keys, 1):
+            src = DATA_SOURCE_REGISTRY.get(key)
+            if src:
+                site_part = f" ({src['site']})" if src["site"] else ""
+                parts.append(f"  [{i}] {src['name']}{site_part} — {src['desc']}")
+
     parts.append("\n=== END OF DATA ===")
     parts.append("\nPlease write a comprehensive buyer's report for this vehicle.")
 
@@ -288,7 +610,7 @@ async def generate_ai_report(
     if not settings.ANTHROPIC_API_KEY or settings.ANTHROPIC_API_KEY.startswith("your_"):
         logger.warning("Anthropic API key not configured — using demo report")
         return _generate_demo_report(
-            registration, vehicle_data, mot_analysis, ulez_data, listing_price
+            registration, vehicle_data, mot_analysis, ulez_data, listing_price, check_result
         )
 
     user_message = _build_full_context(
@@ -314,7 +636,7 @@ async def generate_ai_report(
         logger.error(f"Anthropic API error: {e}")
         logger.info("Falling back to demo report after API error")
         return _generate_demo_report(
-            registration, vehicle_data, mot_analysis, ulez_data, listing_price
+            registration, vehicle_data, mot_analysis, ulez_data, listing_price, check_result
         )
     except Exception as e:
         logger.error(f"AI report generation failed: {e}")
@@ -327,8 +649,13 @@ def _generate_demo_report(
     mot_analysis: Dict,
     ulez_data: Optional[Dict],
     listing_price: Optional[int] = None,
+    check_result: Optional[Dict] = None,
 ) -> str:
     """Generate a realistic demo report when Anthropic API key is not configured."""
+    # Build source reference mapping for inline [N] citations
+    source_keys = _collect_active_sources(vehicle_data, mot_analysis, check_result)
+    ref = lambda key: _source_ref(source_keys, key)
+
     make = vehicle_data.get("make", "Unknown") if vehicle_data else "Unknown"
     colour = vehicle_data.get("colour", "Unknown") if vehicle_data else "Unknown"
     fuel = vehicle_data.get("fuelType", "Unknown") if vehicle_data else "Unknown"
@@ -387,12 +714,12 @@ def _generate_demo_report(
             if f.get("text") and f["text"] not in recent_failures:
                 recent_failures.append(f["text"])
 
-    # Build repair estimates
+    # Build repair estimates (make-specific where RAC data available)
     repair_items = []
     total_repair_low = 0
     total_repair_high = 0
     for p in patterns:
-        est = _estimate_repair_cost(p["category"])
+        est = _estimate_repair_cost(p["category"], make)
         if est:
             repair_items.append((p, est))
             total_repair_low += est["low"]
@@ -408,7 +735,7 @@ def _generate_demo_report(
     report = f"## Should You Buy This Car?\n"
 
     if verdict == "BUY":
-        report += f"**BUY** — This {year} {make.title()} {model} is a solid choice. "
+        report += f"**BUY** — This {year} {_format_make(make)} {model}{ref('dvla_ves')} is a solid choice. "
         if condition and condition >= 80:
             report += f"With a condition score of {condition}/100 and a {pass_rate}% MOT pass rate across {total_tests} tests, this car has been well looked after. "
         else:
@@ -420,12 +747,12 @@ def _generate_demo_report(
         else:
             report += f"The {total_failures} MOT failure{'s' if total_failures != 1 else ''} {'are' if total_failures > 1 else 'is'} minor and {'were' if total_failures > 1 else 'was'} promptly resolved.\n"
     elif verdict == "NEGOTIATE":
-        report += f"**NEGOTIATE** — This {year} {make.title()} {model} is worth considering, but the data gives you leverage to negotiate the price down. "
+        report += f"**NEGOTIATE** — This {year} {_format_make(make)} {model}{ref('dvla_ves')} is worth considering, but the data gives you leverage to negotiate the price down. "
         if patterns:
             report += f"Recurring {patterns[0]['category']} issues ({patterns[0]['occurrences']} times in MOT history) and "
         report += f"a condition score of {condition}/100 mean you should factor in upcoming repair costs before agreeing on a price.\n"
     else:
-        report += f"**AVOID** — This {year} {make.title()} {model} raises serious concerns. "
+        report += f"**AVOID** — This {year} {_format_make(make)} {model}{ref('dvla_ves')} raises serious concerns. "
         if clocked:
             report += "Mileage discrepancies have been detected, which is a major red flag. The odometer may have been tampered with, meaning hidden mechanical wear that will cost you in the long run.\n"
         else:
@@ -436,7 +763,7 @@ def _generate_demo_report(
 
     # MOT narrative
     if total_tests > 0:
-        report += f"This car has been through {total_tests} MOT tests since first registration, passing {total_passes} ({pass_rate}%). "
+        report += f"This car has been through {total_tests} MOT tests{ref('dvsa_mot')} since first registration, passing {total_passes} ({pass_rate}%). "
 
     # Interpret the advisory pattern
     if recent_advisories:
@@ -447,16 +774,19 @@ def _generate_demo_report(
 
         if patterns:
             top = patterns[0]
-            est = _estimate_repair_cost(top["category"])
+            est = _estimate_repair_cost(top["category"], make)
             report += f"The recurring theme is **{top['category']}** issues, which have appeared {top['occurrences']} times. "
             if top["concern_level"] == "low":
-                report += f"For a {make.title()} {model} of this age, this is fairly typical wear-and-tear rather than a sign of neglect. "
+                report += f"For a {_format_make(make)} {model} of this age, this is fairly typical wear-and-tear rather than a sign of neglect. "
             elif top["concern_level"] == "medium":
                 report += "This is worth investigating — it could indicate the car has been driven hard or maintenance has been deferred. "
             else:
                 report += "This is concerning and suggests either heavy use, deferred maintenance, or a deeper underlying problem. "
             if est:
-                report += f"Budget £{est['low']}-£{est['high']} {est['per']} to address this.\n"
+                if est.get("make_avg"):
+                    report += f"Budget around **£{est['make_avg']}** for a {est['make_name']} (UK average, RAC data){' ' + est['per'] if est['per'] else ''}.\n"
+                else:
+                    report += f"Budget £{est['low']}-£{est['high']} {est['per']} to address this.\n"
     elif total_tests > 0:
         report += "The MOT history is remarkably clean with no recurring issues — a good sign of careful ownership.\n"
 
@@ -496,31 +826,49 @@ def _generate_demo_report(
 
     report += "\n**Immediate costs (within 30 days):**\n"
     if recent_advisories:
-        urgent_found = False
+        urgent_rows = []
         for adv in recent_advisories[:3]:
-            adv_lower = adv.lower()
-            for key, est in REPAIR_COST_ESTIMATES.items():
-                if key in adv_lower:
-                    report += f"- {adv} → **£{est['low']}-£{est['high']}** {est['per']}\n"
-                    urgent_found = True
-                    break
-        if not urgent_found:
-            report += "- No urgent repairs needed based on the latest MOT\n"
+            est = _estimate_repair_cost(adv, make)
+            if est:
+                if est.get("make_avg"):
+                    cost = f"~£{est['make_avg']} ({est['make_name']} avg)"
+                else:
+                    cost = f"£{est['low']}-£{est['high']}"
+                if est["per"]:
+                    cost += f" {est['per']}"
+                urgent_rows.append((adv, cost))
+        if urgent_rows:
+            report += "| Issue | Est. Cost |\n"
+            report += "|---|---|\n"
+            for issue, cost in urgent_rows:
+                report += f"| {issue} | **{cost}** |\n"
+        else:
+            report += "No urgent repairs needed based on the latest MOT.\n"
     else:
-        report += "- No advisories flagged — no immediate work needed\n"
+        report += "No advisories flagged — no immediate work needed.\n"
 
     report += "\n**Annual running costs:**\n"
-    report += f"- Annual service ({make.title()} {model}): **£{service_low}-£{service_high}**\n"
-    report += f"- MOT test fee: **£{mot_fee:.2f}**\n"
+    report += "| Item | Cost |\n"
+    report += "|---|---|\n"
+    report += f"| Annual service ({_format_make(make)} {model}) | **£{service_low}-£{service_high}** |\n"
+    report += f"| MOT test fee | **£{mot_fee:.2f}** |\n"
     if tax_status and tax_status != "Unknown":
-        report += f"- Road tax: Status is *{tax_status}*\n"
+        report += f"| Road tax | *{tax_status}* |\n"
     if compliant is False and daily_charge:
-        report += f"- ULEZ/CAZ daily charges: **{daily_charge}** (if driving in clean air zones)\n"
+        report += f"| ULEZ/CAZ daily charge | **{daily_charge}** |\n"
 
     if repair_items:
-        report += "\n**Predicted repairs (next 12 months):**\n"
+        report += f"\n**Predicted repairs (next 12 months):**{ref('rac')}\n"
+        report += "| Repair | Est. Cost | Frequency |\n"
+        report += "|---|---|---|\n"
         for p, est in repair_items:
-            report += f"- {est['component']}: **£{est['low']}-£{est['high']}** {est['per']} (flagged {p['occurrences']}x in MOT history)\n"
+            if est.get("make_avg"):
+                cost = f"**~£{est['make_avg']}** ({est['make_name']} avg)"
+            else:
+                cost = f"**£{est['low']}-£{est['high']}**"
+                if est["per"]:
+                    cost += f" {est['per']}"
+            report += f"| {est['component']} | {cost} | {p['occurrences']}x in MOT history |\n"
 
     total_low = service_low + int(mot_fee) + annual_repair_low
     total_high = service_high + int(mot_fee) + annual_repair_high
@@ -552,9 +900,13 @@ def _generate_demo_report(
 
         if patterns:
             top = patterns[0]
-            est = _estimate_repair_cost(top["category"])
+            est = _estimate_repair_cost(top["category"], make)
             if est:
-                report += f"2. **Key point:** *\"The MOT history shows recurring {top['category']} issues — {top['occurrences']} times across the tests. I've looked into it and I'm expecting £{est['low']}-£{est['high']} to sort that out. Can we factor that into the price?\"*\n\n"
+                if est.get("make_avg"):
+                    cost_quote = f"around £{est['make_avg']} for a {est['make_name']}"
+                else:
+                    cost_quote = f"£{est['low']}-£{est['high']}"
+                report += f"2. **Key point:** *\"The MOT history shows recurring {top['category']} issues — {top['occurrences']} times across the tests. I've looked into it and I'm expecting {cost_quote} to sort that out. Can we factor that into the price?\"*\n\n"
 
         if listing_price:
             discount_amount = max(total_repair_low + (total_repair_high - total_repair_low) // 2, int(listing_price * 0.05 / 100))
@@ -573,7 +925,11 @@ def _generate_demo_report(
         report += "1. **Opening line:** *\"I've been looking at a few options and had checks done on all of them. What's the best you can do on the price?\"*\n\n"
         if patterns and repair_items:
             top_p, top_est = repair_items[0]
-            report += f"2. **Mild leverage:** *\"The check flagged some {top_p['category']} wear — I'll need to budget £{top_est['low']}-£{top_est['high']} for that. Could you knock something off to cover it?\"*\n\n"
+            if top_est.get("make_avg"):
+                cost_quote = f"around £{top_est['make_avg']}"
+            else:
+                cost_quote = f"£{top_est['low']}-£{top_est['high']}"
+            report += f"2. **Mild leverage:** *\"The check flagged some {top_p['category']} wear — I'll need to budget {cost_quote} for that. Could you knock something off to cover it?\"*\n\n"
         if mot_days is not None and mot_days < 90:
             report += f"3. **MOT leverage:** *\"The MOT is due in {mot_days} days. Would you be willing to put a fresh MOT on it before I buy?\"*\n\n"
         if listing_price:
@@ -618,17 +974,171 @@ def _generate_demo_report(
     for item in checklist[:8]:
         report += f"- {item}\n"
 
-    # --- Red Flags ---
-    report += "\n## Red Flags to Watch For\n"
-    report += f"Things to verify in person that the data can't tell you:\n\n"
-    report += "- **Service history:** Ask for the stamped service book. Gaps in servicing are a concern at any mileage\n"
-    report += "- **V5C document:** Check the name and address match the seller. If they say \"I'm selling for a friend,\" proceed with extreme caution\n"
+    # --- Premium sections (provenance, valuation, ownership) ---
+    provenance = check_result or {}
+    finance = provenance.get("finance_check")
+    stolen = provenance.get("stolen_check")
+    writeoff = provenance.get("write_off_check")
+    valuation_data = provenance.get("valuation")
+    plates_data = provenance.get("plate_changes")
+    keeper_data = provenance.get("keeper_history")
+    salvage_data = provenance.get("salvage_check")
 
-    if vehicle_data and vehicle_data.get("dateOfLastV5CIssued"):
-        v5c_date = vehicle_data["dateOfLastV5CIssued"]
-        report += f"- **V5C timing:** The V5C was last issued on {v5c_date}. If this doesn't match when the seller says they bought it, ask why\n"
+    has_provenance = any([finance, stolen, writeoff, valuation_data, plates_data])
 
-    report += "- **Payment:** Never pay cash without a receipt. Bank transfer is safest — you have a paper trail\n"
-    report += f"- **HPI check:** Consider a full HPI/provenance check (finance, stolen, write-off) for complete peace of mind — our Premium Check covers this for £9.99\n"
+    if has_provenance:
+        report += f"\n## Provenance Check{ref('experian')}\n"
+
+        all_clear = True
+
+        if finance:
+            if finance.get("finance_outstanding"):
+                all_clear = False
+                report += f"**Finance: OUTSTANDING** — This vehicle has {finance.get('record_count', 0)} active finance agreement(s).\n"
+                for r in finance.get("records", []):
+                    report += f"- {r.get('agreement_type', 'Agreement')} with **{r.get('finance_company', 'Unknown')}**"
+                    if r.get("agreement_date"):
+                        report += f" (started {r['agreement_date']})"
+                    report += "\n"
+                report += "\n**What this means:** The finance company legally owns this car until the debt is paid off. If you buy it, the finance company can repossess it from you even though you paid the seller. **Do not buy this car** unless the seller settles the finance before the sale and provides written confirmation.\n\n"
+            else:
+                report += "- **Finance:** No outstanding finance found. Safe to purchase.\n"
+
+        if stolen:
+            if stolen.get("stolen"):
+                all_clear = False
+                report += f"- **Stolen:** **REPORTED STOLEN** on {stolen.get('reported_date', 'unknown date')}"
+                if stolen.get("police_force"):
+                    report += f" by {stolen['police_force']}"
+                report += ". **Do not purchase this vehicle.** You will have no legal title and it will be seized.\n"
+            else:
+                report += "- **Stolen:** Not reported stolen. Clear.\n"
+
+        if writeoff:
+            if writeoff.get("written_off"):
+                all_clear = False
+                report += f"- **Write-off:** **{writeoff.get('record_count', 0)} insurance write-off record(s) found.**\n"
+                for r in writeoff.get("records", []):
+                    cat = r.get("category", "?")
+                    report += f"  - **Category {cat}** recorded on {r.get('date', '?')}"
+                    if r.get("loss_type"):
+                        report += f" ({r['loss_type']})"
+                    report += "\n"
+                report += "\n"
+                # Explain categories
+                if any(r.get("category") in ("A", "B") for r in writeoff.get("records", [])):
+                    report += "Category A/B means the car was so badly damaged it should have been scrapped. **Walk away.**\n\n"
+                else:
+                    report += "Category N/S means the car was damaged but repaired. This isn't necessarily a dealbreaker, but:\n"
+                    report += "- Insist on seeing repair invoices and photos\n"
+                    report += "- Get an independent structural inspection (£100-200)\n"
+                    report += "- Factor in reduced resale value (typically 20-30% less than equivalent non-write-off)\n\n"
+            else:
+                report += "- **Write-off:** No insurance write-off history. Clear.\n"
+
+        if salvage_data and salvage_data.get("salvage_found"):
+            all_clear = False
+            report += f"- **Salvage:**{ref('carguide')} Salvage auction records found. This car may have been auctioned as salvage — investigate the repair history thoroughly.\n"
+        elif salvage_data:
+            report += f"- **Salvage:**{ref('carguide')} No salvage auction records. Clear.\n"
+
+        if all_clear:
+            report += "\n**All provenance checks clear.** This car has no hidden financial or legal issues. You can buy with confidence.\n"
+
+        # --- Market Valuation ---
+        if valuation_data:
+            report += f"\n## Market Valuation{ref('brego')}\n"
+            private = valuation_data.get("private_sale")
+            dealer = valuation_data.get("dealer_forecourt")
+            trade = valuation_data.get("trade_in")
+            part_ex = valuation_data.get("part_exchange")
+
+            report += "Based on current market data for this vehicle's age, mileage, and condition:\n\n"
+            report += "| Valuation Type | Amount |\n"
+            report += "|---|---|\n"
+            if private:
+                report += f"| Private Sale | **£{private:,}** |\n"
+            if dealer:
+                report += f"| Dealer Forecourt | **£{dealer:,}** |\n"
+            if trade:
+                report += f"| Trade-in | **£{trade:,}** |\n"
+            if part_ex:
+                report += f"| Part Exchange | **£{part_ex:,}** |\n"
+            report += "\n"
+
+            if listing_price and private:
+                asking = int(listing_price / 100)
+                diff = asking - private
+                pct = round((diff / private) * 100)
+                if diff > 0:
+                    report += f"At **£{asking:,}**, the asking price is **£{diff:,} above** the private sale valuation ({pct}% over market value). "
+                    if pct > 15:
+                        report += "This is significantly overpriced. Use the valuation data to negotiate hard.\n\n"
+                    elif pct > 5:
+                        report += "There's room to negotiate. A fair offer would be closer to the private sale value.\n\n"
+                    else:
+                        report += "This is only slightly above market — a small discount should be achievable.\n\n"
+                elif diff < 0:
+                    report += f"At **£{asking:,}**, the asking price is **£{abs(diff):,} below** private sale valuation. This looks like a good deal — but check why it's priced so low.\n\n"
+                else:
+                    report += f"The asking price of **£{asking:,}** is bang on the private sale valuation. This is a fair price.\n\n"
+
+                report += f"**Recommended offer:** £{min(asking, private):,}"
+                if diff > 0 and trade:
+                    target = private - (private - trade) // 4
+                    report += f" (start at £{target:,} and work up)"
+                report += "\n"
+
+        # --- Ownership History ---
+        report += "\n## Ownership History\n"
+
+        if keeper_data and keeper_data.get("total_keepers"):
+            total_keepers = keeper_data["total_keepers"]
+            report += f"This vehicle has had **{total_keepers} registered keeper{'s' if total_keepers != 1 else ''}**.\n"
+            if total_keepers <= 2:
+                report += "Low keeper count — suggests stable ownership and a car that's been looked after.\n"
+            elif total_keepers <= 4:
+                report += "Average number of keepers for this age. Nothing unusual.\n"
+            else:
+                report += "Higher than average number of keepers — could indicate problems that caused owners to move it on. Ask the seller directly.\n"
+
+        if plates_data:
+            if plates_data.get("changes_found"):
+                report += f"\n**{plates_data.get('record_count', 0)} plate change(s) found:**\n"
+                for r in plates_data.get("records", []):
+                    report += f"- {r.get('previous_plate', '?')} → changed on {r.get('change_date', '?')} ({r.get('change_type', '?')})\n"
+                report += "\nPlate changes aren't always concerning (personalised plates are common), but combined with other flags they can indicate an attempt to disguise a vehicle's history.\n"
+            else:
+                report += "\nNo plate changes found. The vehicle has kept its original registration — a positive sign.\n"
+
+        if vehicle_data and vehicle_data.get("dateOfLastV5CIssued"):
+            v5c_date = vehicle_data["dateOfLastV5CIssued"]
+            try:
+                v5c_dt = datetime.strptime(v5c_date, "%Y-%m-%d")
+                days_ago = (datetime.utcnow() - v5c_dt).days
+                if days_ago < 90:
+                    report += f"\n**V5C recently issued** ({v5c_date}, {days_ago} days ago). A very recent V5C can indicate a recent ownership change — confirm when the seller actually bought the car.\n"
+                else:
+                    report += f"\nV5C last issued on {v5c_date} ({days_ago} days ago). No concerns.\n"
+            except ValueError:
+                pass
+
+    else:
+        # Non-premium: show red flags + upsell
+        report += "\n## Red Flags to Watch For\n"
+        report += "Things to verify in person that the data can't tell you:\n\n"
+        report += "- **Service history:** Ask for the stamped service book. Gaps in servicing are a concern at any mileage\n"
+        report += "- **V5C document:** Check the name and address match the seller. If they say \"I'm selling for a friend,\" proceed with extreme caution\n"
+
+        if vehicle_data and vehicle_data.get("dateOfLastV5CIssued"):
+            v5c_date = vehicle_data["dateOfLastV5CIssued"]
+            report += f"- **V5C timing:** The V5C was last issued on {v5c_date}. If this doesn't match when the seller says they bought it, ask why\n"
+
+        report += "- **Payment:** Never pay cash without a receipt. Bank transfer is safest — you have a paper trail\n"
+        report += "- **HPI check:** Consider a full HPI/provenance check (finance, stolen, write-off) for complete peace of mind — our Premium Check covers this for £9.99\n"
+
+    # Append Data Sources footer (source_keys computed at top of function)
+    if source_keys:
+        report += _build_sources_section(source_keys)
 
     return report

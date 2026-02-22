@@ -237,6 +237,37 @@ export interface SalvageCheck {
   data_source: string;
 }
 
+export interface KeeperHistory {
+  keeper_count: number | null;
+  last_change_date: string | null;
+  data_source: string;
+}
+
+export interface HighRiskRecord {
+  risk_type: string;
+  date: string | null;
+  detail: string | null;
+  company: string | null;
+  contact: string | null;
+}
+
+export interface HighRiskCheck {
+  flagged: boolean;
+  records: HighRiskRecord[];
+  data_source: string;
+}
+
+export interface PreviousSearchRecord {
+  date: string | null;
+  business_type: string | null;
+}
+
+export interface PreviousSearches {
+  search_count: number;
+  records: PreviousSearchRecord[];
+  data_source: string;
+}
+
 export interface FreeCheckResponse {
   registration: string;
   tier: string;
@@ -256,6 +287,9 @@ export interface FreeCheckResponse {
   write_off_check: WriteOffCheck | null;
   plate_changes: PlateChangeHistory | null;
   valuation: Valuation | null;
+  keeper_history: KeeperHistory | null;
+  high_risk: HighRiskCheck | null;
+  previous_searches: PreviousSearches | null;
   salvage_check: SalvageCheck | null;
   checked_at: string;
   data_sources: string[];
@@ -415,6 +449,221 @@ export async function fulfilReport(
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({ detail: "Report generation failed" }));
+    throw new Error(err.detail || `HTTP ${res.status}`);
+  }
+
+  return res.json();
+}
+
+
+// --- EV Health Check ---
+
+export interface RangeEstimate {
+  estimated_range_miles: number | null;
+  min_range_now_miles: number | null;
+  max_range_now_miles: number | null;
+  min_range_new_miles: number | null;
+  max_range_new_miles: number | null;
+  official_range_miles: number | null;
+  range_retention_pct: number | null;
+  warranty_miles_remaining: number | null;
+  warranty_months_remaining: number | null;
+  battery_test_available: boolean;
+  battery_test_date: string | null;
+  battery_test_grade: string | null;
+  battery_capacity_kwh: number | null;
+  usable_battery_capacity_kwh: number | null;
+  data_source: string;
+}
+
+export interface RangeScenario {
+  scenario: string;
+  temperature_c: number | null;
+  estimated_miles: number | null;
+  driving_style: string | null;
+}
+
+export interface EVSpecs {
+  battery_capacity_kwh: number | null;
+  usable_capacity_kwh: number | null;
+  battery_type: string | null;
+  battery_chemistry: string | null;
+  battery_architecture: string | null;
+  battery_weight_kg: number | null;
+  battery_warranty_years: number | null;
+  battery_warranty_miles: number | null;
+  charge_port: string | null;
+  fast_charge_port: string | null;
+  max_dc_charge_kw: number | null;
+  avg_dc_charge_kw: number | null;
+  max_ac_charge_kw: number | null;
+  charge_time_home_mins: number | null;
+  charge_time_rapid_mins: number | null;
+  rapid_charge_speed_mph: number | null;
+  energy_consumption_wh_per_mile: number | null;
+  energy_consumption_mi_per_kwh: number | null;
+  real_range_miles: number | null;
+  drivetrain: string | null;
+  motor_power_kw: number | null;
+  motor_power_bhp: number | null;
+  top_speed_mph: number | null;
+  zero_to_sixty_secs: number | null;
+  kerb_weight_kg: number | null;
+  boot_capacity_litres: number | null;
+  boot_capacity_max_litres: number | null;
+  frunk_litres: number | null;
+  max_towing_weight_kg: number | null;
+  data_source: string;
+}
+
+export interface LifespanPrediction {
+  predicted_remaining_years: number | null;
+  prediction_range: string | null;
+  one_year_survival_pct: number | null;
+  model_avg_final_miles: number | null;
+  model_avg_final_age: number | null;
+  manufacturer_avg_final_miles: number | null;
+  manufacturer_avg_final_age: number | null;
+  pct_still_on_road: number | null;
+  initially_registered: number | null;
+  currently_licensed: number | null;
+  data_source: string;
+}
+
+export interface BatteryHealth {
+  score: number | null;
+  grade: string | null;
+  degradation_estimate_pct: number | null;
+  summary: string | null;
+  test_grade: string | null;
+  test_date: string | null;
+}
+
+export interface ChargingCosts {
+  home_cost_per_full_charge: number | null;
+  rapid_cost_per_full_charge: number | null;
+  cost_per_mile_home: number | null;
+  cost_per_mile_rapid: number | null;
+  cost_per_mile_public: number | null;
+  annual_cost_estimate_home: number | null;
+  annual_cost_estimate_rapid: number | null;
+  vs_petrol_annual_saving: number | null;
+}
+
+export interface EVCheckResponse {
+  registration: string;
+  tier: string;
+  is_electric: boolean;
+  ev_type: string | null;
+  vehicle: VehicleIdentity | null;
+  mot_summary: MOTSummary | null;
+  mot_tests: MOTTestRecord[];
+  clocking_analysis: ClockingAnalysis | null;
+  condition_score: number | null;
+  mileage_timeline: MileageReading[];
+  failure_patterns: FailurePattern[];
+  ulez_compliance: ULEZCompliance | null;
+  tax_calculation: TaxCalculation | null;
+  safety_rating: SafetyRating | null;
+  vehicle_stats: VehicleStats | null;
+  range_estimate: RangeEstimate | null;
+  range_scenarios: RangeScenario[];
+  ev_specs: EVSpecs | null;
+  lifespan_prediction: LifespanPrediction | null;
+  battery_health: BatteryHealth | null;
+  charging_costs: ChargingCosts | null;
+  checked_at: string;
+  data_sources: string[];
+}
+
+export async function getEVCheckCount(): Promise<number> {
+  try {
+    const res = await fetch(`${API_URL}/api/v1/ev/count`);
+    if (!res.ok) return 0;
+    const data = await res.json();
+    return data.total_checks || 0;
+  } catch {
+    return 0;
+  }
+}
+
+export async function runEVCheck(
+  registration: string
+): Promise<EVCheckResponse> {
+  const res = await fetch(`${API_URL}/api/v1/ev/check`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ registration }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: "EV check failed" }));
+    throw new Error(err.detail || `HTTP ${res.status}`);
+  }
+
+  return res.json();
+}
+
+export interface EVPreviewResponse {
+  registration: string;
+  ai_report: string | null;
+  ev_check: EVCheckResponse | null;
+  price: string;
+}
+
+export async function runEVPreview(
+  registration: string
+): Promise<EVPreviewResponse> {
+  const res = await fetch(`${API_URL}/api/v1/ev/preview`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ registration }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: "EV preview failed" }));
+    throw new Error(err.detail || `HTTP ${res.status}`);
+  }
+
+  return res.json();
+}
+
+export async function createEVCheckout(
+  registration: string,
+  email: string
+): Promise<CheckoutResponse> {
+  const res = await fetch(`${API_URL}/api/v1/ev/checkout`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ registration, email }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: "EV checkout failed" }));
+    throw new Error(err.detail || `HTTP ${res.status}`);
+  }
+
+  return res.json();
+}
+
+export interface EVFulfilmentResponse extends FulfilmentResponse {
+  ai_report: string | null;
+  ev_check: EVCheckResponse | null;
+}
+
+export async function fulfilEVReport(
+  sessionId: string
+): Promise<EVFulfilmentResponse> {
+  const res = await fetch(
+    `${API_URL}/api/v1/ev/fulfil?session_id=${encodeURIComponent(sessionId)}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    }
+  );
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: "EV report generation failed" }));
     throw new Error(err.detail || `HTTP ${res.status}`);
   }
 

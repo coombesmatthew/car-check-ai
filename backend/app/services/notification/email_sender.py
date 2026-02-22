@@ -112,6 +112,25 @@ def render_report_email(
         "report_url": "#",  # Placeholder — no web view yet
         "unsubscribe_url": "#",
         "year_now": datetime.utcnow().year,
+        # Full data sections
+        "vehicle": vehicle if vehicle else None,
+        "mot_tests": check_data.get("mot_tests", []),
+        "mileage_timeline": check_data.get("mileage_timeline", []),
+        "clocking_analysis": check_data.get("clocking_analysis"),
+        "failure_patterns": check_data.get("failure_patterns", []),
+        "ulez": check_data.get("ulez_compliance") or {},
+        "tax": check_data.get("tax_calculation"),
+        "safety": check_data.get("safety_rating"),
+        "stats": check_data.get("vehicle_stats"),
+        # Premium sections
+        "finance": check_data.get("finance_check"),
+        "stolen": check_data.get("stolen_check"),
+        "writeoff": check_data.get("write_off_check"),
+        "plates": check_data.get("plate_changes"),
+        "valuation": check_data.get("valuation"),
+        "keeper_history": check_data.get("keeper_history"),
+        "salvage": check_data.get("salvage_check"),
+        "tier": check_data.get("tier", "free"),
     }
 
     return template.render(**context)

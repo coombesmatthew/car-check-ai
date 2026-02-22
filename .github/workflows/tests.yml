@@ -2,9 +2,9 @@ name: Tests
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, dev, develop ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main ]
 
 jobs:
   backend-tests:
@@ -38,6 +38,7 @@ jobs:
     - name: Run tests
       env:
         DATABASE_URL: postgresql://postgres:postgres@localhost:5432/carcheck_test
+        PYTHONPATH: ${{ github.workspace }}/backend
       run: |
         cd backend
         pytest --cov=app
