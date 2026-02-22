@@ -38,7 +38,10 @@ REPAIR_COST_ESTIMATES = {
             "NISSAN": 275, "VAUXHALL": 280, "VOLKSWAGEN": 305,
         },
     },
-    "tyre": {"component": "Tyre replacement", "low": 50, "high": 150, "per": "each"},
+    "tyre": {
+        "component": "Tyre replacement", "low": 50, "high": 150, "per": "each",
+        "url": "https://www.rac.co.uk/drive/advice/tyres/the-racs-guide-to-tyre-buying/",
+    },
     "suspension": {
         "component": "Suspension repair", "low": 100, "high": 600, "per": "per corner",
         "url": "https://www.rac.co.uk/drive/advice/car-maintenance/shock-absorber-replacement-cost-and-maintenance-guide/",
@@ -99,7 +102,10 @@ REPAIR_COST_ESTIMATES = {
         "component": "Battery replacement", "low": 150, "high": 350, "per": "",
         "url": "https://www.rac.co.uk/drive/advice/car-maintenance/car-battery-fitted-at-home/",
     },
-    "oil": {"component": "Oil leak repair", "low": 150, "high": 500, "per": ""},
+    "oil": {
+        "component": "Oil leak repair", "low": 150, "high": 500, "per": "",
+        "url": "https://www.rac.co.uk/drive/advice/know-how/car-leaking-how-to-identify-liquid-dripping-from-your-car-and-what-to-do/",
+    },
     "coolant": {
         "component": "Cooling system repair", "low": 200, "high": 700, "per": "",
         "url": "https://www.rac.co.uk/car-care/car-repairs/car-radiator-repair",
@@ -127,6 +133,7 @@ def _estimate_repair_cost(category: str, make: Optional[str] = None) -> Optional
                 "low": estimate["low"],
                 "high": estimate["high"],
                 "per": estimate["per"],
+                "url": estimate.get("url"),
             }
             if make and estimate.get("by_make"):
                 make_upper = make.upper().strip()
@@ -783,10 +790,17 @@ def _generate_demo_report(
             else:
                 report += "This is concerning and suggests either heavy use, deferred maintenance, or a deeper underlying problem. "
             if est:
+                url = est.get("url")
                 if est.get("make_avg"):
-                    report += f"Budget around **£{est['make_avg']}** for a {est['make_name']} (UK average, RAC data){' ' + est['per'] if est['per'] else ''}.\n"
+                    cost_text = f"£{est['make_avg']}"
+                    if url:
+                        cost_text = f"[{cost_text}]({url})"
+                    report += f"Budget around **{cost_text}** for a {est['make_name']} (UK average, RAC data){' ' + est['per'] if est['per'] else ''}.\n"
                 else:
-                    report += f"Budget £{est['low']}-£{est['high']} {est['per']} to address this.\n"
+                    cost_text = f"£{est['low']}-£{est['high']}"
+                    if url:
+                        cost_text = f"[{cost_text}]({url})"
+                    report += f"Budget {cost_text} {est['per']} to address this.\n"
     elif total_tests > 0:
         report += "The MOT history is remarkably clean with no recurring issues — a good sign of careful ownership.\n"
 
@@ -836,6 +850,9 @@ def _generate_demo_report(
                     cost = f"£{est['low']}-£{est['high']}"
                 if est["per"]:
                     cost += f" {est['per']}"
+                # Wrap cost in RAC link if available
+                if est.get("url"):
+                    cost = f"[{cost}]({est['url']})"
                 urgent_rows.append((adv, cost))
         if urgent_rows:
             report += "| Issue | Est. Cost |\n"
@@ -863,12 +880,15 @@ def _generate_demo_report(
         report += "|---|---|---|\n"
         for p, est in repair_items:
             if est.get("make_avg"):
-                cost = f"**~£{est['make_avg']}** ({est['make_name']} avg)"
+                cost = f"~£{est['make_avg']} ({est['make_name']} avg)"
             else:
-                cost = f"**£{est['low']}-£{est['high']}**"
+                cost = f"£{est['low']}-£{est['high']}"
                 if est["per"]:
                     cost += f" {est['per']}"
-            report += f"| {est['component']} | {cost} | {p['occurrences']}x in MOT history |\n"
+            # Wrap in RAC link if available
+            if est.get("url"):
+                cost = f"[{cost}]({est['url']})"
+            report += f"| {est['component']} | **{cost}** | {p['occurrences']}x in MOT history |\n"
 
     total_low = service_low + int(mot_fee) + annual_repair_low
     total_high = service_high + int(mot_fee) + annual_repair_high
@@ -994,7 +1014,7 @@ def _generate_demo_report(
         if finance:
             if finance.get("finance_outstanding"):
                 all_clear = False
-                report += f"**Finance: OUTSTANDING** — This vehicle has {finance.get('record_count', 0)} active finance agreement(s).\n"
+                report += f"**Finance:{ref('experian')} OUTSTANDING** — This vehicle has {finance.get('record_count', 0)} active finance agreement(s).\n"
                 for r in finance.get("records", []):
                     report += f"- {r.get('agreement_type', 'Agreement')} with **{r.get('finance_company', 'Unknown')}**"
                     if r.get("agreement_date"):
@@ -1002,22 +1022,22 @@ def _generate_demo_report(
                     report += "\n"
                 report += "\n**What this means:** The finance company legally owns this car until the debt is paid off. If you buy it, the finance company can repossess it from you even though you paid the seller. **Do not buy this car** unless the seller settles the finance before the sale and provides written confirmation.\n\n"
             else:
-                report += "- **Finance:** No outstanding finance found. Safe to purchase.\n"
+                report += f"- **Finance:**{ref('experian')} No outstanding finance found. Safe to purchase.\n"
 
         if stolen:
             if stolen.get("stolen"):
                 all_clear = False
-                report += f"- **Stolen:** **REPORTED STOLEN** on {stolen.get('reported_date', 'unknown date')}"
+                report += f"- **Stolen:**{ref('experian')} **REPORTED STOLEN** on {stolen.get('reported_date', 'unknown date')}"
                 if stolen.get("police_force"):
                     report += f" by {stolen['police_force']}"
                 report += ". **Do not purchase this vehicle.** You will have no legal title and it will be seized.\n"
             else:
-                report += "- **Stolen:** Not reported stolen. Clear.\n"
+                report += f"- **Stolen:**{ref('experian')} Not reported stolen. Clear.\n"
 
         if writeoff:
             if writeoff.get("written_off"):
                 all_clear = False
-                report += f"- **Write-off:** **{writeoff.get('record_count', 0)} insurance write-off record(s) found.**\n"
+                report += f"- **Write-off:**{ref('experian')} **{writeoff.get('record_count', 0)} insurance write-off record(s) found.**\n"
                 for r in writeoff.get("records", []):
                     cat = r.get("category", "?")
                     report += f"  - **Category {cat}** recorded on {r.get('date', '?')}"
@@ -1034,7 +1054,7 @@ def _generate_demo_report(
                     report += "- Get an independent structural inspection (£100-200)\n"
                     report += "- Factor in reduced resale value (typically 20-30% less than equivalent non-write-off)\n\n"
             else:
-                report += "- **Write-off:** No insurance write-off history. Clear.\n"
+                report += f"- **Write-off:**{ref('experian')} No insurance write-off history. Clear.\n"
 
         if salvage_data and salvage_data.get("salvage_found"):
             all_clear = False

@@ -34,7 +34,11 @@
                     {% if tier == "premium" %}
                     <span style="background-color: #7c3aed; color: #ffffff; font-size: 11px; font-weight: 600; padding: 4px 12px; border-radius: 20px;">PREMIUM</span>
                     {% elif tier == "basic" %}
-                    <span style="background-color: #2563eb; color: #ffffff; font-size: 11px; font-weight: 600; padding: 4px 12px; border-radius: 20px;">BASIC</span>
+                    <span style="background-color: #2563eb; color: #ffffff; font-size: 11px; font-weight: 600; padding: 4px 12px; border-radius: 20px;">FULL REPORT</span>
+                    {% elif tier == "ev" %}
+                    <span style="background-color: #059669; color: #ffffff; font-size: 11px; font-weight: 600; padding: 4px 12px; border-radius: 20px;">EV HEALTH</span>
+                    {% elif tier == "ev_complete" %}
+                    <span style="background-color: #0d9488; color: #ffffff; font-size: 11px; font-weight: 600; padding: 4px 12px; border-radius: 20px;">EV COMPLETE</span>
                     {% endif %}
                   </td>
                 </tr>
@@ -391,6 +395,220 @@
           </tr>
           {% endif %}
 
+          <!-- ==================== EV SECTIONS ==================== -->
+
+          <!-- Battery Health -->
+          {% if battery_health %}
+          <tr>
+            <td style="padding: 24px 32px; border-bottom: 1px solid #e2e8f0;">
+              <h2 style="margin: 0 0 12px 0; color: #1e293b; font-size: 15px; font-weight: 600; border-bottom: 2px solid #059669; padding-bottom: 6px;">
+                <span style="color: #059669;">&#9889;</span> Battery Health
+              </h2>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 12px;">
+                <tr>
+                  <td style="text-align: center; padding: 12px 0;">
+                    <span style="font-size: 42px; font-weight: 700; color: {{ '#059669' if battery_health.score >= 80 else '#f59e0b' if battery_health.score >= 60 else '#dc2626' }};">{{ battery_health.score }}</span>
+                    <span style="color: #64748b; font-size: 14px;">/100</span>
+                    <br>
+                    <span style="display: inline-block; margin-top: 4px; background-color: {{ '#d1fae5' if battery_health.score >= 80 else '#fef3c7' if battery_health.score >= 60 else '#fee2e2' }}; color: {{ '#065f46' if battery_health.score >= 80 else '#92400e' if battery_health.score >= 60 else '#991b1b' }}; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 4px;">Grade {{ battery_health.grade }}</span>
+                  </td>
+                </tr>
+              </table>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size: 13px;">
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b; width: 40%;">Degradation</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">{{ battery_health.degradation_estimate_pct }}%</td>
+                </tr>
+                {% if battery_health.summary %}
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b;">Summary</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">{{ battery_health.summary }}</td>
+                </tr>
+                {% endif %}
+              </table>
+            </td>
+          </tr>
+          {% endif %}
+
+          <!-- Range Estimate -->
+          {% if range_estimate %}
+          <tr>
+            <td style="padding: 24px 32px; border-bottom: 1px solid #e2e8f0;">
+              <h2 style="margin: 0 0 12px 0; color: #1e293b; font-size: 15px; font-weight: 600; border-bottom: 2px solid #059669; padding-bottom: 6px;">
+                <span style="color: #059669;">&#9889;</span> Range Estimate
+              </h2>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size: 13px;">
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b; width: 40%;">Official (WLTP)</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">{{ range_estimate.official_range_miles }} miles</td>
+                </tr>
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b;">Real-World Estimate</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 600; font-size: 15px;">{{ range_estimate.estimated_range_miles }} miles</td>
+                </tr>
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b;">Range Retention</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">{{ range_estimate.range_retention_pct }}% of official</td>
+                </tr>
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b;">Best Case</td>
+                  <td style="padding: 5px 0; color: #059669; font-weight: 500;">{{ range_estimate.best_case_miles }} miles (warm city)</td>
+                </tr>
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b;">Worst Case</td>
+                  <td style="padding: 5px 0; color: #dc2626; font-weight: 500;">{{ range_estimate.worst_case_miles }} miles (cold motorway)</td>
+                </tr>
+              </table>
+              {% if range_scenarios %}
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size: 12px; margin-top: 12px;">
+                <tr>
+                  <td style="padding: 6px 8px; background-color: #ecfdf5; font-weight: 600; color: #065f46;">Scenario</td>
+                  <td style="padding: 6px 8px; background-color: #ecfdf5; font-weight: 600; color: #065f46;">Temp</td>
+                  <td style="padding: 6px 8px; background-color: #ecfdf5; font-weight: 600; color: #065f46;">Range</td>
+                </tr>
+                {% for s in range_scenarios %}
+                <tr>
+                  <td style="padding: 5px 8px; border-bottom: 1px solid #f1f5f9; color: #334155;">{{ s.scenario }}</td>
+                  <td style="padding: 5px 8px; border-bottom: 1px solid #f1f5f9; color: #334155;">{{ s.temperature_c }}&deg;C</td>
+                  <td style="padding: 5px 8px; border-bottom: 1px solid #f1f5f9; color: #1e293b; font-weight: 600;">{{ s.estimated_miles }} mi</td>
+                </tr>
+                {% endfor %}
+              </table>
+              {% endif %}
+            </td>
+          </tr>
+          {% endif %}
+
+          <!-- Charging Costs -->
+          {% if charging_costs %}
+          <tr>
+            <td style="padding: 24px 32px; border-bottom: 1px solid #e2e8f0;">
+              <h2 style="margin: 0 0 12px 0; color: #1e293b; font-size: 15px; font-weight: 600; border-bottom: 2px solid #059669; padding-bottom: 6px;">
+                <span style="color: #059669;">&#9889;</span> Charging & Running Costs
+              </h2>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size: 12px;">
+                <tr>
+                  <td style="padding: 6px 8px; background-color: #ecfdf5; font-weight: 600; color: #065f46;">Method</td>
+                  <td style="padding: 6px 8px; background-color: #ecfdf5; font-weight: 600; color: #065f46;">Per Mile</td>
+                  <td style="padding: 6px 8px; background-color: #ecfdf5; font-weight: 600; color: #065f46;">Full Charge</td>
+                  <td style="padding: 6px 8px; background-color: #ecfdf5; font-weight: 600; color: #065f46;">Annual (10k)</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 8px; border-bottom: 1px solid #f1f5f9; color: #334155;">Home (7kW)</td>
+                  <td style="padding: 6px 8px; border-bottom: 1px solid #f1f5f9; color: #1e293b; font-weight: 600;">{{ charging_costs.cost_per_mile_home }}p</td>
+                  <td style="padding: 6px 8px; border-bottom: 1px solid #f1f5f9; color: #334155;">&pound;{{ charging_costs.home_cost_per_full_charge }}</td>
+                  <td style="padding: 6px 8px; border-bottom: 1px solid #f1f5f9; color: #1e293b; font-weight: 600;">&pound;{{ charging_costs.annual_cost_estimate_home }}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 8px; border-bottom: 1px solid #f1f5f9; color: #334155;">Public Rapid</td>
+                  <td style="padding: 6px 8px; border-bottom: 1px solid #f1f5f9; color: #1e293b; font-weight: 600;">{{ charging_costs.cost_per_mile_rapid }}p</td>
+                  <td style="padding: 6px 8px; border-bottom: 1px solid #f1f5f9; color: #334155;">&pound;{{ charging_costs.rapid_cost_per_full_charge }}</td>
+                  <td style="padding: 6px 8px; border-bottom: 1px solid #f1f5f9; color: #1e293b; font-weight: 600;">&pound;{{ charging_costs.annual_cost_estimate_rapid }}</td>
+                </tr>
+              </table>
+              {% if charging_costs.vs_petrol_annual_saving %}
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top: 10px;">
+                <tr>
+                  <td style="padding: 8px 12px; background-color: #d1fae5; border-radius: 6px; text-align: center;">
+                    <span style="color: #065f46; font-size: 13px; font-weight: 600;">Annual saving vs petrol: &pound;{{ charging_costs.vs_petrol_annual_saving }}</span>
+                  </td>
+                </tr>
+              </table>
+              {% endif %}
+            </td>
+          </tr>
+          {% endif %}
+
+          <!-- EV Specs -->
+          {% if ev_specs %}
+          <tr>
+            <td style="padding: 24px 32px; border-bottom: 1px solid #e2e8f0;">
+              <h2 style="margin: 0 0 12px 0; color: #1e293b; font-size: 15px; font-weight: 600; border-bottom: 2px solid #059669; padding-bottom: 6px;">
+                <span style="color: #059669;">&#9889;</span> EV Specifications
+              </h2>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size: 13px;">
+                {% if ev_specs.battery_capacity_kwh %}
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b; width: 40%;">Battery Capacity</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">{{ ev_specs.battery_capacity_kwh }} kWh ({{ ev_specs.usable_capacity_kwh }} kWh usable)</td>
+                </tr>
+                {% endif %}
+                {% if ev_specs.battery_type %}
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b;">Battery Type</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">{{ ev_specs.battery_type }}</td>
+                </tr>
+                {% endif %}
+                {% if ev_specs.max_dc_charge_kw %}
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b;">Max DC Charging</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">{{ ev_specs.max_dc_charge_kw }} kW</td>
+                </tr>
+                {% endif %}
+                {% if ev_specs.charge_time_rapid_mins %}
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b;">Rapid Charge (10-80%)</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">~{{ ev_specs.charge_time_rapid_mins }} mins</td>
+                </tr>
+                {% endif %}
+                {% if ev_specs.charge_time_home_hours %}
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b;">Home Charge (7kW)</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">~{{ ev_specs.charge_time_home_hours }} hours</td>
+                </tr>
+                {% endif %}
+                {% if ev_specs.energy_consumption_kwh_per_mile %}
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b;">Energy Consumption</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">{{ ev_specs.energy_consumption_kwh_per_mile }} kWh/mile</td>
+                </tr>
+                {% endif %}
+              </table>
+            </td>
+          </tr>
+          {% endif %}
+
+          <!-- Lifespan Prediction -->
+          {% if lifespan_prediction %}
+          <tr>
+            <td style="padding: 24px 32px; border-bottom: 1px solid #e2e8f0;">
+              <h2 style="margin: 0 0 12px 0; color: #1e293b; font-size: 15px; font-weight: 600; border-bottom: 2px solid #059669; padding-bottom: 6px;">
+                <span style="color: #059669;">&#9889;</span> Ownership Forecast
+              </h2>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size: 13px;">
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b; width: 40%;">Remaining Life</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">{{ lifespan_prediction.predicted_remaining_years }} years / {{ "{:,}".format(lifespan_prediction.predicted_remaining_miles) }} miles</td>
+                </tr>
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b;">Overall Condition</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">{{ lifespan_prediction.overall_condition }}</td>
+                </tr>
+                {% if lifespan_prediction.confidence_level %}
+                <tr>
+                  <td style="padding: 5px 0; color: #64748b;">Confidence</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">{{ lifespan_prediction.confidence_level }}</td>
+                </tr>
+                {% endif %}
+              </table>
+              {% if lifespan_prediction.risk_factors %}
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top: 10px; font-size: 13px;">
+                <tr>
+                  <td style="color: #64748b; font-size: 12px; font-weight: 600; padding-bottom: 6px;">Risk Factors:</td>
+                </tr>
+                {% for rf in lifespan_prediction.risk_factors %}
+                <tr>
+                  <td style="padding: 3px 0; color: #334155;">
+                    <span style="color: #f59e0b; margin-right: 6px;">&#9888;</span> {{ rf }}
+                  </td>
+                </tr>
+                {% endfor %}
+              </table>
+              {% endif %}
+            </td>
+          </tr>
+          {% endif %}
+
           <!-- ==================== PREMIUM SECTIONS ==================== -->
 
           <!-- Valuation -->
@@ -665,7 +883,7 @@
           <tr>
             <td style="padding: 16px 32px;">
               <p style="margin: 0; color: #94a3b8; font-size: 11px; line-height: 1.6;">
-                <strong>Data sources:</strong> DVLA Vehicle Enquiry Service, DVSA MOT History API{% if finance or valuation %}, Experian AutoCheck{% endif %}{% if valuation %}, Brego Valuations{% endif %}{% if salvage %}, CarGuide Salvage{% endif %}.<br>
+                <strong>Data sources:</strong> DVLA Vehicle Enquiry Service, DVSA MOT History API{% if battery_health %}, ClearWatt Battery Telemetry{% endif %}{% if ev_specs %}, EV Database{% endif %}{% if lifespan_prediction %}, AutoPredict{% endif %}{% if finance or valuation %}, Experian AutoCheck{% endif %}{% if valuation %}, Brego Valuations{% endif %}{% if salvage %}, CarGuide Salvage{% endif %}.<br>
                 This report is AI-generated and advisory only. It should not replace a professional vehicle inspection.
                 Always verify details independently before making a purchase decision.
               </p>

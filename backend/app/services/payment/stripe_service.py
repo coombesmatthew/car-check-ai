@@ -26,9 +26,14 @@ TIER_CONFIG = {
         "description": "Full vehicle history: finance, stolen, write-off, valuation, keeper history, plus AI buyer's report. PDF delivered to your email.",
     },
     "ev": {
-        "amount": 799,
+        "amount": 899,
         "name": "VeriCar EV Health Check",
         "description": "Battery health score, real-world range estimate, charging costs, lifespan prediction, plus AI report. PDF delivered to your email.",
+    },
+    "ev_complete": {
+        "amount": 1399,
+        "name": "VeriCar EV Complete Check",
+        "description": "Full EV health check plus finance, stolen, write-off, valuation, keeper history. PDF delivered to your email.",
     },
 }
 
@@ -47,7 +52,7 @@ def create_checkout_session(
     Args:
         registration: Vehicle registration number
         email: Customer email for receipt + report delivery
-        tier: "basic" (£3.99), "premium" (£9.99), or "ev" (£7.99)
+        tier: "basic" (£3.99), "premium" (£9.99), "ev" (£8.99), or "ev_complete" (£13.99)
         listing_url: Optional listing URL for the AI report
         listing_price: Optional listing price in pence
         success_url: URL to redirect on successful payment
@@ -64,12 +69,12 @@ def create_checkout_session(
 
     base_url = settings.SITE_URL.rstrip("/")
     if not success_url:
-        if tier == "ev":
+        if tier in ("ev", "ev_complete"):
             success_url = f"{base_url}/ev/report/success?session_id={{CHECKOUT_SESSION_ID}}"
         else:
             success_url = f"{base_url}/report/success?session_id={{CHECKOUT_SESSION_ID}}"
     if not cancel_url:
-        if tier == "ev":
+        if tier in ("ev", "ev_complete"):
             cancel_url = f"{base_url}/ev/report/cancel"
         else:
             cancel_url = f"{base_url}/report/cancel"

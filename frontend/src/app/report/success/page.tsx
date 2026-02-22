@@ -92,6 +92,11 @@ function SuccessContent() {
           ? "Check your email — your PDF report has been sent."
           : "Your report has been generated successfully."}
       </p>
+      {result?.email_sent && (
+        <p className="text-sm text-slate-400">
+          Can&apos;t find it? Check your spam or junk folder.
+        </p>
+      )}
 
       {/* Report summary card */}
       <div className="max-w-md mx-auto bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm text-left mb-8">
@@ -139,6 +144,12 @@ function SuccessContent() {
           Report ref: {result?.report_ref}
         </p>
       </div>
+
+      {/* Legal disclaimer */}
+      <p className="text-xs text-slate-400 text-center mt-8 max-w-2xl mx-auto">
+        This report is for informational purposes only and should not be the sole basis for a purchasing decision. Data sourced from DVLA, DVSA, and third-party providers &mdash; accuracy not guaranteed. We recommend an independent mechanical inspection before purchase. See our{" "}
+        <a href="/terms" className="underline hover:text-slate-600">Terms of Service</a>.
+      </p>
     </div>
   );
 }

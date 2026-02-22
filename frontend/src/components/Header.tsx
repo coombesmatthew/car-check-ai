@@ -25,23 +25,23 @@ export default function Header() {
           <a href="/" className="text-slate-600 hover:text-slate-900 transition-colors">
             Car Check
           </a>
-          <a href="#full-report" className="text-slate-600 hover:text-slate-900 transition-colors">
-            Full Report
-          </a>
           <a href="/ev" className="text-emerald-600 hover:text-emerald-700 font-medium transition-colors flex items-center gap-1">
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
             </svg>
             EV Check
           </a>
+          <a href="#full-report" className="text-slate-600 hover:text-slate-900 transition-colors">
+            Pricing
+          </a>
           <a href="#how-it-works" className="text-slate-600 hover:text-slate-900 transition-colors">
             How It Works
           </a>
           <a
-            href="#full-report"
+            href="#search"
             className="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors text-sm"
           >
-            Get Report &mdash; &pound;3.99
+            Free Check
           </a>
         </nav>
 
@@ -69,21 +69,21 @@ export default function Header() {
           <a href="/" className="block py-2 text-slate-600 hover:text-slate-900" onClick={() => setMenuOpen(false)}>
             Car Check
           </a>
-          <a href="#full-report" className="block py-2 text-slate-600 hover:text-slate-900" onClick={() => setMenuOpen(false)}>
-            Full Report
-          </a>
           <a href="/ev" className="block py-2 text-emerald-600 hover:text-emerald-700 font-medium" onClick={() => setMenuOpen(false)}>
             EV Check
+          </a>
+          <a href="#full-report" className="block py-2 text-slate-600 hover:text-slate-900" onClick={() => setMenuOpen(false)}>
+            Pricing
           </a>
           <a href="#how-it-works" className="block py-2 text-slate-600 hover:text-slate-900" onClick={() => setMenuOpen(false)}>
             How It Works
           </a>
           <a
-            href="#full-report"
+            href="#search"
             className="block text-center py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
             onClick={() => setMenuOpen(false)}
           >
-            Get Report &mdash; &pound;3.99
+            Free Check
           </a>
         </div>
       )}

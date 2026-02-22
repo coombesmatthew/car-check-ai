@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { runEVCheck, runEVPreview, getEVCheckCount, EVCheckResponse } from "@/lib/api";
+import { runEVCheck, getEVCheckCount, EVCheckResponse } from "@/lib/api";
 import EVCheckResult from "./EVCheckResult";
 import EVUpsellSection from "./EVUpsellSection";
 import EVAIReport from "./EVAIReport";
@@ -19,17 +19,10 @@ export default function EVSearchSection() {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<EVCheckResponse | null>(null);
 
-  // AI report preview state
-  const [aiReport, setAiReport] = useState<string | null>(null);
-  const [reportLoading, setReportLoading] = useState(false);
-  const [reportError, setReportError] = useState<string | null>(null);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setResult(null);
-    setAiReport(null);
-    setReportError(null);
 
     const cleaned = registration.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
     if (cleaned.length < 2 || cleaned.length > 8) {
@@ -49,22 +42,6 @@ export default function EVSearchSection() {
     }
   };
 
-  const handleGenerateReport = async () => {
-    if (!result) return;
-    setReportLoading(true);
-    setReportError(null);
-
-    try {
-      const data = await runEVPreview(result.registration);
-      setAiReport(data.ai_report);
-    } catch (err) {
-      setReportError(
-        err instanceof Error ? err.message : "Report generation failed"
-      );
-    } finally {
-      setReportLoading(false);
-    }
-  };
 
   return (
     <>
@@ -91,18 +68,18 @@ export default function EVSearchSection() {
           <form onSubmit={handleSubmit} className="max-w-lg mx-auto">
             <div className="flex gap-2">
               <div className="flex-1 relative">
-                <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
-                  <div className="w-6 h-4 bg-blue-700 rounded-sm flex items-center justify-center">
-                    <span className="text-[8px] font-bold text-white">GB</span>
-                  </div>
+                <div className="absolute left-0 top-0 bottom-0 w-10 bg-emerald-600 rounded-l-lg flex items-center justify-center">
+                  <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+                  </svg>
                 </div>
                 <input
                   type="text"
                   value={registration}
                   onChange={(e) => setRegistration(e.target.value.toUpperCase())}
-                  placeholder="ENTER REG"
+                  placeholder="BD72 EGZ"
                   maxLength={8}
-                  className="w-full pl-12 pr-4 py-3.5 text-lg font-mono font-bold tracking-widest text-slate-900 bg-yellow-50 border-2 border-slate-300 rounded-lg focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 placeholder:text-slate-300 placeholder:font-normal placeholder:tracking-normal"
+                  className="w-full pl-14 pr-4 py-3.5 text-lg font-mono font-bold tracking-wider text-slate-900 bg-yellow-50 border-2 border-slate-300 rounded-lg focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 placeholder:text-slate-400 placeholder:font-normal placeholder:tracking-normal"
                 />
               </div>
               <button
@@ -231,46 +208,10 @@ export default function EVSearchSection() {
               <>
                 <EVCheckResult result={result} />
 
-                {/* AI Report (if generated) */}
-                {aiReport && (
-                  <div className="mt-6">
-                    <EVAIReport report={aiReport} registration={result.registration} />
-                  </div>
-                )}
-
-                {/* Generate Report CTA (shown before report is generated) */}
-                {!aiReport && (
-                  <div className="mt-6 text-center">
-                    <button
-                      onClick={handleGenerateReport}
-                      disabled={reportLoading}
-                      className="inline-flex items-center gap-2 px-8 py-3.5 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 disabled:bg-emerald-300 transition-colors text-sm shadow-lg shadow-emerald-200"
-                    >
-                      {reportLoading ? (
-                        <>
-                          <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
-                          </svg>
-                          Generating AI Report...
-                        </>
-                      ) : (
-                        <>
-                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                          </svg>
-                          Generate Free AI Report
-                        </>
-                      )}
-                    </button>
-                    <p className="text-xs text-slate-400 mt-2">
-                      Free expert analysis of this EV using official DVLA &amp; MOT data
-                    </p>
-                    {reportError && (
-                      <p className="mt-2 text-sm text-red-600">{reportError}</p>
-                    )}
-                  </div>
-                )}
+                {/* Static sample report showing what each tier includes */}
+                <div className="mt-6">
+                  <EVAIReport />
+                </div>
 
                 {/* Upsell — always shown after results, below report if generated */}
                 <EVUpsellSection registration={result.registration} />

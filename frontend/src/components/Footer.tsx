@@ -12,7 +12,7 @@ export default function Footer() {
                 </svg>
               </div>
               <span className="font-bold text-slate-900">
-                Car<span className="text-blue-600">Verify</span>
+                Veri<span className="text-blue-600">Car</span>
               </span>
             </div>
             <p className="text-sm text-slate-500 leading-relaxed">
@@ -37,10 +37,10 @@ export default function Footer() {
               <a href="/ev" className="block text-sm text-emerald-600 hover:text-emerald-700 transition-colors">
                 EV Health Check
               </a>
-              <a href="#" className="block text-sm text-slate-500 hover:text-slate-700 transition-colors">
+              <a href="/privacy" className="block text-sm text-slate-500 hover:text-slate-700 transition-colors">
                 Privacy Policy
               </a>
-              <a href="#" className="block text-sm text-slate-500 hover:text-slate-700 transition-colors">
+              <a href="/terms" className="block text-sm text-slate-500 hover:text-slate-700 transition-colors">
                 Terms of Service
               </a>
             </nav>

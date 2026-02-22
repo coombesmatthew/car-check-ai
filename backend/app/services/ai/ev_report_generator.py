@@ -178,7 +178,7 @@ battery health telemetry, real-world range data, or lifespan prediction data —
 Your job is to:
 1. Provide genuine value from the free data (MOT history, mileage, vehicle condition)
 2. Apply your EV expertise to interpret what the data means for an EV buyer
-3. Make clear what ADDITIONAL insights the paid report (£7.99) would provide
+3. Make clear what ADDITIONAL insights the paid report (£8.99) would provide
 
 Use UK units (miles, £), reference UK electricity rates, and be specific with numbers.
 Keep the tone professional but accessible. Be honest — don't make up data you don't have.
@@ -332,7 +332,7 @@ vs Petrol saving: £{saving}/year""")
                 parts.append(f"  [{i}] {src['name']} ({src['site']}) — {src['desc']}")
 
     parts.append("\n=== END OF DATA ===")
-    parts.append("\nWrite an EV buyer's report for this vehicle. This is a FREE preview — the full paid report (£7.99) includes real-world battery telemetry, detailed range scenarios, and AI lifespan prediction.")
+    parts.append("\nWrite an EV buyer's report for this vehicle. This is a FREE preview — the full paid report (£8.99) includes real-world battery telemetry, detailed range scenarios, and AI lifespan prediction.")
 
     return "\n".join(parts)
 
@@ -380,7 +380,7 @@ Using the specs and UK rates:
 - Note that EVs have lower maintenance (no oil changes, less brake wear from regen)
 
 ## What You'd Learn in the Full Report
-List what the paid £7.99 report adds:
+List what the paid £8.99 report adds:
 - Real-world battery health score and degradation percentage (from telemetry data)
 - Range across 27 temperature and driving scenarios
 - Detailed battery and charging specifications
@@ -536,13 +536,13 @@ def _generate_demo_ev_report(
 
     # What you'd learn
     report += "\n## What You'd Learn in the Full Report\n"
-    report += "The free check covers DVLA and MOT data. The **full EV Health Report (£7.99)** adds:\n\n"
+    report += "The free check covers DVLA and MOT data. The **full EV Health Report (£8.99)** adds:\n\n"
     report += "- **Battery Health Score** — actual degradation percentage based on telemetry data, not estimates\n"
     report += "- **Real-World Range** — tested across 27 temperature and driving scenarios (e.g. winter motorway: expect 30-40% less than WLTP)\n"
     report += "- **Detailed Battery Specs** — capacity, charge speeds, charging times for home and rapid\n"
     report += "- **AI Lifespan Prediction** — predicted remaining years and miles based on the vehicle's condition\n"
     report += "- **Expert AI Verdict** — comprehensive written analysis delivered as a PDF to your email\n"
-    report += "\nFor a used EV, battery health is the single most important factor. A new battery can cost £5,000-£20,000+ depending on the model — knowing the actual degradation before you buy is worth far more than £7.99.\n"
+    report += "\nFor a used EV, battery health is the single most important factor. A new battery can cost £5,000-£20,000+ depending on the model — knowing the actual degradation before you buy is worth far more than £8.99.\n"
 
     # Data Sources
     if source_keys:
@@ -557,7 +557,7 @@ PAID_SYSTEM_PROMPT = """You are VeriCar's EV specialist — an expert in electri
 range estimation, and total cost of ownership. You write clear, authoritative reports for UK consumers
 buying used electric vehicles.
 
-The buyer has paid £7.99 for this premium EV Health Check report. You have access to battery health
+The buyer has paid £8.99 for this premium EV Health Check report. You have access to battery health
 telemetry, real-world range data, detailed EV specifications, and AI lifespan predictions.
 
 Your report must be practical, honest, and focused on what matters most to EV buyers:
@@ -752,6 +752,6 @@ Risk factors: {', '.join(lp.get('risk_factors', []))}""")
                 parts.append(f"  [{i}] {src['name']} ({src['site']}) — {src['desc']}")
 
     parts.append("\n=== END OF DATA ===")
-    parts.append("\nREPORT TIER: PAID EV HEALTH CHECK (£7.99)")
+    parts.append("\nREPORT TIER: PAID EV HEALTH CHECK (£8.99)")
 
     return "\n".join(parts)

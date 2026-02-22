@@ -11,9 +11,7 @@ interface UpsellSectionProps {
   setListingUrl: (url: string) => void;
   listingPrice: string;
   setListingPrice: (price: string) => void;
-  reportLoading: boolean;
   reportError: string | null;
-  onGenerateReport: () => void;
 }
 
 const CheckIcon = ({ className = "w-4 h-4 text-emerald-500" }: { className?: string }) => (
@@ -330,9 +328,7 @@ export default function UpsellSection({
   setListingUrl,
   listingPrice,
   setListingPrice,
-  reportLoading,
   reportError,
-  onGenerateReport,
 }: UpsellSectionProps) {
   const [email, setEmail] = useState("");
   const [checkoutLoading, setCheckoutLoading] = useState(false);
@@ -453,9 +449,9 @@ export default function UpsellSection({
                     { text: "Everything in Full Report", highlight: false },
                     { text: "Finance & Debt Check", highlight: true },
                     { text: "Stolen Vehicle Check", highlight: true },
-                    { text: "Write-off & Salvage", highlight: true },
+                    { text: "Write-off & Salvage History", highlight: true },
                     { text: "Market Valuation", highlight: true },
-                    { text: "Keeper & Plate History", highlight: true },
+                    { text: "Plate & Keeper History", highlight: true },
                   ].map(({ text, highlight }) => (
                     <li key={text} className="flex items-center gap-2 text-sm text-slate-700">
                       <CheckIcon className={`w-4 h-4 ${highlight ? "text-purple-600" : "text-emerald-500"}`} />
@@ -493,6 +489,12 @@ export default function UpsellSection({
 
             {/* Trust badges */}
             <TrustBadges />
+
+            <p className="text-xs text-slate-400 text-center mt-4">
+              By purchasing, you agree to our{" "}
+              <a href="/terms" className="underline hover:text-slate-600">Terms of Service</a> and{" "}
+              <a href="/privacy" className="underline hover:text-slate-600">Privacy Policy</a>.
+            </p>
           </div>
         </div>
       </>
@@ -501,7 +503,6 @@ export default function UpsellSection({
 
   // Expanded checkout form
   const config = tierConfig[selectedTier];
-  const tierColor = selectedTier === "premium" ? "purple" : "blue";
 
   return (
     <div id="full-report" className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
@@ -638,6 +639,12 @@ export default function UpsellSection({
 
         {/* Trust badges */}
         <TrustBadges />
+
+        <p className="text-xs text-slate-400 text-center mt-4">
+          By purchasing, you agree to our{" "}
+          <a href="/terms" className="underline hover:text-slate-600">Terms of Service</a> and{" "}
+          <a href="/privacy" className="underline hover:text-slate-600">Privacy Policy</a>.
+        </p>
       </div>
     </div>
   );

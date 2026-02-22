@@ -7,50 +7,7 @@ import Card from "@/components/ui/Card";
 import ScoreGauge from "@/components/ui/ScoreGauge";
 
 /* Locked/blurred preview card for paid tier data */
-function LockedCard({
-  title,
-  icon,
-  tier,
-  children,
-}: {
-  title: string;
-  icon: JSX.Element;
-  tier: "basic" | "premium";
-  children: React.ReactNode;
-}) {
-  const isPremium = tier === "premium";
-  const tierLabel = isPremium ? "Premium" : "Full Report";
-  const tierPrice = isPremium ? "\u00A39.99" : "\u00A33.99";
 
-  return (
-    <div className="relative bg-white border border-slate-200 rounded-xl overflow-hidden">
-      {/* Card header */}
-      <div className="flex items-center gap-2 px-4 py-3 border-b border-slate-100 bg-slate-50">
-        <span className="text-slate-400">{icon}</span>
-        <h3 className="text-sm font-semibold text-slate-400">{title}</h3>
-        <span className={`ml-auto text-xs font-medium px-2 py-0.5 rounded-full ${isPremium ? "bg-purple-100 text-purple-700" : "bg-blue-100 text-blue-700"}`}>
-          {tierLabel}
-        </span>
-      </div>
-      {/* Blurred content */}
-      <div className="p-4 select-none" style={{ filter: "blur(5px)" }}>
-        {children}
-      </div>
-      {/* Unlock overlay */}
-      <div className="absolute inset-0 top-[44px] bg-gradient-to-t from-white via-white/90 to-white/60 flex flex-col items-center justify-center">
-        <svg className={`w-8 h-8 mb-2 ${isPremium ? "text-purple-400" : "text-blue-400"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-        </svg>
-        <a
-          href="#full-report"
-          className={`px-4 py-2 text-white text-xs font-semibold rounded-lg transition-colors ${isPremium ? "bg-purple-600 hover:bg-purple-700" : "bg-blue-600 hover:bg-blue-700"}`}
-        >
-          Unlock with {tierLabel} &mdash; {tierPrice}
-        </a>
-      </div>
-    </div>
-  );
-}
 
 function DetailRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
@@ -69,7 +26,7 @@ function MileageChart({ readings }: { readings: { date: string; miles: number }[
   if (readings.length < 2) return null;
 
   const width = 300;
-  const height = 80;
+  const height = 160;
   const padding = { top: 8, right: 8, bottom: 8, left: 8 };
   const innerW = width - padding.left - padding.right;
   const innerH = height - padding.top - padding.bottom;
@@ -120,7 +77,7 @@ function MileageChart({ readings }: { readings: { date: string; miles: number }[
       onMouseMove={handleMouseMove}
       onMouseLeave={() => setHoveredIndex(null)}
     >
-      <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-20" preserveAspectRatio="none">
+      <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-40" preserveAspectRatio="none">
         <polygon points={areaPoints.join(" ")} fill="url(#mileageGradient)" />
         <polyline points={points.join(" ")} fill="none" stroke="#2563eb" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
         <defs>
@@ -350,7 +307,7 @@ export default function CheckResult({ data }: { data: FreeCheckResponse }) {
   } = data;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Title bar with score gauge */}
       <div className="flex items-center justify-between bg-white border border-slate-200 rounded-xl p-6">
         <div>
@@ -418,7 +375,7 @@ export default function CheckResult({ data }: { data: FreeCheckResponse }) {
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {/* 1. Vehicle Identity */}
         {vehicle && (
           <Card title="Vehicle Identity" icon={icons.car} status="neutral">
@@ -945,19 +902,14 @@ export default function CheckResult({ data }: { data: FreeCheckResponse }) {
                   <span className="text-sm font-semibold text-emerald-800">Mileage Consistent</span>
                 </div>
               ) : (
-                <Badge
-                  variant={
-                    clocking_analysis.risk_level === "unknown"
-                      ? "neutral"
-                      : "warn"
-                  }
-                  label={
-                    clocking_analysis.risk_level === "unknown"
-                      ? "Insufficient Data"
-                      : `${clocking_analysis.risk_level.toUpperCase()} RISK`
-                  }
-                  size="md"
-                />
+                clocking_analysis.risk_level === "unknown" ? (
+                <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2">
+                  <svg className="w-5 h-5 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  <span className="text-sm font-semibold text-slate-600">Not Enough MOT History Yet</span>
+                </div>
+                ) : (
+                <Badge variant="warn" label={`${clocking_analysis.risk_level.toUpperCase()} RISK`} size="md" />
+                )
               )}
             </div>
             {clocking_analysis.reason && (
@@ -991,17 +943,35 @@ export default function CheckResult({ data }: { data: FreeCheckResponse }) {
                 </div>
               </div>
             )}
-            {mileage_timeline.length === 1 && (
-              <div className="mt-3 pt-3 border-t border-slate-100">
-                <p className="text-xs text-slate-400 mb-2">
-                  Mileage Timeline (1 reading)
-                </p>
-                <div className="flex justify-between text-xs text-slate-600">
-                  <span>{mileage_timeline[0].date}</span>
-                  <span className="font-mono">{mileage_timeline[0].miles.toLocaleString()} mi</span>
+            {mileage_timeline.length === 1 && (() => {
+              const regDate = mot_summary?.first_used_date
+                || (vehicle?.year_of_manufacture ? `${vehicle.year_of_manufacture}-01-01` : null);
+              const syntheticTimeline = regDate
+                ? [{ date: regDate, miles: 0 }, ...mileage_timeline]
+                : mileage_timeline;
+              return (
+                <div className="mt-3 pt-3 border-t border-slate-100">
+                  <p className="text-xs text-slate-400 mb-2">
+                    Mileage Timeline (1 reading + registration)
+                  </p>
+                  {syntheticTimeline.length >= 2 && (
+                    <>
+                      <MileageChart readings={syntheticTimeline} />
+                      <div className="flex justify-between text-xs text-slate-400 mt-1">
+                        <span>{syntheticTimeline[0].date} (registered)</span>
+                        <span>{syntheticTimeline[syntheticTimeline.length - 1].date}</span>
+                      </div>
+                    </>
+                  )}
+                  {syntheticTimeline.length < 2 && (
+                    <div className="flex justify-between text-xs text-slate-600">
+                      <span>{mileage_timeline[0].date}</span>
+                      <span className="font-mono">{mileage_timeline[0].miles.toLocaleString()} mi</span>
+                    </div>
+                  )}
                 </div>
-              </div>
-            )}
+              );
+            })()}
           </Card>
         )}
 
@@ -1122,18 +1092,6 @@ export default function CheckResult({ data }: { data: FreeCheckResponse }) {
                             label={z.compliant ? "Clear" : "Charge"}
                           />
                         </span>
-                      </div>
-                    ))}
-                </div>
-                {/* Zones that don't affect cars (collapsed) */}
-                <p className="text-xs font-medium text-slate-400 mb-1.5">Commercial-only zones (cars exempt)</p>
-                <div className="space-y-1">
-                  {ulez_compliance.zone_details
-                    .filter((z) => !z.cars_affected)
-                    .map((z) => (
-                      <div key={z.zone_id} className="flex items-center justify-between text-sm">
-                        <span className="text-slate-400">{z.name}</span>
-                        <Badge variant="neutral" label="Exempt" />
                       </div>
                     ))}
                 </div>
@@ -1335,132 +1293,109 @@ export default function CheckResult({ data }: { data: FreeCheckResponse }) {
                 : "neutral"
             }
           >
-            <div className="space-y-2">
-              {failure_patterns.map((p, i) => (
-                <div key={i} className="flex items-center justify-between">
-                  <span className="text-sm capitalize text-slate-700">
-                    {p.category}
-                  </span>
-                  <span className="flex items-center gap-2">
-                    <span className="text-xs text-slate-400">
-                      {p.occurrences}x
-                    </span>
-                    <Badge
-                      variant={
-                        p.concern_level === "high"
-                          ? "fail"
-                          : p.concern_level === "medium"
-                          ? "warn"
-                          : "neutral"
-                      }
-                      label={p.concern_level}
-                    />
-                  </span>
-                </div>
-              ))}
+            <div className="space-y-3">
+              {failure_patterns.map((p, i) => {
+                // Collect individual defects from MOT history matching this category
+                const categoryDefects: { text: string; type: string; date: string }[] = [];
+                mot_tests.forEach((test) => {
+                  [...test.advisories, ...test.failures, ...test.dangerous].forEach((d) => {
+                    if (d.text.toLowerCase().includes(p.category.toLowerCase())) {
+                      categoryDefects.push({ text: d.text, type: d.type, date: test.date });
+                    }
+                  });
+                });
+
+                return (
+                  <div key={i}>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-sm font-medium capitalize text-slate-700">
+                        {p.category}
+                      </span>
+                      <span className="flex items-center gap-2">
+                        <span className="text-xs text-slate-400">
+                          {p.occurrences}x
+                        </span>
+                        <Badge
+                          variant={
+                            p.concern_level === "high"
+                              ? "fail"
+                              : p.concern_level === "medium"
+                              ? "warn"
+                              : "neutral"
+                          }
+                          label={p.concern_level}
+                        />
+                      </span>
+                    </div>
+                    {categoryDefects.length > 0 && (
+                      <div className="space-y-1 ml-1 pl-3 border-l-2 border-slate-100">
+                        {categoryDefects.map((d, j) => (
+                          <div key={j} className="flex items-start justify-between gap-2">
+                            <span className="text-xs text-slate-500 leading-snug">{d.text}</span>
+                            <span className="text-xs text-slate-300 whitespace-nowrap flex-shrink-0">{d.date}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {i < failure_patterns.length - 1 && <div className="border-b border-slate-100 mt-3" />}
+                  </div>
+                );
+              })}
             </div>
           </Card>
         )}
-        {/* --- Locked premium previews (shown when data not present) --- */}
-
-        {!finance_check && (
-          <LockedCard title="Finance Check" icon={icons.document} tier="premium">
-            <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2 mb-3">
-              <span className="text-sm font-semibold text-emerald-800">NO FINANCE OUTSTANDING</span>
-            </div>
-            <div className="space-y-1.5">
-              <div className="flex justify-between py-1.5"><span className="text-sm text-slate-500">Agreement Type</span><span className="text-sm text-slate-700">Hire Purchase</span></div>
-              <div className="flex justify-between py-1.5"><span className="text-sm text-slate-500">Finance Company</span><span className="text-sm text-slate-700">Close Brothers Ltd</span></div>
-              <div className="flex justify-between py-1.5"><span className="text-sm text-slate-500">Agreement Date</span><span className="text-sm text-slate-700">14/03/2022</span></div>
-            </div>
-          </LockedCard>
-        )}
-
-        {!stolen_check && (
-          <LockedCard title="Stolen Vehicle Check" icon={icons.shield} tier="premium">
-            <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2 mb-3">
-              <span className="text-sm font-semibold text-emerald-800">NOT REPORTED STOLEN</span>
-            </div>
-            <div className="space-y-1.5">
-              <div className="flex justify-between py-1.5"><span className="text-sm text-slate-500">Police Database</span><span className="text-sm text-slate-700">Checked</span></div>
-              <div className="flex justify-between py-1.5"><span className="text-sm text-slate-500">Status</span><span className="text-sm text-slate-700">Clear</span></div>
-            </div>
-          </LockedCard>
-        )}
-
-        {!write_off_check && (
-          <LockedCard title="Write-off &amp; Insurance" icon={icons.alert} tier="premium">
-            <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2 mb-3">
-              <span className="text-sm font-semibold text-emerald-800">NOT WRITTEN OFF</span>
-            </div>
-            <div className="space-y-1.5">
-              <div className="flex justify-between py-1.5"><span className="text-sm text-slate-500">Category</span><span className="text-sm text-slate-700">None</span></div>
-              <div className="flex justify-between py-1.5"><span className="text-sm text-slate-500">Insurance Claims</span><span className="text-sm text-slate-700">0 records</span></div>
-            </div>
-          </LockedCard>
-        )}
-
-        {!valuation && (
-          <LockedCard title="Market Valuation" icon={icons.currency} tier="premium">
-            <div className="space-y-2 mb-3">
-              <div className="flex items-center justify-between"><span className="text-sm text-slate-500">Private Sale</span><span className="text-lg font-bold text-slate-900">&pound;8,450</span></div>
-              <div className="flex items-center justify-between"><span className="text-sm text-slate-500">Dealer Forecourt</span><span className="text-lg font-bold text-slate-900">&pound;10,200</span></div>
-              <div className="flex items-center justify-between"><span className="text-sm text-slate-500">Trade-in</span><span className="text-lg font-bold text-slate-900">&pound;7,100</span></div>
-            </div>
-            <div className="h-3 bg-gradient-to-r from-amber-200 via-emerald-300 to-blue-300 rounded-full" />
-          </LockedCard>
-        )}
-
-        {!salvage_check && (
-          <LockedCard title="Salvage Auction Check" icon={icons.alert} tier="premium">
-            <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2 mb-3">
-              <span className="text-sm font-semibold text-emerald-800">NO SALVAGE RECORDS</span>
-            </div>
-            <p className="text-xs text-slate-500">Checked against UK salvage auction databases.</p>
-          </LockedCard>
-        )}
-
-        {!plate_changes && (
-          <LockedCard title="Plate Change History" icon={icons.swap} tier="premium">
-            <div className="space-y-1.5">
-              <div className="flex justify-between py-1.5"><span className="text-sm text-slate-500">Plate Changes</span><span className="text-sm text-slate-700">1 change found</span></div>
-              <div className="flex justify-between py-1.5"><span className="text-sm text-slate-500">Previous Plate</span><span className="inline-block bg-yellow-50 border border-yellow-300 font-mono font-bold px-2 py-0.5 rounded text-slate-900 text-xs">AB18 XYZ</span></div>
-              <div className="flex justify-between py-1.5"><span className="text-sm text-slate-500">Change Date</span><span className="text-sm text-slate-700">12/06/2023</span></div>
-            </div>
-          </LockedCard>
-        )}
-
-        {!keeper_history && (
-          <LockedCard title="Keeper History" icon={icons.users} tier="premium">
-            <div className="space-y-1.5">
-              <div className="flex justify-between py-1.5"><span className="text-sm text-slate-500">Registered Keepers</span><span className="text-sm text-slate-700">3 keepers</span></div>
-              <div className="flex justify-between py-1.5"><span className="text-sm text-slate-500">Last Change</span><span className="text-sm text-slate-700">12/06/2023</span></div>
-            </div>
-          </LockedCard>
-        )}
-
-        {!high_risk && (
-          <LockedCard title="High Risk Indicators" icon={icons.alert} tier="premium">
-            <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2 mb-3">
-              <span className="text-sm font-semibold text-emerald-800">NO HIGH RISK FLAGS</span>
-            </div>
-            <div className="space-y-1.5">
-              <div className="flex justify-between py-1.5"><span className="text-sm text-slate-500">Scrapped Marker</span><span className="text-sm text-slate-700">Clear</span></div>
-              <div className="flex justify-between py-1.5"><span className="text-sm text-slate-500">Import/Export</span><span className="text-sm text-slate-700">Clear</span></div>
-            </div>
-          </LockedCard>
-        )}
-
-        {!previous_searches && (
-          <LockedCard title="Previous Checks" icon={icons.search} tier="premium">
-            <div className="space-y-1.5">
-              <div className="flex justify-between py-1.5"><span className="text-sm text-slate-500">Previous Checks</span><span className="text-sm text-slate-700">7 checks found</span></div>
-              <div className="flex justify-between py-1.5"><span className="text-sm text-slate-500">Last Checked</span><span className="text-sm text-slate-700">14/01/2025</span></div>
-              <div className="flex justify-between py-1.5"><span className="text-sm text-slate-500">Checked By</span><span className="text-sm text-slate-700">Dealer / Finance</span></div>
-            </div>
-          </LockedCard>
-        )}
       </div>
+
+      {/* --- Consolidated premium upsell (shown when any premium data is missing) --- */}
+      {(!finance_check || !stolen_check || !write_off_check || !valuation || !salvage_check || !plate_changes || !keeper_history || !high_risk || !previous_searches) && (
+        <div className="mt-3 bg-gradient-to-br from-purple-50 to-slate-50 border-2 border-purple-200 rounded-xl overflow-hidden">
+          <div className="bg-gradient-to-r from-purple-700 to-purple-800 px-5 py-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-white font-bold text-lg">Unlock Premium Check</h3>
+                <p className="text-purple-200 text-sm">Full ownership &amp; history checks powered by Experian data</p>
+              </div>
+              <span className="bg-purple-500/30 text-white text-xs font-bold px-3 py-1 rounded-full border border-purple-400/30">
+                &pound;9.99
+              </span>
+            </div>
+          </div>
+          <div className="p-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-2.5">
+              {[
+                { label: "Finance & Outstanding Debt", available: !finance_check },
+                { label: "Stolen Vehicle Check", available: !stolen_check },
+                { label: "Write-off & Salvage History", available: !write_off_check },
+                { label: "Market Valuation", available: !valuation },
+                { label: "Salvage Auction Check", available: !salvage_check },
+                { label: "Plate & Keeper History", available: !plate_changes || !keeper_history },
+                { label: "High Risk Indicators", available: !high_risk },
+                { label: "Previous Searches", available: !previous_searches },
+                { label: "AI Report & PDF", available: true },
+              ].filter(item => item.available).map((item) => (
+                <div key={item.label} className="flex items-center gap-2">
+                  <svg className="w-4 h-4 text-purple-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+                  </svg>
+                  <span className="text-sm text-slate-700">{item.label}</span>
+                </div>
+              ))}
+            </div>
+            <div className="mt-5 flex items-center gap-4">
+              <a
+                href="#full-report"
+                className="inline-flex items-center gap-2 px-6 py-2.5 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors text-sm"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                </svg>
+                Get Premium Check &mdash; &pound;9.99
+              </a>
+              <span className="text-xs text-slate-400">One-off payment &middot; No subscription</span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Full MOT Test History */}
       {mot_tests && mot_tests.length > 0 && (
@@ -1479,6 +1414,12 @@ export default function CheckResult({ data }: { data: FreeCheckResponse }) {
           Free Check &middot; Powered by DVLA &amp; DVSA data
         </span>
       </div>
+
+      {/* Legal disclaimer */}
+      <p className="text-xs text-slate-400 text-center mt-4 max-w-2xl mx-auto">
+        This report is for informational purposes only and should not be the sole basis for a purchasing decision. Data sourced from DVLA, DVSA, and third-party providers &mdash; accuracy not guaranteed. We recommend an independent mechanical inspection before purchase. See our{" "}
+        <a href="/terms" className="underline hover:text-slate-600">Terms of Service</a>.
+      </p>
     </div>
   );
 }

@@ -106,7 +106,7 @@ class MOTAnalyzer:
             return {
                 "clocked": False,
                 "risk_level": "unknown",
-                "reason": "Insufficient MOT history for mileage analysis",
+                "reason": "This vehicle doesn't have enough MOT tests yet to analyse mileage trends. Mileage analysis requires at least two MOT readings.",
                 "flags": [],
             }
 
