@@ -100,7 +100,7 @@ export default function RootLayout({
                 },
                 {
                   "@type": "Offer",
-                  name: "Basic Report",
+                  name: "Full Report",
                   price: "3.99",
                   priceCurrency: "GBP",
                   description:
@@ -113,6 +113,22 @@ export default function RootLayout({
                   priceCurrency: "GBP",
                   description:
                     "Full provenance check including finance, stolen, write-off, and plate history",
+                },
+                {
+                  "@type": "Offer",
+                  name: "EV Health Check",
+                  price: "8.99",
+                  priceCurrency: "GBP",
+                  description:
+                    "Battery health score, real-world range, charging costs, lifespan prediction, and AI verdict for electric vehicles",
+                },
+                {
+                  "@type": "Offer",
+                  name: "EV Complete",
+                  price: "13.99",
+                  priceCurrency: "GBP",
+                  description:
+                    "Everything in EV Health Check plus finance, stolen, write-off, valuation, and keeper history",
                 },
               ],
               aggregateRating: {

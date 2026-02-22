@@ -326,7 +326,7 @@ class TestEVPreviewEndpoint:
         assert data["registration"] == "AB12CDE"
         assert data["ai_report"] is not None
         assert "BUY" in data["ai_report"]
-        assert data["price"] == "£7.99"
+        assert data["price"] == "£8.99"
         assert data["ev_check"] is not None
 
     @patch("app.api.v1.endpoints.ev.EVOrchestrator")

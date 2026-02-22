@@ -6,7 +6,7 @@ import { Suspense } from "react";
 import { fulfilEVReport, EVFulfilmentResponse } from "@/lib/api";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import EVAIReport from "@/components/ev/EVAIReport";
+import AIReport from "@/components/AIReport";
 import BatteryHealthGauge from "@/components/ev/BatteryHealthGauge";
 import RangeChart from "@/components/ev/RangeChart";
 import ChargingCard from "@/components/ev/ChargingCard";
@@ -103,6 +103,11 @@ function SuccessContent() {
             ? "A PDF copy has been sent to your email."
             : "Your report has been generated successfully."}
         </p>
+        {result?.email_sent && (
+          <p className="text-sm text-slate-400">
+            Can&apos;t find it? Check your spam or junk folder.
+          </p>
+        )}
       </div>
 
       {/* Report summary card */}
@@ -179,7 +184,7 @@ function SuccessContent() {
       {/* Full AI Report */}
       {result?.ai_report && (
         <div className="mb-8">
-          <EVAIReport report={result.ai_report} registration={result.registration} />
+          <AIReport report={result.ai_report} registration={result.registration} />
         </div>
       )}
 
@@ -195,6 +200,12 @@ function SuccessContent() {
           Report ref: {result?.report_ref}
         </p>
       </div>
+
+      {/* Legal disclaimer */}
+      <p className="text-xs text-slate-400 text-center mt-8 max-w-2xl mx-auto">
+        This report is for informational purposes only and should not be the sole basis for a purchasing decision. Data sourced from DVLA, DVSA, and third-party providers &mdash; accuracy not guaranteed. We recommend an independent mechanical inspection before purchase. See our{" "}
+        <a href="/terms" className="underline hover:text-slate-600">Terms of Service</a>.
+      </p>
     </div>
   );
 }

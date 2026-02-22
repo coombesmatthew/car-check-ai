@@ -29,6 +29,7 @@ class EVCheckoutRequest(BaseModel):
     """Request for EV Stripe checkout."""
     registration: str
     email: str
+    tier: str = "ev"
 
 
 class RangeEstimate(BaseModel):

@@ -4,7 +4,7 @@ import Footer from "@/components/Footer";
 import EVSearchSection from "@/components/ev/EVSearchSection";
 
 export const metadata: Metadata = {
-  title: "EV Battery Health Check UK | Range & Degradation Analysis | VeriCar",
+  title: "EV Health Check UK | Range & Degradation Analysis | VeriCar",
   description:
     "Check your electric car's battery health, real-world range, and charging costs. The UK's most comprehensive used EV check using ClearWatt, EV Database, and AutoPredict data.",
   keywords: [
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     "electric car range",
   ],
   openGraph: {
-    title: "EV Battery Health Check UK | VeriCar",
+    title: "EV Health Check UK | VeriCar",
     description:
       "Check your electric car's battery health, real-world range, and charging costs. Instant results using official DVLA data plus specialist EV analytics.",
     type: "website",
@@ -49,12 +49,17 @@ const faqItems = [
   {
     question: "What's included in the free check?",
     answer:
-      "The free EV check confirms the vehicle is electric, shows MOT history, mileage verification, condition score, and tax status. Battery health, range estimates, charging costs, and the AI report require the paid check (£7.99).",
+      "The free EV check confirms the vehicle is electric, shows MOT history, mileage verification, condition score, and tax status. Battery health, range estimates, charging costs, and the AI report require the paid check (£8.99).",
   },
   {
-    question: "What's included in the £7.99 paid report?",
+    question: "What's included in the £8.99 EV Health report?",
     answer:
-      "The full report adds: battery health score with degradation estimate, real-world range across different conditions, home vs rapid charging cost comparison, AI-predicted remaining lifespan, and a personalised AI verdict with buying advice. Delivered as a PDF to your email.",
+      "The EV Health report adds: battery health score with degradation estimate, real-world range across different conditions, home vs rapid charging cost comparison, AI-predicted remaining lifespan, and a personalised AI verdict with buying advice. Delivered as a PDF to your email.",
+  },
+  {
+    question: "What's included in the £13.99 EV Complete report?",
+    answer:
+      "EV Complete includes everything in EV Health plus full ownership checks: finance & outstanding debt, stolen vehicle check, write-off & salvage history, market valuation, and keeper & plate history. The ultimate pre-purchase check for any used EV.",
   },
   {
     question: "How much does it cost to charge an electric car?",
@@ -93,10 +98,24 @@ const jsonLd = {
         },
         {
           "@type": "Offer",
-          price: "7.99",
+          price: "3.99",
           priceCurrency: "GBP",
           description:
-            "Full EV Health Check with battery health score, real-world range, charging costs, lifespan prediction, and AI verdict.",
+            "Full Report with AI risk assessment, buy/avoid verdict, negotiation points, and PDF emailed.",
+        },
+        {
+          "@type": "Offer",
+          price: "8.99",
+          priceCurrency: "GBP",
+          description:
+            "EV Health Check with battery health score, real-world range, charging costs, lifespan prediction, and AI verdict.",
+        },
+        {
+          "@type": "Offer",
+          price: "13.99",
+          priceCurrency: "GBP",
+          description:
+            "EV Complete Check with everything in EV Health plus finance, stolen, write-off, valuation, and keeper history.",
         },
       ],
       description:
@@ -219,8 +238,8 @@ export default function EVPage() {
             </div>
             <div className="text-center">
               <div className="w-12 h-12 rounded-full bg-emerald-600 text-white font-bold text-lg flex items-center justify-center mx-auto mb-4">3</div>
-              <h3 className="font-semibold text-slate-900 mb-2">Unlock Battery Report</h3>
-              <p className="text-sm text-slate-500">For £7.99, get battery health, range estimates, charging costs, and AI verdict delivered to your email.</p>
+              <h3 className="font-semibold text-slate-900 mb-2">Unlock EV Health Report</h3>
+              <p className="text-sm text-slate-500">From £8.99, get battery health, range, charging costs, and AI verdict. Or go complete at £13.99 with ownership checks.</p>
             </div>
           </div>
         </div>
@@ -228,41 +247,44 @@ export default function EVPage() {
 
       {/* Pricing */}
       <section className="bg-white border-t border-slate-100 py-16">
-        <div className="mx-auto max-w-2xl px-4">
+        <div className="mx-auto max-w-4xl px-4">
           <div className="text-center mb-10">
             <h2 className="text-2xl font-bold text-slate-900">Simple pricing</h2>
-            <p className="text-slate-500 mt-2">Start free. Unlock the full battery analysis if you need it.</p>
+            <p className="text-slate-500 mt-2">Start free. Upgrade to battery analysis or the complete ownership check.</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="border border-slate-200 rounded-xl p-6">
-              <span className="text-sm font-semibold text-slate-500 uppercase tracking-wide">Free</span>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Full Report */}
+            <div className="border-2 border-blue-600 rounded-xl p-6 pt-8 relative">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap">
+                <span className="bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full">Popular</span>
+              </div>
+              <span className="text-sm font-semibold text-blue-600 uppercase tracking-wide">Full Report</span>
               <div className="mt-1 mb-4">
-                <span className="text-3xl font-bold text-slate-900">&pound;0</span>
+                <span className="text-3xl font-bold text-slate-900">&pound;3.99</span>
               </div>
               <ul className="space-y-2.5 mb-6">
-                {["EV Detection", "MOT History", "Mileage Verification", "Condition Score", "Tax & ULEZ Status"].map((item) => (
-                  <li key={item} className="flex items-center gap-2 text-sm text-slate-600">
-                    <svg className="w-4 h-4 text-emerald-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                {["Everything in Free", "AI Risk Assessment", "Buy/Avoid Verdict", "Negotiation Points", "PDF Report Emailed"].map((item, i) => (
+                  <li key={item} className="flex items-center gap-2 text-sm text-slate-700">
+                    <svg className={`w-4 h-4 flex-shrink-0 ${i === 0 ? "text-emerald-500" : "text-blue-500"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                     </svg>
-                    <span>{item}</span>
+                    <span className={i > 0 ? "font-medium" : ""}>{item}</span>
                   </li>
                 ))}
               </ul>
-              <a href="#search" className="block text-center py-2.5 border-2 border-slate-300 text-slate-700 font-semibold rounded-lg hover:bg-slate-50 transition-colors text-sm">
-                Try Free Check
+              <a href="#search" className="block text-center py-2.5 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors text-sm">
+                Get Full Report &mdash; &pound;3.99
               </a>
             </div>
+
+            {/* EV Health */}
             <div className="border-2 border-emerald-600 rounded-xl p-6 relative">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                <span className="bg-emerald-600 text-white text-xs font-semibold px-3 py-1 rounded-full">Recommended</span>
-              </div>
-              <span className="text-sm font-semibold text-emerald-600 uppercase tracking-wide">Full Report</span>
+              <span className="text-sm font-semibold text-emerald-600 uppercase tracking-wide">EV Health Check</span>
               <div className="mt-1 mb-4">
-                <span className="text-3xl font-bold text-slate-900">&pound;7.99</span>
+                <span className="text-3xl font-bold text-slate-900">&pound;8.99</span>
               </div>
               <ul className="space-y-2.5 mb-6">
-                {["Everything in Free", "Battery Health Score", "Real-World Range", "Charging Cost Comparison", "Lifespan Prediction", "AI Expert Verdict", "PDF Report & Email"].map((item, i) => (
+                {["Everything in Free", "Battery Health Score", "Real-World Range", "Charging Costs", "Lifespan Prediction", "AI Expert Verdict", "PDF Report & Email"].map((item, i) => (
                   <li key={item} className="flex items-center gap-2 text-sm text-slate-700">
                     <svg className={`w-4 h-4 flex-shrink-0 ${i === 0 ? "text-emerald-500" : "text-emerald-600"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
@@ -272,7 +294,31 @@ export default function EVPage() {
                 ))}
               </ul>
               <a href="#search" className="block text-center py-2.5 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 transition-colors text-sm">
-                Get EV Report &mdash; &pound;7.99
+                Get EV Health Check &mdash; &pound;8.99
+              </a>
+            </div>
+
+            {/* EV Complete */}
+            <div className="border-2 border-teal-600 rounded-xl p-6 pt-8 relative">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap">
+                <span className="bg-teal-600 text-white text-xs font-semibold px-3 py-1 rounded-full">Best Value</span>
+              </div>
+              <span className="text-sm font-semibold text-teal-600 uppercase tracking-wide">EV Complete</span>
+              <div className="mt-1 mb-4">
+                <span className="text-3xl font-bold text-slate-900">&pound;13.99</span>
+              </div>
+              <ul className="space-y-2.5 mb-6">
+                {["Everything in EV Health", "Finance & Debt Check", "Stolen Vehicle Check", "Write-off & Salvage History", "Market Valuation", "Plate & Keeper History"].map((item, i) => (
+                  <li key={item} className="flex items-center gap-2 text-sm text-slate-700">
+                    <svg className={`w-4 h-4 flex-shrink-0 ${i === 0 ? "text-emerald-500" : "text-teal-500"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg>
+                    <span className={i > 0 ? "font-medium" : ""}>{item}</span>
+                  </li>
+                ))}
+              </ul>
+              <a href="#search" className="block text-center py-2.5 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 transition-colors text-sm">
+                Get EV Complete &mdash; &pound;13.99
               </a>
             </div>
           </div>

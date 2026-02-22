@@ -122,6 +122,13 @@ def render_report_email(
         "tax": check_data.get("tax_calculation"),
         "safety": check_data.get("safety_rating"),
         "stats": check_data.get("vehicle_stats"),
+        # EV sections
+        "battery_health": check_data.get("battery_health"),
+        "range_estimate": check_data.get("range_estimate"),
+        "range_scenarios": check_data.get("range_scenarios", []),
+        "charging_costs": check_data.get("charging_costs"),
+        "ev_specs": check_data.get("ev_specs"),
+        "lifespan_prediction": check_data.get("lifespan_prediction"),
         # Premium sections
         "finance": check_data.get("finance_check"),
         "stolen": check_data.get("stolen_check"),

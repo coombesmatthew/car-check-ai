@@ -1,10 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { runFreeCheck, runBasicCheckPreview, getCheckCount, FreeCheckResponse } from "@/lib/api";
+import { runFreeCheck, getCheckCount, FreeCheckResponse } from "@/lib/api";
 import TrustBar from "@/components/ui/TrustBar";
 import CheckResult from "@/components/CheckResult";
-import AIReport from "@/components/AIReport";
 import UpsellSection from "@/components/UpsellSection";
 
 export default function SearchSection() {
@@ -17,8 +16,6 @@ export default function SearchSection() {
   const [showUpsell, setShowUpsell] = useState(false);
   const [listingUrl, setListingUrl] = useState("");
   const [listingPrice, setListingPrice] = useState("");
-  const [aiReport, setAiReport] = useState<string | null>(null);
-  const [reportLoading, setReportLoading] = useState(false);
   const [reportError, setReportError] = useState<string | null>(null);
   const [checkCount, setCheckCount] = useState<number | null>(null);
 
@@ -32,7 +29,6 @@ export default function SearchSection() {
     e.preventDefault();
     setError(null);
     setResult(null);
-    setAiReport(null);
     setShowUpsell(false);
 
     const cleaned = registration.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
@@ -54,30 +50,6 @@ export default function SearchSection() {
     }
   };
 
-  const handleGenerateReport = async () => {
-    if (!result) return;
-    setReportLoading(true);
-    setReportError(null);
-
-    try {
-      const priceInPence = listingPrice
-        ? Math.round(parseFloat(listingPrice) * 100)
-        : undefined;
-
-      const data = await runBasicCheckPreview(
-        result.registration,
-        listingUrl || undefined,
-        priceInPence
-      );
-      setAiReport(data.ai_report);
-    } catch (err) {
-      setReportError(
-        err instanceof Error ? err.message : "Report generation failed"
-      );
-    } finally {
-      setReportLoading(false);
-    }
-  };
 
   return (
     <>
@@ -167,7 +139,7 @@ export default function SearchSection() {
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
             </svg>
-            Buying an EV? Try our Full EV Check
+            Buying an EV? Try our EV Health Check
           </a>
         </div>
 
@@ -207,15 +179,8 @@ export default function SearchSection() {
         </section>
       )}
 
-      {/* AI Report (if generated) */}
-      {aiReport && result && (
-        <section className="mx-auto max-w-5xl px-4 pb-8 w-full">
-          <AIReport report={aiReport} registration={result.registration} />
-        </section>
-      )}
-
-      {/* Upsell CTA - shown after free check, before report */}
-      {result && !aiReport && (
+      {/* Upsell CTA - shown after free check */}
+      {result && (
         <section className="mx-auto max-w-5xl px-4 pb-16 w-full">
           <UpsellSection
             registration={result.registration}
@@ -225,9 +190,7 @@ export default function SearchSection() {
             setListingUrl={setListingUrl}
             listingPrice={listingPrice}
             setListingPrice={setListingPrice}
-            reportLoading={reportLoading}
             reportError={reportError}
-            onGenerateReport={handleGenerateReport}
           />
         </section>
       )}

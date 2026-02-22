@@ -630,12 +630,13 @@ export async function runEVPreview(
 
 export async function createEVCheckout(
   registration: string,
-  email: string
+  email: string,
+  tier: "ev" | "ev_complete" = "ev"
 ): Promise<CheckoutResponse> {
   const res = await fetch(`${API_URL}/api/v1/ev/checkout`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ registration, email }),
+    body: JSON.stringify({ registration, email, tier }),
   });
 
   if (!res.ok) {

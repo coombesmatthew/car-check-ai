@@ -65,7 +65,7 @@ class EVPreviewResponse(BaseModel):
     registration: str
     ai_report: Optional[str] = None
     ev_check: Optional[EVCheckResponse] = None
-    price: str = "£7.99"
+    price: str = "£8.99"
 
 
 @router.post("/preview", response_model=EVPreviewResponse)
@@ -73,7 +73,7 @@ async def ev_preview(request: EVCheckRequest):
     """Generate a FREE AI preview report for an EV.
 
     Uses only DVLA + MOT data (no paid API calls). The report teases
-    what the full paid report (£7.99) would include.
+    what the full paid report (£8.99) would include.
     Non-EVs get rejected with a 400 error.
     """
     orchestrator = EVOrchestrator()
@@ -116,12 +116,14 @@ class EVCheckoutResponse(BaseModel):
 
 @router.post("/checkout", response_model=EVCheckoutResponse)
 async def ev_checkout(request: EVCheckoutRequest):
-    """Create a Stripe Checkout Session for a paid EV report (£7.99)."""
+    """Create a Stripe Checkout Session for a paid EV report."""
+    if request.tier not in ("ev", "ev_complete"):
+        raise HTTPException(status_code=400, detail="Invalid EV tier. Must be 'ev' or 'ev_complete'.")
     try:
         result = create_checkout_session(
             registration=request.registration,
             email=request.email,
-            tier="ev",
+            tier=request.tier,
             success_url=None,  # uses default from stripe_service
             cancel_url=None,
         )
