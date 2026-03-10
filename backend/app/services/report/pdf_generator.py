@@ -25,6 +25,13 @@ def _md_to_html(content: str) -> str:
     # Italic
     content = re.sub(r"\*(.*?)\*", r"<em>\1</em>", content)
 
+    # Expand inline tables: AI often outputs entire table on one line.
+    # Pattern: "| cell | |" — the junction between rows — becomes a newline.
+    content = re.sub(r" \| \|", "\n|", content)
+
+    # Ensure ### headings always start on their own line
+    content = re.sub(r"([^\n])(### )", r"\1\n\2", content)
+
     lines = content.split("\n")
     output: List[str] = []
     i = 0
