@@ -26,8 +26,8 @@ def _md_to_html(content: str) -> str:
     content = re.sub(r"\*(.*?)\*", r"<em>\1</em>", content)
 
     # Expand inline tables: AI often outputs entire table on one line.
-    # Pattern: "| cell | |" — the junction between rows — becomes a newline.
-    content = re.sub(r" \| \|", "\n|", content)
+    # Row boundary is always "| |" (pipe-space-pipe with nothing between).
+    content = re.sub(r"\| \|", "|\n|", content)
 
     # Ensure ### headings always start on their own line
     content = re.sub(r"([^\n])(### )", r"\1\n\2", content)
@@ -69,7 +69,8 @@ def _md_to_html(content: str) -> str:
         elif re.match(r"^\d+\. ", line):
             items = []
             while i < len(lines) and re.match(r"^\d+\. ", lines[i]):
-                items.append(f"<li>{re.sub(r'^\d+\. ', '', lines[i])}</li>")
+                text = re.sub(r"^\d+\. ", "", lines[i])
+                items.append(f"<li>{text}</li>")
                 i += 1
             output.append("<ol>" + "".join(items) + "</ol>")
 
