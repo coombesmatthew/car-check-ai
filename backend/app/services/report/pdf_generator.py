@@ -20,6 +20,10 @@ TEMPLATE_DIR = Path(__file__).resolve().parents[3] / "templates" / "pdf"
 
 def _md_to_html(content: str) -> str:
     """Convert markdown content block to HTML."""
+    # Markdown links [text](url) → just the text (PDF, links not clickable)
+    content = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", content)
+    # Citation numbers [N] → superscript (strip from PDF for cleanliness)
+    content = re.sub(r"\[(\d+)\]", r"<sup>\1</sup>", content)
     # Bold
     content = re.sub(r"\*\*(.*?)\*\*", r"<strong>\1</strong>", content)
     # Italic
