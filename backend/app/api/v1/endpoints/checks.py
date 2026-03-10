@@ -335,7 +335,7 @@ async def fulfil_basic_report(session_id: str):
         )
 
         logger.info(
-            f"BASIC report fulfilled for {registration} "
+            f"{tier.upper()} report fulfilled for {registration} "
             f"(ref: {report_ref}, session: {session_id}, email: {email_sent})"
         )
 
