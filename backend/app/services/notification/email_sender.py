@@ -92,7 +92,7 @@ def render_report_email(
     Returns:
         Rendered HTML string.
     """
-    env = Environment(loader=FileSystemLoader(str(TEMPLATE_DIR)))
+    env = Environment(loader=FileSystemLoader(str(TEMPLATE_DIR)), autoescape=True)
     template = env.get_template("report.html")
 
     vehicle = check_data.get("vehicle") or {}
