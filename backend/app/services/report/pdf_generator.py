@@ -18,12 +18,24 @@ from app.core.logging import logger
 TEMPLATE_DIR = Path(__file__).resolve().parents[3] / "templates" / "pdf"
 
 
-def _md_to_html(content: str) -> str:
+def _md_to_html(content: str, citation_urls: Optional[Dict[int, str]] = None) -> str:
     """Convert markdown content block to HTML."""
-    # Markdown links [text](url) → just the text (PDF, links not clickable)
-    content = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", content)
-    # Citation numbers [N] → superscript (strip from PDF for cleanliness)
-    content = re.sub(r"\[(\d+)\]", r"<sup>\1</sup>", content)
+    # Markdown links [text](url) → clickable link
+    content = re.sub(
+        r"\[([^\]]+)\]\(([^)]+)\)",
+        r'<a href="\2" style="color:#64748b;">\1</a>',
+        content,
+    )
+    # Citation numbers [N] → superscript linked to source URL if known
+    def _cite(m: re.Match) -> str:
+        n = int(m.group(1))
+        url = (citation_urls or {}).get(n, "")
+        style = "font-size:7pt;color:#94a3b8;text-decoration:none;"
+        if url:
+            return f'<a href="{url}" style="{style}"><sup>{n}</sup></a>'
+        return f'<sup style="font-size:7pt;color:#94a3b8;">{n}</sup>'
+
+    content = re.sub(r"\[(\d+)\]", _cite, content)
     # Bold
     content = re.sub(r"\*\*(.*?)\*\*", r"<strong>\1</strong>", content)
     # Italic
@@ -101,11 +113,36 @@ def _md_to_html(content: str) -> str:
     return "".join(output)
 
 
+def _extract_citation_urls(report_text: str) -> Dict[int, str]:
+    """Build a {citation_number: url} map from the Data Sources section."""
+    urls: Dict[int, str] = {}
+    in_sources = False
+    for line in report_text.split("\n"):
+        if line.startswith("## ") and "source" in line.lower():
+            in_sources = True
+            continue
+        if in_sources:
+            if line.startswith("## "):
+                break
+            # "1. [Title](url)"
+            m = re.match(r"^(\d+)\.\s+\[([^\]]+)\]\(([^)]+)\)", line)
+            if m:
+                urls[int(m.group(1))] = m.group(3)
+                continue
+            # "1. https://..."
+            m = re.match(r"^(\d+)\.\s+(https?://\S+)", line)
+            if m:
+                urls[int(m.group(1))] = m.group(2)
+    return urls
+
+
 def _parse_ai_sections(report_text: str) -> List[Dict[str, str]]:
     """Parse markdown AI report into structured sections."""
     sections = []
     if not report_text:
         return sections
+
+    citation_urls = _extract_citation_urls(report_text)
 
     current_title = None
     current_lines: List[str] = []
@@ -113,14 +150,14 @@ def _parse_ai_sections(report_text: str) -> List[Dict[str, str]]:
     for line in report_text.split("\n"):
         if line.startswith("## "):
             if current_title:
-                sections.append({"title": current_title, "content": _md_to_html("\n".join(current_lines).strip())})
+                sections.append({"title": current_title, "content": _md_to_html("\n".join(current_lines).strip(), citation_urls)})
             current_title = line.lstrip("# ").strip()
             current_lines = []
         else:
             current_lines.append(line)
 
     if current_title:
-        sections.append({"title": current_title, "content": _md_to_html("\n".join(current_lines).strip())})
+        sections.append({"title": current_title, "content": _md_to_html("\n".join(current_lines).strip(), citation_urls)})
 
     return sections
 
