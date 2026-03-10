@@ -4,7 +4,7 @@ import { useState } from "react";
 import { EVCheckResponse, MOTTestRecord, MOTDefect } from "@/lib/api";
 import Badge from "@/components/ui/Badge";
 import Card from "@/components/ui/Card";
-import ScoreGauge from "@/components/ui/ScoreGauge";
+
 
 interface Props {
   result: EVCheckResponse;
@@ -128,7 +128,7 @@ const icons = {
 };
 
 export default function EVCheckResult({ result }: Props) {
-  const { vehicle, mot_summary, mot_tests, clocking_analysis, condition_score, mileage_timeline, failure_patterns, tax_calculation, safety_rating, vehicle_stats } = result;
+  const { vehicle, mot_summary, mot_tests, clocking_analysis, mileage_timeline, failure_patterns, tax_calculation, safety_rating, vehicle_stats } = result;
 
   return (
     <div className="space-y-4">
@@ -149,7 +149,6 @@ export default function EVCheckResult({ result }: Props) {
             {result.data_sources.length > 0 && <span className="ml-2 text-slate-400">Sources: {result.data_sources.join(", ")}</span>}
           </p>
         </div>
-        {condition_score !== null && <ScoreGauge score={condition_score} size={110} />}
       </div>
 
       {/* Outstanding Recall Warning */}

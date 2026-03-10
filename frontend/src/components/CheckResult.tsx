@@ -4,7 +4,7 @@ import { useState } from "react";
 import { FreeCheckResponse, MOTTestRecord } from "@/lib/api";
 import Badge from "@/components/ui/Badge";
 import Card from "@/components/ui/Card";
-import ScoreGauge from "@/components/ui/ScoreGauge";
+
 
 /* Locked/blurred preview card for paid tier data */
 
@@ -299,7 +299,7 @@ function MOTTestItem({ test }: { test: MOTTestRecord }) {
 
 export default function CheckResult({ data }: { data: FreeCheckResponse }) {
   const {
-    vehicle, mot_summary, mot_tests, clocking_analysis, condition_score,
+    vehicle, mot_summary, mot_tests, clocking_analysis,
     ulez_compliance, mileage_timeline, failure_patterns,
     tax_calculation, safety_rating, vehicle_stats,
     finance_check, stolen_check, write_off_check, plate_changes, valuation,
@@ -328,9 +328,6 @@ export default function CheckResult({ data }: { data: FreeCheckResponse }) {
             )}
           </p>
         </div>
-        {condition_score !== null && (
-          <ScoreGauge score={condition_score} size={110} />
-        )}
       </div>
 
       {/* EV Cross-sell Banner */}

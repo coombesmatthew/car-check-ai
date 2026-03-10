@@ -17,15 +17,6 @@ def _build_key_findings(check_data: Dict, verdict: Optional[str]) -> List[Dict[s
     """Extract key findings from check data for email summary."""
     findings = []
 
-    # Condition score
-    score = check_data.get("condition_score")
-    if score is not None:
-        if score >= 80:
-            findings.append({"icon": "✅", "colour": "#059669", "text": f"Condition score: {score}/100 — Good condition"})
-        elif score >= 50:
-            findings.append({"icon": "⚠️", "colour": "#f59e0b", "text": f"Condition score: {score}/100 — Some concerns"})
-        else:
-            findings.append({"icon": "❌", "colour": "#dc2626", "text": f"Condition score: {score}/100 — Poor condition"})
 
     # Clocking
     clocking = check_data.get("clocking_analysis") or {}
