@@ -44,7 +44,7 @@ class Settings(BaseSettings):
 
     # Email
     RESEND_API_KEY: str = ""
-    FROM_EMAIL: str = "reports@vericar.co.uk"
+    FROM_EMAIL: str = "matthew@vericar.co.uk"
 
     # Site URL (frontend base URL for Stripe redirects etc.)
     SITE_URL: str = "http://localhost:3001"
