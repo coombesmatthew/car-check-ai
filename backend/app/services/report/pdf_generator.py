@@ -18,6 +18,77 @@ from app.core.logging import logger
 TEMPLATE_DIR = Path(__file__).resolve().parents[3] / "templates" / "pdf"
 
 
+def _md_to_html(content: str) -> str:
+    """Convert markdown content block to HTML."""
+    # Bold
+    content = re.sub(r"\*\*(.*?)\*\*", r"<strong>\1</strong>", content)
+    # Italic
+    content = re.sub(r"\*(.*?)\*", r"<em>\1</em>", content)
+
+    lines = content.split("\n")
+    output: List[str] = []
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+
+        # H3 subheading
+        if line.startswith("### "):
+            output.append(f"<h4>{line[4:].strip()}</h4>")
+            i += 1
+
+        # Horizontal rule
+        elif line.strip() == "---":
+            i += 1  # skip — section dividers already handled by ## splits
+
+        # Pipe table
+        elif line.strip().startswith("|"):
+            table_lines = []
+            while i < len(lines) and lines[i].strip().startswith("|"):
+                table_lines.append(lines[i])
+                i += 1
+            if len(table_lines) >= 2:
+                html = '<table class="ai-table">'
+                for row_idx, row in enumerate(table_lines):
+                    cells = [c.strip() for c in row.strip().strip("|").split("|")]
+                    # skip separator row (---|---)
+                    if all(re.match(r"^[-: ]+$", c) for c in cells):
+                        continue
+                    tag = "th" if row_idx == 0 else "td"
+                    html += "<tr>" + "".join(f"<{tag}>{c}</{tag}>" for c in cells) + "</tr>"
+                html += "</table>"
+                output.append(html)
+
+        # Numbered list
+        elif re.match(r"^\d+\. ", line):
+            items = []
+            while i < len(lines) and re.match(r"^\d+\. ", lines[i]):
+                items.append(f"<li>{re.sub(r'^\d+\. ', '', lines[i])}</li>")
+                i += 1
+            output.append("<ol>" + "".join(items) + "</ol>")
+
+        # Unordered list
+        elif line.startswith("- ") or line.startswith("• "):
+            items = []
+            while i < len(lines) and (lines[i].startswith("- ") or lines[i].startswith("• ")):
+                items.append(f"<li>{lines[i][2:].strip()}</li>")
+                i += 1
+            output.append("<ul>" + "".join(items) + "</ul>")
+
+        # Blank line
+        elif not line.strip():
+            i += 1
+
+        # Normal paragraph line — collect until blank
+        else:
+            para_lines = []
+            while i < len(lines) and lines[i].strip() and not lines[i].startswith(("### ", "- ", "• ", "|")) and not re.match(r"^\d+\. ", lines[i]):
+                para_lines.append(lines[i])
+                i += 1
+            output.append(f"<p>{' '.join(para_lines)}</p>")
+
+    return "".join(output)
+
+
 def _parse_ai_sections(report_text: str) -> List[Dict[str, str]]:
     """Parse markdown AI report into structured sections."""
     sections = []
@@ -30,50 +101,14 @@ def _parse_ai_sections(report_text: str) -> List[Dict[str, str]]:
     for line in report_text.split("\n"):
         if line.startswith("## "):
             if current_title:
-                content = "\n".join(current_lines).strip()
-                # Convert markdown bold to HTML
-                content = re.sub(r"\*\*(.*?)\*\*", r"<strong>\1</strong>", content)
-                # Convert markdown list items to HTML
-                content = re.sub(r"^- (.+)$", r"<li>\1</li>", content, flags=re.MULTILINE)
-                if "<li>" in content:
-                    content = re.sub(
-                        r"((?:<li>.*?</li>\n?)+)",
-                        r"<ul>\1</ul>",
-                        content,
-                        flags=re.DOTALL,
-                    )
-                # Wrap paragraphs
-                paragraphs = content.split("\n\n")
-                content = "".join(
-                    f"<p>{p.strip()}</p>" if not p.strip().startswith("<") else p
-                    for p in paragraphs
-                    if p.strip()
-                )
-                sections.append({"title": current_title, "content": content})
+                sections.append({"title": current_title, "content": _md_to_html("\n".join(current_lines).strip())})
             current_title = line.lstrip("# ").strip()
             current_lines = []
         else:
             current_lines.append(line)
 
-    # Don't forget the last section
     if current_title:
-        content = "\n".join(current_lines).strip()
-        content = re.sub(r"\*\*(.*?)\*\*", r"<strong>\1</strong>", content)
-        content = re.sub(r"^- (.+)$", r"<li>\1</li>", content, flags=re.MULTILINE)
-        if "<li>" in content:
-            content = re.sub(
-                r"((?:<li>.*?</li>\n?)+)",
-                r"<ul>\1</ul>",
-                content,
-                flags=re.DOTALL,
-            )
-        paragraphs = content.split("\n\n")
-        content = "".join(
-            f"<p>{p.strip()}</p>" if not p.strip().startswith("<") else p
-            for p in paragraphs
-            if p.strip()
-        )
-        sections.append({"title": current_title, "content": content})
+        sections.append({"title": current_title, "content": _md_to_html("\n".join(current_lines).strip())})
 
     return sections
 

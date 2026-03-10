@@ -127,8 +127,13 @@
     }
 
     .section-content p { margin-bottom: 2mm; }
-    .section-content ul { margin-left: 5mm; margin-bottom: 2mm; }
+    .section-content ul, .section-content ol { margin-left: 5mm; margin-bottom: 2mm; }
     .section-content li { margin-bottom: 1mm; }
+    .section-content h4 { font-size: 11pt; font-weight: 700; color: #1e293b; margin: 3mm 0 1.5mm; }
+    .ai-table { width: 100%; border-collapse: collapse; margin: 3mm 0; font-size: 9pt; }
+    .ai-table th { background: #f1f5f9; font-weight: 700; text-align: left; padding: 2mm 3mm; border: 1px solid #e2e8f0; }
+    .ai-table td { padding: 2mm 3mm; border: 1px solid #e2e8f0; vertical-align: top; }
+    .ai-table tr:nth-child(even) td { background: #f8fafc; }
 
     .data-table {
       width: 100%;
@@ -258,7 +263,7 @@
   <div class="section">
     <div class="section-title">{{ section.title }}</div>
     <div class="section-content">
-      {{ section.content }}
+      {{ section.content | safe }}
     </div>
   </div>
   {% endfor %}
