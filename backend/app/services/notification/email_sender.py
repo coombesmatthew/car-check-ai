@@ -21,18 +21,18 @@ def _build_key_findings(check_data: Dict, verdict: Optional[str]) -> List[Dict[s
     score = check_data.get("condition_score")
     if score is not None:
         if score >= 80:
-            findings.append({"icon": "&#9989;", "colour": "#059669", "text": f"Condition score: {score}/100 — Good condition"})
+            findings.append({"icon": "✅", "colour": "#059669", "text": f"Condition score: {score}/100 — Good condition"})
         elif score >= 50:
-            findings.append({"icon": "&#9888;", "colour": "#f59e0b", "text": f"Condition score: {score}/100 — Some concerns"})
+            findings.append({"icon": "⚠️", "colour": "#f59e0b", "text": f"Condition score: {score}/100 — Some concerns"})
         else:
-            findings.append({"icon": "&#10060;", "colour": "#dc2626", "text": f"Condition score: {score}/100 — Poor condition"})
+            findings.append({"icon": "❌", "colour": "#dc2626", "text": f"Condition score: {score}/100 — Poor condition"})
 
     # Clocking
     clocking = check_data.get("clocking_analysis") or {}
     if clocking.get("clocked"):
-        findings.append({"icon": "&#10060;", "colour": "#dc2626", "text": "Mileage discrepancy detected — possible clocking"})
+        findings.append({"icon": "❌", "colour": "#dc2626", "text": "Mileage discrepancy detected — possible clocking"})
     elif clocking.get("risk_level") == "none":
-        findings.append({"icon": "&#9989;", "colour": "#059669", "text": "Mileage history clean — no clocking detected"})
+        findings.append({"icon": "✅", "colour": "#059669", "text": "Mileage history clean — no clocking detected"})
 
     # MOT summary
     mot = check_data.get("mot_summary") or {}
@@ -40,21 +40,21 @@ def _build_key_findings(check_data: Dict, verdict: Optional[str]) -> List[Dict[s
     total_failures = mot.get("total_failures", 0)
     if total_tests > 0:
         if total_failures == 0:
-            findings.append({"icon": "&#9989;", "colour": "#059669", "text": f"{total_tests} MOT tests — never failed"})
+            findings.append({"icon": "✅", "colour": "#059669", "text": f"{total_tests} MOT tests — never failed"})
         else:
-            findings.append({"icon": "&#9888;", "colour": "#f59e0b", "text": f"{total_tests} MOT tests — {total_failures} failure{'s' if total_failures != 1 else ''}"})
+            findings.append({"icon": "⚠️", "colour": "#f59e0b", "text": f"{total_tests} MOT tests — {total_failures} failure{'s' if total_failures != 1 else ''}"})
 
     # ULEZ
     ulez = check_data.get("ulez_compliance") or {}
     if ulez.get("compliant") is True:
-        findings.append({"icon": "&#9989;", "colour": "#059669", "text": "Compliant with all UK clean air zones"})
+        findings.append({"icon": "✅", "colour": "#059669", "text": "Compliant with all UK clean air zones"})
     elif ulez.get("compliant") is False:
-        findings.append({"icon": "&#10060;", "colour": "#dc2626", "text": f"Non-compliant — {ulez.get('daily_charge', 'charges apply')}"})
+        findings.append({"icon": "❌", "colour": "#dc2626", "text": f"Non-compliant — {ulez.get('daily_charge', 'charges apply')}"})
 
     # Failure patterns
     patterns = check_data.get("failure_patterns", [])
     for p in patterns[:2]:
-        findings.append({"icon": "&#9888;", "colour": "#f59e0b", "text": f"Recurring {p['category']} issues ({p['occurrences']}x)"})
+        findings.append({"icon": "⚠️", "colour": "#f59e0b", "text": f"Recurring {p['category']} issues ({p['occurrences']}x)"})
 
     return findings[:6]  # Cap at 6 findings
 
