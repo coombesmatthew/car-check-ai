@@ -2,7 +2,7 @@ export default function Footer() {
   return (
     <footer className="border-t border-slate-200 bg-slate-50 mt-auto">
       <div className="mx-auto max-w-5xl px-4 py-10">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-8">
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2 mb-3">
@@ -24,25 +24,13 @@ export default function Footer() {
           {/* Links */}
           <div>
             <h4 className="font-semibold text-slate-900 mb-3 text-sm">Quick Links</h4>
-            <nav className="space-y-2">
-              <a href="#search" className="block text-sm text-slate-500 hover:text-slate-700 transition-colors">
-                Free Check
-              </a>
-              <a href="#full-report" className="block text-sm text-slate-500 hover:text-slate-700 transition-colors">
-                Full Report
-              </a>
-              <a href="#how-it-works" className="block text-sm text-slate-500 hover:text-slate-700 transition-colors">
-                How It Works
-              </a>
-              <a href="/ev" className="block text-sm text-emerald-600 hover:text-emerald-700 transition-colors">
-                EV Health Check
-              </a>
-              <a href="/privacy" className="block text-sm text-slate-500 hover:text-slate-700 transition-colors">
-                Privacy Policy
-              </a>
-              <a href="/terms" className="block text-sm text-slate-500 hover:text-slate-700 transition-colors">
-                Terms of Service
-              </a>
+            <nav className="text-sm text-slate-500 leading-relaxed">
+              <a href="#search" className="block hover:text-slate-700 transition-colors">Free Check</a>
+              <a href="#full-report" className="block hover:text-slate-700 transition-colors">Full Report</a>
+              <a href="#how-it-works" className="block hover:text-slate-700 transition-colors">How It Works</a>
+              <a href="/ev" className="block text-emerald-600 hover:text-emerald-700 transition-colors">EV Health Check</a>
+              <a href="/privacy" className="block hover:text-slate-700 transition-colors">Privacy Policy</a>
+              <a href="/terms" className="block hover:text-slate-700 transition-colors">Terms of Service</a>
             </nav>
           </div>
 
@@ -57,10 +45,23 @@ export default function Footer() {
               Not affiliated with or endorsed by DVLA, DVSA, or GOV.UK.
             </p>
           </div>
+
+          {/* Legal / Business info */}
+          <div>
+            <h4 className="font-semibold text-slate-900 mb-3 text-sm">Legal</h4>
+            <address className="not-italic text-sm text-slate-500 leading-relaxed">
+              <span className="block font-medium text-slate-600">Matthew Coombes</span>
+              <span className="block">1 Farm Close, Sunderland</span>
+              <span className="block">Tyne and Wear, NE37 1EG</span>
+              <a href="mailto:matthew@vericar.co.uk" className="block mt-3 hover:text-slate-700 transition-colors">
+                matthew@vericar.co.uk
+              </a>
+            </address>
+          </div>
         </div>
 
         <div className="border-t border-slate-200 mt-8 pt-6 text-center text-xs text-slate-400">
-          &copy; {new Date().getFullYear()} VeriCar. All rights reserved.
+          &copy; {new Date().getFullYear()} VeriCar. Operated by Matthew Coombes (sole trader). All rights reserved.
         </div>
       </div>
     </footer>
