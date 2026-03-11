@@ -86,7 +86,7 @@ function SampleReportModal({ onClose }: { onClose: () => void }) {
                 : "text-slate-500 hover:text-slate-700"
             }`}
           >
-            Full Report &mdash; &pound;3.99
+            Full Report &mdash; &pound;4.99
           </button>
           <button
             onClick={() => setActiveTab("premium")}
@@ -337,7 +337,7 @@ export default function UpsellSection({
   const [showSampleReport, setShowSampleReport] = useState(false);
 
   const tierConfig = {
-    basic: { price: "3.99", label: "Full Report" },
+    basic: { price: "4.99", label: "Full Report" },
     premium: { price: "9.99", label: "Premium Check" },
   };
 
@@ -414,7 +414,7 @@ export default function UpsellSection({
                   POPULAR
                 </div>
                 <div className="text-xs font-semibold text-blue-600 mb-1 uppercase tracking-wide">Full Report</div>
-                <div className="text-lg font-bold text-slate-900 mb-3">&pound;3.99</div>
+                <div className="text-lg font-bold text-slate-900 mb-3">&pound;4.99</div>
                 <ul className="space-y-2 mb-4">
                   {[
                     { text: "Everything in Free", highlight: false },
@@ -433,7 +433,7 @@ export default function UpsellSection({
                   onClick={() => handleSelectTier("basic")}
                   className="w-full py-2.5 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors text-sm"
                 >
-                  Get Full Report &mdash; &pound;3.99
+                  Get Full Report &mdash; &pound;4.99
                 </button>
               </div>
 
@@ -532,7 +532,7 @@ export default function UpsellSection({
                 : "text-slate-500 hover:text-slate-700"
             }`}
           >
-            Full Report &mdash; &pound;3.99
+            Full Report &mdash; &pound;4.99
           </button>
           <button
             onClick={() => setSelectedTier("premium")}

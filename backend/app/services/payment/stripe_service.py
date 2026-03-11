@@ -16,7 +16,7 @@ def _init_stripe():
 
 TIER_CONFIG = {
     "basic": {
-        "amount": 399,
+        "amount": 499,
         "name": "VeriCar Report",
         "description": "AI-powered buyer's report with condition score, risk assessment, and negotiation points. PDF delivered to your email.",
     },

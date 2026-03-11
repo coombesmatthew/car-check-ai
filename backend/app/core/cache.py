@@ -73,6 +73,16 @@ class CacheService:
             logger.warning(f"Counter increment error: {e}")
             return 0
 
+    async def list_push(self, key: str, value: str) -> int:
+        """Append a value to a Redis list. Returns new list length."""
+        if not self._redis:
+            return 0
+        try:
+            return await self._redis.rpush(f"carcheck:{key}", value)
+        except Exception as e:
+            logger.warning(f"List push error: {e}")
+            return 0
+
     async def get_counter(self, key: str) -> int:
         """Get the current value of a counter."""
         if not self._redis:

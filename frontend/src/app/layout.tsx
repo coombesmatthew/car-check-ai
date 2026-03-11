@@ -77,6 +77,13 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        {process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN && (
+          <script
+            defer
+            data-domain={process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN}
+            src="https://plausible.io/js/script.js"
+          />
+        )}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -101,7 +108,7 @@ export default function RootLayout({
                 {
                   "@type": "Offer",
                   name: "Full Report",
-                  price: "3.99",
+                  price: "4.99",
                   priceCurrency: "GBP",
                   description:
                     "AI-powered buyer's report with valuation and risk assessment",
@@ -125,7 +132,7 @@ export default function RootLayout({
                 {
                   "@type": "Offer",
                   name: "EV Complete",
-                  price: "13.99",
+                  price: "14.99",
                   priceCurrency: "GBP",
                   description:
                     "Everything in EV Health Check plus finance, stolen, write-off, valuation, and keeper history",

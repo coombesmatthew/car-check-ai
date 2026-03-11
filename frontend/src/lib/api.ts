@@ -302,6 +302,18 @@ export interface BasicCheckPreviewResponse {
   price: string;
 }
 
+export async function captureEmail(email: string, registration: string): Promise<void> {
+  try {
+    await fetch(`${API_URL}/api/v1/checks/leads`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, registration }),
+    });
+  } catch {
+    // fire-and-forget, never throw
+  }
+}
+
 export async function getCheckCount(): Promise<number> {
   try {
     const res = await fetch(`${API_URL}/api/v1/checks/count`);

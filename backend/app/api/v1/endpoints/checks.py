@@ -391,6 +391,24 @@ async def stripe_webhook(request: Request):
     return {"received": True}
 
 
+# --- Lead Capture ---
+
+
+class LeadCaptureRequest(BaseModel):
+    email: EmailStr
+    registration: str
+
+
+@router.post("/leads", status_code=201)
+async def capture_lead(request: LeadCaptureRequest):
+    """Capture an email lead from a free check user."""
+    import datetime
+    entry = f"{request.email}|{request.registration.upper()}|{datetime.datetime.utcnow().isoformat()}"
+    await cache.list_push("leads", entry)
+    logger.info(f"Lead captured: {request.email} for {request.registration.upper()}")
+    return {"ok": True}
+
+
 # --- Listing Check (paste a URL) ---
 
 
