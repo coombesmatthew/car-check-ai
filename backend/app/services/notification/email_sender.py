@@ -13,41 +13,105 @@ from app.core.logging import logger
 TEMPLATE_DIR = Path(__file__).resolve().parents[3] / "templates" / "email"
 
 
-def _build_key_findings(check_data: Dict, verdict: Optional[str]) -> List[Dict[str, str]]:
-    """Extract key findings from check data for email summary."""
-    findings = []
+def _build_checks_summary(check_data: Dict) -> List[Dict[str, str]]:
+    """Build a pass/fail checklist for the At a Glance section.
 
+    Items are ordered by severity — most critical (stolen, finance, write-off) first.
+    Each item has: status, icon, colour, bg, label, detail.
+    """
+    items = []
+
+    # --- Provenance checks (premium tier) ---
+
+    # Stolen (highest risk — illegal to buy)
+    stolen = check_data.get("stolen_check")
+    if stolen:
+        if stolen.get("stolen"):
+            items.append({"status": "fail", "icon": "❌", "colour": "#dc2626", "bg": "#fee2e2",
+                          "label": "Reported Stolen",
+                          "detail": "Do not purchase — this vehicle has a stolen marker"})
+        else:
+            items.append({"status": "pass", "icon": "✅", "colour": "#059669", "bg": "#f0fdf4",
+                          "label": "Not Stolen", "detail": "Clear — no stolen marker"})
+
+    # Finance (legal ownership risk)
+    finance = check_data.get("finance_check")
+    if finance:
+        if finance.get("finance_outstanding"):
+            count = finance.get("record_count", 1)
+            items.append({"status": "fail", "icon": "❌", "colour": "#dc2626", "bg": "#fee2e2",
+                          "label": "Finance Outstanding",
+                          "detail": f"{count} active agreement{'s' if count != 1 else ''} — lender may repossess"})
+        else:
+            items.append({"status": "pass", "icon": "✅", "colour": "#059669", "bg": "#f0fdf4",
+                          "label": "No Finance Outstanding", "detail": "Clear — safe to purchase"})
+
+    # Write-off
+    writeoff = check_data.get("write_off_check")
+    if writeoff:
+        if writeoff.get("written_off"):
+            cats = [r.get("category") for r in writeoff.get("records", []) if r.get("category")]
+            cat_str = " / ".join(f"Cat {c}" for c in cats) if cats else "category unknown"
+            items.append({"status": "fail", "icon": "❌", "colour": "#dc2626", "bg": "#fee2e2",
+                          "label": "Insurance Write-Off Found",
+                          "detail": f"{cat_str} — affects insurance cost and resale value"})
+        else:
+            items.append({"status": "pass", "icon": "✅", "colour": "#059669", "bg": "#f0fdf4",
+                          "label": "No Write-Off History", "detail": "Clear — not written off"})
+
+    # Salvage
+    salvage = check_data.get("salvage_check")
+    if salvage:
+        if salvage.get("salvage_found"):
+            items.append({"status": "warn", "icon": "⚠️", "colour": "#d97706", "bg": "#fffbeb",
+                          "label": "Salvage Records Found",
+                          "detail": "Vehicle appears in salvage auction records"})
+        else:
+            items.append({"status": "pass", "icon": "✅", "colour": "#059669", "bg": "#f0fdf4",
+                          "label": "No Salvage Records", "detail": "Clear — no auction history"})
+
+    # --- Core checks (all tiers) ---
 
     # Clocking
     clocking = check_data.get("clocking_analysis") or {}
     if clocking.get("clocked"):
-        findings.append({"icon": "❌", "colour": "#dc2626", "text": "Mileage discrepancy detected — possible clocking"})
-    elif clocking.get("risk_level") == "none":
-        findings.append({"icon": "✅", "colour": "#059669", "text": "Mileage history clean — no clocking detected"})
+        items.append({"status": "fail", "icon": "❌", "colour": "#dc2626", "bg": "#fee2e2",
+                      "label": "Mileage Discrepancy Detected",
+                      "detail": "Odometer may have been tampered with"})
+    else:
+        items.append({"status": "pass", "icon": "✅", "colour": "#059669", "bg": "#f0fdf4",
+                      "label": "Mileage Verified", "detail": "Consistent history — no clocking detected"})
 
-    # MOT summary
-    mot = check_data.get("mot_summary") or {}
-    total_tests = mot.get("total_tests", 0)
-    total_failures = mot.get("total_failures", 0)
-    if total_tests > 0:
-        if total_failures == 0:
-            findings.append({"icon": "✅", "colour": "#059669", "text": f"{total_tests} MOT tests — never failed"})
+    # MOT
+    vehicle = check_data.get("vehicle") or {}
+    mot_status = vehicle.get("mot_status", "")
+    stats = check_data.get("vehicle_stats") or {}
+    mot_days = stats.get("mot_days_remaining")
+    if mot_status == "Valid":
+        if mot_days is not None and mot_days < 60:
+            items.append({"status": "warn", "icon": "⚠️", "colour": "#d97706", "bg": "#fffbeb",
+                          "label": "MOT Valid",
+                          "detail": f"Expires in {mot_days} days — use as negotiation leverage"})
         else:
-            findings.append({"icon": "⚠️", "colour": "#f59e0b", "text": f"{total_tests} MOT tests — {total_failures} failure{'s' if total_failures != 1 else ''}"})
+            detail = f"{mot_days} days remaining" if mot_days else "Currently valid"
+            items.append({"status": "pass", "icon": "✅", "colour": "#059669", "bg": "#f0fdf4",
+                          "label": "MOT Valid", "detail": detail})
+    elif mot_status:
+        items.append({"status": "fail", "icon": "❌", "colour": "#dc2626", "bg": "#fee2e2",
+                      "label": "MOT Not Valid", "detail": f"Status: {mot_status}"})
 
-    # ULEZ
+    # ULEZ / CAZ
     ulez = check_data.get("ulez_compliance") or {}
-    if ulez.get("compliant") is True:
-        findings.append({"icon": "✅", "colour": "#059669", "text": "Compliant with all UK clean air zones"})
-    elif ulez.get("compliant") is False:
-        findings.append({"icon": "❌", "colour": "#dc2626", "text": f"Non-compliant — {ulez.get('daily_charge', 'charges apply')}"})
+    if ulez.get("compliant") is False:
+        charge = ulez.get("daily_charge", "charges apply")
+        items.append({"status": "warn", "icon": "⚠️", "colour": "#d97706", "bg": "#fffbeb",
+                      "label": "CAZ Non-Compliant",
+                      "detail": f"{charge} in affected UK zones"})
+    elif ulez.get("compliant") is True:
+        items.append({"status": "pass", "icon": "✅", "colour": "#059669", "bg": "#f0fdf4",
+                      "label": "All Clean Air Zones Clear", "detail": "Compliant with all UK zones"})
 
-    # Failure patterns
-    patterns = check_data.get("failure_patterns", [])
-    for p in patterns[:2]:
-        findings.append({"icon": "⚠️", "colour": "#f59e0b", "text": f"Recurring {p['category']} issues ({p['occurrences']}x)"})
-
-    return findings[:6]  # Cap at 6 findings
+    return items
 
 
 def _score_colour(score: Optional[int]) -> str:
@@ -98,7 +162,7 @@ def render_report_email(
         "score_colour": _score_colour(check_data.get("condition_score")),
         "verdict": verdict,
         "verdict_bg_colour": _verdict_bg(verdict),
-        "key_findings": _build_key_findings(check_data, verdict),
+        "checks_summary": _build_checks_summary(check_data),
         "report_ref": report_ref,
         "report_url": "#",  # Placeholder — no web view yet
         "unsubscribe_url": "#",

@@ -204,7 +204,7 @@ class StolenCheck(BaseModel):
 
 
 class WriteOffRecord(BaseModel):
-    category: str
+    category: Optional[str] = None
     date: str
     loss_type: Optional[str] = None
 

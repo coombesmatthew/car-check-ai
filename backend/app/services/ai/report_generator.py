@@ -526,14 +526,15 @@ Records: {writeoff.get('record_count', 0)}""")
 
         valuation = check_result.get("valuation")
         if valuation:
+            def _fmt(v): return f"£{v:,}" if isinstance(v, (int, float)) else "N/A"
             parts.append(f"""
 VALUATION (source: Brego):
-Private Sale: £{valuation.get('private_sale', '?'):,}
-Dealer Forecourt: £{valuation.get('dealer_forecourt', '?'):,}
-Trade-in: £{valuation.get('trade_in', '?'):,}
-Part Exchange: £{valuation.get('part_exchange', '?'):,}
+Private Sale: {_fmt(valuation.get('private_sale'))}
+Dealer Forecourt: {_fmt(valuation.get('dealer_forecourt'))}
+Trade-in: {_fmt(valuation.get('trade_in'))}
+Part Exchange: {_fmt(valuation.get('part_exchange'))}
 Condition: {valuation.get('condition', '?')}
-Mileage Used: {valuation.get('mileage_used', '?'):,} miles""")
+Mileage Used: {f"{valuation.get('mileage_used'):,} miles" if isinstance(valuation.get('mileage_used'), int) else 'N/A'}""")
 
         plates = check_result.get("plate_changes")
         if plates:

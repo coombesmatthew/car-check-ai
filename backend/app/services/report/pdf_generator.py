@@ -38,77 +38,105 @@ def _md_to_html(content: str, citation_urls: Optional[Dict[int, str]] = None) ->
     content = re.sub(r"\[(\d+)\]", _cite, content)
     # Bold
     content = re.sub(r"\*\*(.*?)\*\*", r"<strong>\1</strong>", content)
-    # Italic
-    content = re.sub(r"\*(.*?)\*", r"<em>\1</em>", content)
+    # Italic — avoid matching bold remnants
+    content = re.sub(r"(?<!\*)\*(?!\*)(.*?)(?<!\*)\*(?!\*)", r"<em>\1</em>", content)
 
     # Expand inline tables: AI often outputs entire table on one line.
-    # Row boundary is always "| |" (pipe-space-pipe with nothing between).
+    # Row boundary is "| |" (pipe-space-pipe).
     content = re.sub(r"\| \|", "|\n|", content)
 
-    # Ensure ### headings always start on their own line
-    content = re.sub(r"([^\n])(### )", r"\1\n\2", content)
+    # Ensure ### and ## headings always start on their own line.
+    # Exclude '#' from the preceding character to avoid splitting '###' into '#' + '## '.
+    content = re.sub(r"([^\n#])(#{2,3} )", r"\1\n\2", content)
 
     lines = content.split("\n")
     output: List[str] = []
     i = 0
     while i < len(lines):
         line = lines[i]
+        stripped = line.strip()
 
-        # H3 subheading
-        if line.startswith("### "):
-            output.append(f"<h4>{line[4:].strip()}</h4>")
+        # H2 subheading (Claude sometimes uses ## inside sections)
+        if stripped.startswith("## "):
+            output.append(f'<h3 style="font-size:11pt;font-weight:700;color:#1e293b;margin:4mm 0 2mm;">{stripped[3:].strip()}</h3>')
             i += 1
 
-        # Horizontal rule
-        elif line.strip() == "---":
-            i += 1  # skip — section dividers already handled by ## splits
+        # H3 subheading
+        elif stripped.startswith("### "):
+            output.append(f'<h4 style="font-size:10pt;font-weight:700;color:#1e293b;margin:3mm 0 1mm;">{stripped[4:].strip()}</h4>')
+            i += 1
+
+        # Horizontal rule — skip (dividers are cosmetic noise in PDF sections)
+        elif stripped == "---":
+            i += 1
+
+        # Blockquote > "..."
+        elif stripped.startswith("> "):
+            quote_lines = []
+            while i < len(lines) and lines[i].strip().startswith("> "):
+                quote_lines.append(lines[i].strip()[2:])
+                i += 1
+            quote_html = " ".join(quote_lines)
+            output.append(f'<blockquote style="margin:2mm 0 2mm 4mm;padding:2mm 3mm;border-left:3px solid #cbd5e1;color:#475569;font-style:italic;">{quote_html}</blockquote>')
 
         # Pipe table
-        elif line.strip().startswith("|"):
+        elif stripped.startswith("|"):
             table_lines = []
             while i < len(lines) and lines[i].strip().startswith("|"):
                 table_lines.append(lines[i])
                 i += 1
             if len(table_lines) >= 2:
                 html = '<table class="ai-table">'
-                for row_idx, row in enumerate(table_lines):
+                first_data_row = True
+                for row in table_lines:
                     cells = [c.strip() for c in row.strip().strip("|").split("|")]
                     # skip separator row (---|---)
-                    if all(re.match(r"^[-: ]+$", c) for c in cells):
+                    if all(re.match(r"^[-: ]+$", c) for c in cells if c):
                         continue
-                    tag = "th" if row_idx == 0 else "td"
+                    tag = "th" if first_data_row else "td"
+                    first_data_row = False
                     html += "<tr>" + "".join(f"<{tag}>{c}</{tag}>" for c in cells) + "</tr>"
                 html += "</table>"
                 output.append(html)
 
         # Numbered list
-        elif re.match(r"^\d+\. ", line):
+        elif re.match(r"^\d+\. ", stripped):
             items = []
-            while i < len(lines) and re.match(r"^\d+\. ", lines[i]):
-                text = re.sub(r"^\d+\. ", "", lines[i])
+            while i < len(lines) and re.match(r"^\d+\. ", lines[i].strip()):
+                text = re.sub(r"^\d+\. ", "", lines[i].strip())
                 items.append(f"<li>{text}</li>")
                 i += 1
             output.append("<ol>" + "".join(items) + "</ol>")
 
         # Unordered list
-        elif line.startswith("- ") or line.startswith("• "):
+        elif stripped.startswith("- ") or stripped.startswith("• ") or stripped.startswith("* "):
             items = []
-            while i < len(lines) and (lines[i].startswith("- ") or lines[i].startswith("• ")):
-                items.append(f"<li>{lines[i][2:].strip()}</li>")
-                i += 1
+            while i < len(lines):
+                s = lines[i].strip()
+                if s.startswith("- ") or s.startswith("• ") or s.startswith("* "):
+                    items.append(f"<li>{s[2:].strip()}</li>")
+                    i += 1
+                else:
+                    break
             output.append("<ul>" + "".join(items) + "</ul>")
 
         # Blank line
-        elif not line.strip():
+        elif not stripped:
             i += 1
 
-        # Normal paragraph line — collect until blank
+        # Normal paragraph — collect until blank or block element
         else:
             para_lines = []
-            while i < len(lines) and lines[i].strip() and not lines[i].startswith(("### ", "- ", "• ", "|")) and not re.match(r"^\d+\. ", lines[i]):
-                para_lines.append(lines[i])
+            while i < len(lines):
+                s = lines[i].strip()
+                if not s:
+                    break
+                if s.startswith(("## ", "### ", "- ", "• ", "* ", "> ", "|")) or re.match(r"^\d+\. ", s) or s == "---":
+                    break
+                para_lines.append(s)
                 i += 1
-            output.append(f"<p>{' '.join(para_lines)}</p>")
+            if para_lines:
+                output.append(f"<p>{' '.join(para_lines)}</p>")
 
     return "".join(output)
 
@@ -163,17 +191,107 @@ def _parse_ai_sections(report_text: str) -> List[Dict[str, str]]:
 
 
 def _extract_verdict(report_text: str) -> Optional[str]:
-    """Extract BUY/NEGOTIATE/AVOID verdict from report text."""
+    """Extract BUY/NEGOTIATE/AVOID verdict from report text.
+
+    Handles both '**AVOID**' (exact) and '**AVOID —...' (with trailing text).
+    """
     if not report_text:
         return None
-    upper = report_text.upper()
-    if "**AVOID**" in report_text or "AVOID" in upper.split("RECOMMENDATION")[1:2]:
-        return "AVOID"
-    if "**NEGOTIATE**" in report_text or "NEGOTIATE" in upper.split("RECOMMENDATION")[1:2]:
-        return "NEGOTIATE"
-    if "**BUY**" in report_text or "BUY" in upper.split("RECOMMENDATION")[1:2]:
-        return "BUY"
+    # Match **VERDICT** or **VERDICT — ...** or **VERDICT: ...** at start of a line
+    m = re.search(r"\*\*(AVOID|NEGOTIATE|BUY)[\s*\-—:]", report_text)
+    if m:
+        return m.group(1)
+    # Fallback: bare word in first 500 chars
+    snippet = report_text[:500].upper()
+    for word in ("AVOID", "NEGOTIATE", "BUY"):
+        if word in snippet:
+            return word
     return None
+
+
+def _build_checks_summary(check_data: Dict) -> List[Dict]:
+    """Build pass/fail checklist items for the PDF At a Glance section."""
+    items = []
+
+    # Stolen
+    stolen = check_data.get("stolen_check")
+    if stolen:
+        if stolen.get("stolen"):
+            items.append({"status": "fail", "icon": "✗", "label": "Reported Stolen",
+                          "detail": "Do not purchase — stolen marker on record"})
+        else:
+            items.append({"status": "pass", "icon": "✓", "label": "Not Stolen",
+                          "detail": "Clear"})
+
+    # Finance
+    finance = check_data.get("finance_check")
+    if finance:
+        if finance.get("finance_outstanding"):
+            count = finance.get("record_count", 1)
+            items.append({"status": "fail", "icon": "✗", "label": "Finance Outstanding",
+                          "detail": f"{count} active agreement{'s' if count != 1 else ''} — lender may repossess"})
+        else:
+            items.append({"status": "pass", "icon": "✓", "label": "No Finance Outstanding",
+                          "detail": "Clear — safe to purchase"})
+
+    # Write-off
+    writeoff = check_data.get("write_off_check")
+    if writeoff:
+        if writeoff.get("written_off"):
+            cats = [r.get("category") for r in writeoff.get("records", []) if r.get("category")]
+            cat_str = " / ".join(f"Cat {c}" for c in cats) if cats else "category unknown"
+            items.append({"status": "fail", "icon": "✗", "label": "Insurance Write-Off Found",
+                          "detail": f"{cat_str} — affects insurance and resale value"})
+        else:
+            items.append({"status": "pass", "icon": "✓", "label": "No Write-Off History",
+                          "detail": "Clear"})
+
+    # Salvage
+    salvage = check_data.get("salvage_check")
+    if salvage:
+        if salvage.get("salvage_found"):
+            items.append({"status": "warn", "icon": "!", "label": "Salvage Records Found",
+                          "detail": "Appears in salvage auction records"})
+        else:
+            items.append({"status": "pass", "icon": "✓", "label": "No Salvage Records",
+                          "detail": "Clear"})
+
+    # Clocking
+    clocking = check_data.get("clocking_analysis") or {}
+    if clocking.get("clocked"):
+        items.append({"status": "fail", "icon": "✗", "label": "Mileage Discrepancy",
+                      "detail": "Odometer tampering suspected"})
+    else:
+        items.append({"status": "pass", "icon": "✓", "label": "Mileage Verified",
+                      "detail": "No clocking detected"})
+
+    # MOT
+    vehicle = check_data.get("vehicle") or {}
+    mot_status = vehicle.get("mot_status", "")
+    stats = check_data.get("vehicle_stats") or {}
+    mot_days = stats.get("mot_days_remaining")
+    if mot_status == "Valid":
+        if mot_days is not None and mot_days < 60:
+            items.append({"status": "warn", "icon": "!", "label": "MOT Valid",
+                          "detail": f"Expires in {mot_days} days — use as leverage"})
+        else:
+            detail = f"{mot_days} days remaining" if mot_days else "Currently valid"
+            items.append({"status": "pass", "icon": "✓", "label": "MOT Valid", "detail": detail})
+    elif mot_status:
+        items.append({"status": "fail", "icon": "✗", "label": "MOT Not Valid",
+                      "detail": f"Status: {mot_status}"})
+
+    # ULEZ
+    ulez = check_data.get("ulez_compliance") or {}
+    if ulez.get("compliant") is False:
+        charge = ulez.get("daily_charge", "charges apply")
+        items.append({"status": "warn", "icon": "!", "label": "CAZ Non-Compliant",
+                      "detail": f"{charge} in affected UK zones"})
+    elif ulez.get("compliant") is True:
+        items.append({"status": "pass", "icon": "✓", "label": "All Clean Air Zones Clear",
+                      "detail": "Compliant with all UK zones"})
+
+    return items
 
 
 def generate_pdf(
@@ -216,6 +334,7 @@ def generate_pdf(
 
     # Verdict
     verdict = _extract_verdict(ai_report) if ai_report else None
+    checks_summary = _build_checks_summary(check_data)
     verdict_class = {
         "BUY": "buy",
         "NEGOTIATE": "negotiate",
@@ -250,6 +369,7 @@ def generate_pdf(
         "score_class": score_class,
         "verdict": verdict,
         "verdict_class": verdict_class,
+        "checks_summary": checks_summary,
         "generated_date": datetime.utcnow().strftime("%d %B %Y at %H:%M UTC"),
         "report_ref": report_ref,
         "ai_report_sections": ai_sections,
