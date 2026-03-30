@@ -9,8 +9,12 @@ Flow for free tier:
   4. Assemble EV-specific response
 
 Flow for paid tier:
-  + ClearWatt range + EV Database specs + AutoPredict lifespan in parallel
-  + Derive battery health score + charging costs
+  + ClearWatt battery health + range degradation only
+  + Derive battery health score and range estimate
+
+NOTE: Currently only ClearWatt is enabled on the plan.
+To get EV specs + charging costs + lifespan prediction, request plan upgrade
+to include: EVDB Search + Range/Efficiency + AutoPredict endpoints.
 """
 
 import asyncio
@@ -212,93 +216,30 @@ class EVOrchestrator:
         return None
 
     async def _fetch_ev_data(self, registration: str) -> Optional[Dict]:
-        """Fetch ClearWatt + EV Database + AutoPredict.
+        """Fetch ClearWatt battery health + range data.
 
-        Two-phase approach:
-          Phase 1 (parallel): ClearWatt + AutoPredict (predict + stats) + EVDB VRM search
-          Phase 2 (parallel, needs evdb_vehicle_id): EVDB data endpoints
+        NOTE: Currently only ClearWatt is enabled on the plan.
+        To enable EV specs (battery details, charging times, lifespan prediction),
+        request plan upgrade to include: EVDB Search + Range/Efficiency + AutoPredict.
         """
         try:
             mileage = self._get_current_mileage()
+            if not mileage:
+                logger.warning(f"Cannot fetch ClearWatt without mileage for {registration}")
+                return None
 
-            # Phase 1: All VRM-based calls in parallel
-            tasks = {
-                "autopredict_predict": self.oneauto_client.get_autopredict_predict(registration),
-                "autopredict_stats": self.oneauto_client.get_autopredict_statistics(registration),
-                "evdb_search": self.oneauto_client.get_evdb_search(registration),
-            }
-            # ClearWatt requires mileage — skip if unavailable
-            if mileage:
-                tasks["clearwatt"] = self.oneauto_client.get_clearwatt(registration, mileage)
+            clearwatt_raw = await self.oneauto_client.get_clearwatt(registration, mileage)
+            return self._parse_ev_data(clearwatt_raw=clearwatt_raw)
 
-            keys = list(tasks.keys())
-            results = await asyncio.gather(*tasks.values(), return_exceptions=True)
-            phase1 = {}
-            for key, result in zip(keys, results):
-                if isinstance(result, Exception):
-                    logger.warning(f"{key} failed: {result}")
-                    phase1[key] = None
-                else:
-                    phase1[key] = result
-
-            # Phase 2: EVDB data endpoints (need evdb_vehicle_id from search)
-            evdb_data = {}
-            evdb_vehicle_id = self._extract_evdb_vehicle_id(phase1.get("evdb_search"))
-            if evdb_vehicle_id:
-                evdb_tasks = {
-                    "range": self.oneauto_client.get_evdb_range_efficiency(evdb_vehicle_id),
-                    "fast_charging": self.oneauto_client.get_evdb_fast_charging(evdb_vehicle_id),
-                    "onboard_charging": self.oneauto_client.get_evdb_onboard_charging(evdb_vehicle_id),
-                    "pence_per_mile": self.oneauto_client.get_evdb_pence_per_mile(evdb_vehicle_id),
-                    "vehicle_data": self.oneauto_client.get_evdb_vehicle_data(evdb_vehicle_id),
-                }
-                evdb_keys = list(evdb_tasks.keys())
-                evdb_results = await asyncio.gather(*evdb_tasks.values(), return_exceptions=True)
-                for key, result in zip(evdb_keys, evdb_results):
-                    if isinstance(result, Exception):
-                        logger.warning(f"EVDB {key} failed: {result}")
-                        evdb_data[key] = None
-                    else:
-                        evdb_data[key] = result
-
-            return self._parse_ev_data(
-                clearwatt_raw=phase1.get("clearwatt"),
-                autopredict_predict_raw=phase1.get("autopredict_predict"),
-                autopredict_stats_raw=phase1.get("autopredict_stats"),
-                evdb_search_raw=phase1.get("evdb_search"),
-                evdb_data=evdb_data,
-            )
         except Exception as e:
             logger.error(f"EV data fetch failed: {e}")
             return None
 
-    def _extract_evdb_vehicle_id(self, search_raw: Optional[Dict]) -> Optional[int]:
-        """Extract the best-matching evdb_vehicle_id from EVDB search results."""
-        if not search_raw:
-            return None
-        results = search_raw.get("evdb_results", [])
-        if not results:
-            return None
-        # Pick the result with highest overall confidence score
-        best = max(results, key=lambda r: (r.get("confidence_scoring", {}).get("overall_score", 0)))
-        vehicle_id = best.get("evdb_vehicle_id")
-        if vehicle_id:
-            logger.info(
-                f"EVDB matched vehicle_id={vehicle_id} "
-                f"({best.get('manufacturer_desc')} {best.get('model_range_desc')} {best.get('derivative_desc')}, "
-                f"confidence={best.get('confidence_scoring', {}).get('overall_score')})"
-            )
-        return vehicle_id
-
     def _parse_ev_data(
         self,
         clearwatt_raw: Optional[Dict],
-        autopredict_predict_raw: Optional[Dict],
-        autopredict_stats_raw: Optional[Dict],
-        evdb_search_raw: Optional[Dict],
-        evdb_data: Dict,
     ) -> Dict:
-        """Parse real One Auto API responses into typed schema objects."""
+        """Parse ClearWatt battery health + range data into typed schema objects."""
         result = {}
 
         # --- ClearWatt: battery health + range degradation ---
@@ -342,120 +283,14 @@ class EVOrchestrator:
                 usable_battery_capacity_kwh=vehicle_info.get("usable_battery_capacity_kwh"),
             )
 
-        # --- EV Database: specs, range scenarios, charging ---
-        evdb_range = evdb_data.get("range")
-        evdb_fast = evdb_data.get("fast_charging")
-        evdb_onboard = evdb_data.get("onboard_charging")
-        evdb_ppm = evdb_data.get("pence_per_mile")
-        evdb_vehicle = evdb_data.get("vehicle_data")
-
-        if any([evdb_range, evdb_fast, evdb_onboard, evdb_vehicle]):
-            range_data = (evdb_range or {}).get("range", {})
-            efficiency_data = (evdb_range or {}).get("efficiency", {})
-            battery_data = (evdb_range or {}).get("battery", {})
-            performance_data = (evdb_vehicle or {}).get("drivetrain_performance", {})
-            dimensions_data = (evdb_vehicle or {}).get("dimensions_weights", {})
-
-            result["ev_specs"] = EVSpecs(
-                # Battery
-                battery_capacity_kwh=battery_data.get("battery_capacity_kwh") if battery_data else None,
-                usable_capacity_kwh=battery_data.get("battery_capacity_usable_kwh") if battery_data else None,
-                battery_type=battery_data.get("battery_type"),
-                battery_chemistry=battery_data.get("battery_chemistry"),
-                battery_architecture=battery_data.get("battery_architecture"),
-                battery_weight_kg=battery_data.get("battery_weight_kg"),
-                battery_warranty_years=battery_data.get("battery_warranty_years"),
-                battery_warranty_miles=battery_data.get("battery_warranty_mileage"),
-                # Charging
-                charge_port=(evdb_onboard or {}).get("charge_port_type"),
-                fast_charge_port=(evdb_fast or {}).get("fast_charger_port_type"),
-                max_dc_charge_kw=(evdb_fast or {}).get("fast_charger_max_power_kw"),
-                avg_dc_charge_kw=(evdb_fast or {}).get("fast_charger_average_power_kw"),
-                max_ac_charge_kw=(evdb_onboard or {}).get("standard_onboard_charger_max_power_kw"),
-                charge_time_home_mins=(evdb_onboard or {}).get("standard_onboard_charger_chargetime_0to100_percent_minutes"),
-                charge_time_rapid_mins=(evdb_fast or {}).get("fast_charger_chargetime_10to80_percent_mins"),
-                rapid_charge_speed_mph=(evdb_fast or {}).get("fast_charger_chargespeed_10to80_percent_mph"),
-                # Efficiency
-                energy_consumption_wh_per_mile=efficiency_data.get("real_electric_consumption_watt_hours_per_mile"),
-                energy_consumption_mi_per_kwh=efficiency_data.get("real_electric_consumption_miles_per_kwh"),
-                # Range
-                real_range_miles=range_data.get("evdb_real_electric_range_miles"),
-                # Performance
-                drivetrain=performance_data.get("drivetrain_desc"),
-                motor_power_kw=performance_data.get("drivetrain_power_kw"),
-                motor_power_bhp=performance_data.get("drivetrain_power_bhp"),
-                top_speed_mph=performance_data.get("top_speed_mph"),
-                zero_to_sixty_secs=performance_data.get("acceleration_0to62_mph_seconds"),
-                # Dimensions
-                kerb_weight_kg=dimensions_data.get("vehicleweight_kg"),
-                boot_capacity_litres=dimensions_data.get("bootspace_min_litres"),
-                boot_capacity_max_litres=dimensions_data.get("bootspace_max_litres"),
-                frunk_litres=dimensions_data.get("bootspace_front_trunk_litres"),
-                max_towing_weight_kg=dimensions_data.get("max_braked_towing_weight_kg"),
-            )
-
-        # --- Build range scenarios from EV Database pence per mile (9 weather/driving combos) ---
-        if evdb_ppm:
-            range_from_ppm = evdb_ppm.get("range_data", {})
-            scenarios = []
-            scenario_map = [
-                ("Highway Cold (-10°C)", -10, "highway", "evdb_real_electric_range_highway_cold_miles"),
-                ("Combined Cold (-10°C)", -10, "combined", "evdb_real_electric_range_combined_cold_miles"),
-                ("City Cold (-10°C)", -10, "city", "evdb_real_electric_range_city_cold_miles"),
-                ("Highway Mild (10°C)", 10, "highway", "evdb_real_electric_range_highway_mild_miles"),
-                ("Combined Mild (10°C)", 10, "combined", "evdb_real_electric_range_combined_mild_miles"),
-                ("City Mild (10°C)", 10, "city", "evdb_real_electric_range_city_mild_miles"),
-                ("Highway Warm (23°C)", 23, "highway", "evdb_real_electric_range_highway_warm_miles"),
-                ("Combined Warm (23°C)", 23, "combined", "evdb_real_electric_range_combined_warm_miles"),
-                ("City Warm (23°C)", 23, "city", "evdb_real_electric_range_city_warm_miles"),
-            ]
-            for name, temp, style, key in scenario_map:
-                miles = range_from_ppm.get(key)
-                if miles is not None:
-                    scenarios.append(RangeScenario(
-                        scenario=name,
-                        temperature_c=temp,
-                        estimated_miles=miles,
-                        driving_style=style,
-                    ))
-            if scenarios:
-                result["range_scenarios"] = scenarios
-
-        # --- Charging costs from EV Database pence per mile ---
-        if evdb_ppm:
-            result["charging_costs"] = self._calculate_charging_costs_from_evdb(evdb_ppm, evdb_data)
-        elif any([evdb_range, evdb_onboard]):
-            # Fallback: estimate from specs if ppm endpoint failed
-            result["charging_costs"] = self._calculate_charging_costs_from_specs(evdb_range, evdb_onboard)
-
-        # --- AutoPredict: lifespan prediction ---
-        predict = autopredict_predict_raw
-        stats = autopredict_stats_raw
-        if predict or stats:
-            averages = (stats or {}).get("averages_data", {})
-            number_left = (stats or {}).get("number_left_data", {})
-            result["lifespan_prediction"] = LifespanPrediction(
-                predicted_remaining_years=(predict or {}).get("years_left_prediction"),
-                prediction_range=(predict or {}).get("prediction_string"),
-                one_year_survival_pct=(predict or {}).get("one_year_prediction"),
-                model_avg_final_miles=averages.get("model_average_final_miles"),
-                model_avg_final_age=averages.get("model_average_final_age"),
-                manufacturer_avg_final_miles=averages.get("manufacturer_average_final_miles"),
-                manufacturer_avg_final_age=averages.get("manufacturer_average_final_age"),
-                pct_still_on_road=number_left.get("manufacturer_model_year_percentage_left"),
-                initially_registered=number_left.get("manufacturer_model_year_initially_registered"),
-                currently_licensed=number_left.get("manufacturer_model_year_currently_licensed"),
-            )
-
-        # --- Derive battery health ---
-        result["battery_health"] = self._derive_battery_health(clearwatt_raw, evdb_data)
+        # --- Derive battery health from ClearWatt ---
+        result["battery_health"] = self._derive_battery_health(clearwatt_raw)
 
         return result
 
     def _derive_battery_health(
         self,
         clearwatt_raw: Optional[Dict],
-        evdb_data: Dict,
     ) -> BatteryHealth:
         """Derive battery health score from ClearWatt range data."""
         if not clearwatt_raw:
@@ -515,6 +350,9 @@ class EVOrchestrator:
             test_grade=test_grade,
             test_date=test_date,
         )
+
+    # NOTE: Charging cost calculation methods removed — EV Database endpoints not enabled on plan.
+    # To re-enable: request plan upgrade to include EVDB Range, Efficiency, and Pence Per Mile endpoints.
 
     def _calculate_charging_costs_from_evdb(self, ppm_raw: Dict, evdb_data: Dict) -> ChargingCosts:
         """Calculate charging costs using real EV Database pence per mile data."""
