@@ -45,6 +45,19 @@ from app.schemas.check import (
     TaxCalculation,
     SafetyRating,
     VehicleStats,
+    FinanceCheck,
+    FinanceRecord,
+    StolenCheck,
+    WriteOffCheck,
+    WriteOffRecord,
+    PlateChangeHistory,
+    PlateChangeRecord,
+    KeeperHistory,
+    HighRiskCheck,
+    HighRiskRecord,
+    PreviousSearches,
+    PreviousSearchRecord,
+    SalvageCheck,
 )
 from app.schemas.ev import (
     EVCheckResponse,
@@ -88,7 +101,8 @@ class EVOrchestrator:
         """Execute an EV check.
 
         tier="ev_free": DVLA + MOT only (validates EV, shows basic data)
-        tier="ev_paid": + ClearWatt + EV Database + AutoPredict
+        tier="ev_health": + ClearWatt + Range & Pence Per Mile (battery health + charging costs)
+        tier="ev_complete": + AutoCheck + Salvage Check (full vehicle history)
         """
         clean_reg = registration.upper().replace(" ", "")
         logger.info(f"Starting {tier} EV check for {clean_reg}")
@@ -147,29 +161,35 @@ class EVOrchestrator:
             dvla_data, raw_tests, mot_analysis.get("mileage_timeline", [])
         )
 
-        # Step 6: Paid tier — fetch EV-specific data
+        # Step 6: Paid tiers — fetch EV-specific and/or provenance data
         range_estimate = None
         range_scenarios = []
-        ev_specs = None
-        lifespan_prediction = None
         battery_health = None
         charging_costs = None
 
-        if tier == "ev_paid" and is_electric and self.oneauto_client:
+        # EV Health data (both ev_health and ev_complete tiers)
+        if tier in ("ev_health", "ev_complete") and is_electric and self.oneauto_client:
             ev_data = await self._fetch_ev_data(clean_reg)
             if ev_data:
                 range_estimate = ev_data.get("range_estimate")
                 range_scenarios = ev_data.get("range_scenarios", [])
-                ev_specs = ev_data.get("ev_specs")
-                lifespan_prediction = ev_data.get("lifespan_prediction")
                 battery_health = ev_data.get("battery_health")
                 charging_costs = ev_data.get("charging_costs")
                 if range_estimate:
                     data_sources.append("ClearWatt")
-                if ev_specs:
-                    data_sources.append("EV Database")
-                if lifespan_prediction:
-                    data_sources.append("AutoPredict")
+
+        # Vehicle history data (ev_complete tier only)
+        provenance = None
+        current_mileage = None
+        if tier == "ev_complete" and self.oneauto_client:
+            if (mot_analysis.get("mot_summary") or {}).get("current_odometer"):
+                try:
+                    current_mileage = int(mot_analysis["mot_summary"]["current_odometer"])
+                except (ValueError, TypeError):
+                    pass
+            provenance = await self._fetch_provenance_data(clean_reg, current_mileage)
+            if provenance:
+                data_sources.append(provenance.pop("_source", "Provenance Check"))
 
         response = EVCheckResponse(
             registration=clean_reg,
@@ -189,10 +209,16 @@ class EVOrchestrator:
             vehicle_stats=vehicle_stats,
             range_estimate=range_estimate,
             range_scenarios=range_scenarios,
-            ev_specs=ev_specs,
-            lifespan_prediction=lifespan_prediction,
             battery_health=battery_health,
             charging_costs=charging_costs,
+            finance_check=provenance.get("finance_check") if provenance else None,
+            stolen_check=provenance.get("stolen_check") if provenance else None,
+            write_off_check=provenance.get("write_off_check") if provenance else None,
+            plate_changes=provenance.get("plate_changes") if provenance else None,
+            keeper_history=provenance.get("keeper_history") if provenance else None,
+            high_risk=provenance.get("high_risk") if provenance else None,
+            previous_searches=provenance.get("previous_searches") if provenance else None,
+            salvage_check=provenance.get("salvage_check") if provenance else None,
             checked_at=datetime.utcnow(),
             data_sources=data_sources,
         )
@@ -216,11 +242,11 @@ class EVOrchestrator:
         return None
 
     async def _fetch_ev_data(self, registration: str) -> Optional[Dict]:
-        """Fetch ClearWatt battery health + range data.
+        """Fetch ClearWatt battery health + Range & Pence Per Mile charging costs.
 
-        NOTE: Currently only ClearWatt is enabled on the plan.
-        To enable EV specs (battery details, charging times, lifespan prediction),
-        request plan upgrade to include: EVDB Search + Range/Efficiency + AutoPredict.
+        NOTE: Currently only ClearWatt and Range & Pence Per Mile are enabled on the plan.
+        To enable additional specs, request plan upgrade to include:
+        EVDB Search + Range/Efficiency + AutoPredict.
         """
         try:
             mileage = self._get_current_mileage()
@@ -228,18 +254,123 @@ class EVOrchestrator:
                 logger.warning(f"Cannot fetch ClearWatt without mileage for {registration}")
                 return None
 
+            # Fetch both ClearWatt and Range & Pence Per Mile in parallel
             clearwatt_raw = await self.oneauto_client.get_clearwatt(registration, mileage)
-            return self._parse_ev_data(clearwatt_raw=clearwatt_raw)
+            ppm_raw = await self.oneauto_client.get_evdb_pence_per_mile(registration)
+
+            return self._parse_ev_data(clearwatt_raw=clearwatt_raw, ppm_raw=ppm_raw)
 
         except Exception as e:
             logger.error(f"EV data fetch failed: {e}")
             return None
 
+    async def _fetch_provenance_data(self, registration: str, current_mileage: Optional[int] = None) -> Optional[Dict]:
+        """Fetch AutoCheck + Salvage Check for vehicle history."""
+        try:
+            autocheck_raw, salvage_raw = await asyncio.gather(
+                self.oneauto_client.get_autocheck(registration),
+                self.oneauto_client.get_salvage(registration),
+                return_exceptions=True,
+            )
+
+            if isinstance(autocheck_raw, Exception):
+                logger.warning(f"One Auto AutoCheck failed: {autocheck_raw}")
+                autocheck_raw = None
+            if isinstance(salvage_raw, Exception):
+                logger.warning(f"One Auto Salvage check failed: {salvage_raw}")
+                salvage_raw = None
+
+            # Parse AutoCheck response using helper from oneauto_client
+            from app.services.data.oneauto_client import parse_autocheck, parse_salvage
+
+            parsed = parse_autocheck(autocheck_raw)
+            parsed["salvage_check"] = parse_salvage(salvage_raw)
+
+            return self._build_provenance_from_raw(parsed, "Experian via One Auto API")
+
+        except Exception as e:
+            logger.error(f"Provenance data fetch failed: {e}")
+            return None
+
+    def _build_provenance_from_raw(self, raw: Optional[Dict], source: str) -> Optional[Dict]:
+        """Convert raw provenance dict into typed schema objects."""
+        if not raw:
+            return None
+
+        result = {"_source": source}
+
+        fc = raw.get("finance_check")
+        if fc:
+            records = [FinanceRecord(**r) for r in fc.get("records", [])]
+            result["finance_check"] = FinanceCheck(
+                finance_outstanding=fc["finance_outstanding"],
+                record_count=fc.get("record_count", 0),
+                records=records,
+                data_source=fc.get("data_source", source),
+            )
+
+        sc = raw.get("stolen_check")
+        if sc:
+            result["stolen_check"] = StolenCheck(**sc)
+
+        wc = raw.get("write_off_check")
+        if wc:
+            records = [WriteOffRecord(**r) for r in wc.get("records", [])]
+            result["write_off_check"] = WriteOffCheck(
+                written_off=wc["written_off"],
+                record_count=wc.get("record_count", 0),
+                records=records,
+                data_source=wc.get("data_source", source),
+            )
+
+        pc = raw.get("plate_changes")
+        if pc:
+            records = [PlateChangeRecord(**r) for r in pc.get("records", [])]
+            result["plate_changes"] = PlateChangeHistory(
+                changes_found=pc["changes_found"],
+                record_count=pc.get("record_count", 0),
+                records=records,
+                data_source=pc.get("data_source", source),
+            )
+
+        kh = raw.get("keeper_history")
+        if kh:
+            result["keeper_history"] = KeeperHistory(**kh)
+
+        hr = raw.get("high_risk")
+        if hr:
+            records = [HighRiskRecord(**r) for r in hr.get("records", [])]
+            result["high_risk"] = HighRiskCheck(
+                flagged=hr.get("flagged", False),
+                records=records,
+                data_source=hr.get("data_source", source),
+            )
+
+        ps = raw.get("previous_searches")
+        if ps:
+            records = [PreviousSearchRecord(**r) for r in ps.get("records", [])]
+            result["previous_searches"] = PreviousSearches(
+                search_count=ps.get("search_count", 0),
+                records=records,
+                data_source=ps.get("data_source", source),
+            )
+
+        sv = raw.get("salvage_check")
+        if sv:
+            result["salvage_check"] = SalvageCheck(
+                salvage_found=sv.get("salvage_found", False),
+                records=sv.get("records", []),
+                data_source=sv.get("data_source", "CarGuide"),
+            )
+
+        return result
+
     def _parse_ev_data(
         self,
         clearwatt_raw: Optional[Dict],
+        ppm_raw: Optional[Dict] = None,
     ) -> Dict:
-        """Parse ClearWatt battery health + range data into typed schema objects."""
+        """Parse ClearWatt + Range & Pence Per Mile data into typed schema objects."""
         result = {}
 
         # --- ClearWatt: battery health + range degradation ---
@@ -283,10 +414,80 @@ class EVOrchestrator:
                 usable_battery_capacity_kwh=vehicle_info.get("usable_battery_capacity_kwh"),
             )
 
+        # --- Range scenarios from Range & Pence Per Mile (9 weather/driving combos) ---
+        if ppm_raw:
+            range_from_ppm = ppm_raw.get("range_data", {})
+            scenarios = []
+            scenario_map = [
+                ("Highway Cold (-10°C)", -10, "highway", "evdb_real_electric_range_highway_cold_miles"),
+                ("Combined Cold (-10°C)", -10, "combined", "evdb_real_electric_range_combined_cold_miles"),
+                ("City Cold (-10°C)", -10, "city", "evdb_real_electric_range_city_cold_miles"),
+                ("Highway Mild (10°C)", 10, "highway", "evdb_real_electric_range_highway_mild_miles"),
+                ("Combined Mild (10°C)", 10, "combined", "evdb_real_electric_range_combined_mild_miles"),
+                ("City Mild (10°C)", 10, "city", "evdb_real_electric_range_city_mild_miles"),
+                ("Highway Warm (23°C)", 23, "highway", "evdb_real_electric_range_highway_warm_miles"),
+                ("Combined Warm (23°C)", 23, "combined", "evdb_real_electric_range_combined_warm_miles"),
+                ("City Warm (23°C)", 23, "city", "evdb_real_electric_range_city_warm_miles"),
+            ]
+            for name, temp, style, key in scenario_map:
+                miles = range_from_ppm.get(key)
+                if miles is not None:
+                    scenarios.append(RangeScenario(
+                        scenario=name,
+                        temperature_c=temp,
+                        estimated_miles=miles,
+                        driving_style=style,
+                    ))
+            if scenarios:
+                result["range_scenarios"] = scenarios
+
+        # --- Charging costs from Range & Pence Per Mile ---
+        if ppm_raw:
+            result["charging_costs"] = self._calculate_charging_costs_from_ppm(ppm_raw)
+
         # --- Derive battery health from ClearWatt ---
         result["battery_health"] = self._derive_battery_health(clearwatt_raw)
 
         return result
+
+    def _calculate_charging_costs_from_ppm(self, ppm_raw: Dict) -> ChargingCosts:
+        """Calculate charging costs from Range & Pence Per Mile data."""
+        PETROL_PPM = 15.0  # pence per mile for avg petrol car
+        ANNUAL_MILES = 10000
+
+        # Use combined mild pence per mile (most representative UK condition)
+        ppm_data = ppm_raw.get("pence_per_mile_data", {})
+        combined_mild = ppm_data.get("pence_per_mile_combined_mild", {})
+
+        cpm_home = combined_mild.get("domestic_standard")  # standard home tariff
+        cpm_cheap = combined_mild.get("domestic_cheap")  # cheap tariff
+        cpm_public = combined_mild.get("public_charger")  # public charger
+
+        # Unit costs for full charge calculation
+        unit_costs = ppm_raw.get("unit_costs", {})
+        electric_details = unit_costs.get("pence_per_kwh_electric_details", {})
+        home_rate_ppk = electric_details.get("domestic_standard", 34)
+        cheap_rate_ppk = electric_details.get("domestic_cheap", 7.5)
+        public_rate_ppk = electric_details.get("public_charger", 85)
+
+        # Estimate annual costs
+        annual_home = round(cpm_home * ANNUAL_MILES / 100, 2) if cpm_home else None
+        annual_cheap = round(cpm_cheap * ANNUAL_MILES / 100, 2) if cpm_cheap else None
+        annual_public = round(cpm_public * ANNUAL_MILES / 100, 2) if cpm_public else None
+
+        petrol_annual = PETROL_PPM * ANNUAL_MILES / 100
+        saving = round(petrol_annual - annual_home, 2) if annual_home else None
+
+        return ChargingCosts(
+            home_cost_per_full_charge=None,  # PPM doesn't provide battery capacity
+            rapid_cost_per_full_charge=None,
+            cost_per_mile_home=cpm_home,
+            cost_per_mile_rapid=cpm_public,  # public = rapid
+            cost_per_mile_public=cpm_public,
+            annual_cost_estimate_home=annual_home,
+            annual_cost_estimate_rapid=annual_public,
+            vs_petrol_annual_saving=saving,
+        )
 
     def _derive_battery_health(
         self,

@@ -1,9 +1,20 @@
 """Pydantic schemas for EV Health Check product."""
 
 from pydantic import BaseModel, Field, field_validator
-from typing import Optional, List, Any
+from typing import Optional, List, Any, Dict
 from datetime import datetime
 import re
+
+from app.schemas.check import (
+    FinanceCheck,
+    StolenCheck,
+    WriteOffCheck,
+    PlateChangeHistory,
+    KeeperHistory,
+    HighRiskCheck,
+    PreviousSearches,
+    SalvageCheck,
+)
 
 
 class EVCheckRequest(BaseModel):
@@ -166,13 +177,20 @@ class EVCheckResponse(BaseModel):
     tax_calculation: Optional[Any] = None
     safety_rating: Optional[Any] = None
     vehicle_stats: Optional[Any] = None
-    # EV-specific paid data
+    # EV-specific paid data (both tiers)
     range_estimate: Optional[RangeEstimate] = None
     range_scenarios: List[RangeScenario] = []
-    ev_specs: Optional[EVSpecs] = None
-    lifespan_prediction: Optional[LifespanPrediction] = None
     battery_health: Optional[BatteryHealth] = None
     charging_costs: Optional[ChargingCosts] = None
+    # Vehicle history (EV Complete tier only)
+    finance_check: Optional[FinanceCheck] = None
+    stolen_check: Optional[StolenCheck] = None
+    write_off_check: Optional[WriteOffCheck] = None
+    plate_changes: Optional[PlateChangeHistory] = None
+    keeper_history: Optional[KeeperHistory] = None
+    high_risk: Optional[HighRiskCheck] = None
+    previous_searches: Optional[PreviousSearches] = None
+    salvage_check: Optional[SalvageCheck] = None
     # Meta
     checked_at: datetime = Field(default_factory=datetime.utcnow)
     data_sources: List[str] = []
