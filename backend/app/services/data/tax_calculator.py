@@ -34,16 +34,17 @@ CO2_BANDS_POST_2017 = [
 ]
 
 # CO2 band boundaries — PRE-APRIL 2017 (old system)
+# Source: https://www.gov.uk/vehicle-tax-rate-tables/rates-for-cars-registered-on-or-after-1-march-2001
 CO2_BANDS_PRE_2017 = [
-    (0, "A"),
-    (100, "B"),
-    (120, "C"),
-    (150, "D"),
-    (170, "E"),
-    (190, "F"),
-    (225, "G"),
-    (255, "H"),
-    (float("inf"), "I"),
+    (100, "A"),     # 0-100 g/km
+    (110, "B"),     # 101-110 g/km
+    (120, "C"),     # 111-120 g/km
+    (150, "D"),     # 121-150 g/km
+    (170, "E"),     # 151-170 g/km
+    (190, "F"),     # 171-190 g/km
+    (225, "G"),     # 191-225 g/km
+    (255, "H"),     # 226-255 g/km
+    (float("inf"), "I"),  # 256+ g/km
 ]
 
 # First-year VED rates by CO2 band (petrol/diesel) — POST-APRIL 2017
@@ -129,17 +130,17 @@ def get_co2_band(co2: int, year: Optional[int] = None) -> str:
 
 def get_co2_band_range(band: str, year: Optional[int] = None) -> str:
     """Get the CO2 range string for a band."""
-    # Pre-2017 ranges
+    # Pre-2017 ranges (1 March 2001 - 31 March 2017)
     ranges_pre_2017 = {
-        "A": "0 g/km",
-        "B": "1-100 g/km",
-        "C": "101-120 g/km",
+        "A": "0-100 g/km",
+        "B": "101-110 g/km",
+        "C": "111-120 g/km",
         "D": "121-150 g/km",
         "E": "151-170 g/km",
         "F": "171-190 g/km",
         "G": "191-225 g/km",
         "H": "226-255 g/km",
-        "I": "Over 255 g/km",
+        "I": "256+ g/km",
     }
 
     # Post-2017 ranges
