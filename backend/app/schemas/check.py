@@ -279,6 +279,13 @@ class SalvageCheck(BaseModel):
     data_source: str = "CarGuide"
 
 
+class VehicleImages(BaseModel):
+    """Vehicle images by angle from One Auto Global Image Search."""
+    images: Dict[str, Optional[str]] = {}  # angle -> image_id (front, right, rear, left, etc.)
+    color_list: List[str] = []
+    data_source: str = "One Auto"
+
+
 class VehicleIdentity(BaseModel):
     registration: Optional[str] = None
     make: Optional[str] = None
@@ -323,6 +330,7 @@ class FreeCheckResponse(BaseModel):
     high_risk: Optional[HighRiskCheck] = None
     previous_searches: Optional[PreviousSearches] = None
     salvage_check: Optional[SalvageCheck] = None
+    vehicle_images: Optional[VehicleImages] = None
     checked_at: datetime = Field(default_factory=datetime.utcnow)
     data_sources: List[str] = []
 

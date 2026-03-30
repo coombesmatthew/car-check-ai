@@ -1,0 +1,115 @@
+Service,Rate,Billing Unit
+Key Vehicle Details from VRM,10p,Per Use
+Vehicle Identity,10p,Per Use
+Vehicle Details from VIN,10p,Per Use
+Vehicle Details from VRM,10p,Per Use
+OE VIN Lookup (Europe),30p,Per Use
+VIN Decoder,15p,Per Use
+AutoCheck,£2.00,Per Use
+AutoCheck + Salvage - £10k Guarantee,£2.50,Per Use
+AutoCheck + Salvage - £20k Guarantee,£4.00,Per Use
+AutoCheck + Salvage - £30k Guarantee,£8.00,Per Use
+AutoCheck + Salvage - £40k Guarantee,£11.00,Per Use
+AutoCheck + Salvage - £50k Guarantee,£14.00,Per Use
+Finance Check,£1.00,Per Use
+Condition Check,80p,Per Use
+Mileage Check,80p,Per Use
+High Risk Check,75p,Per Use
+Stolen Check,80p,Per Use
+Keeper Change History,75p,Per Use
+Previous Searches,25p,Per Use
+Colour Check,25p,Per Use
+Plate Check,65p,Per Use
+Salvage Check from VRM,50p,Per Use
+Salvage Check from VIN,50p,Per Use
+Taxi Check,50p,Per Use
+OE Service History (Europe) from VIN,£2.50,Per Result
+OE Service History (UK) from VRM,£2.50,Per Result
+Recall Check from VRM,£1.00,Per Use
+Recall Check (Combined),£1.00,Per Use
+Recall Check from VIN,£1.00,Per Use
+MOT History & Tax Status,5p,Per Use
+Regional Identifier from VRM,3p,Per Use
+Lead Validation,£1.50,Per Result
+Derivative ID (UK) from VRM,15p,Per Use
+Current Valuation (UK) from VRM,70p,Per Use
+Current Valuation (UK) from VIN,70p,Per Use
+Search (UK),free,Per Use
+Current Valuation (UK) from ID,66p,Per Use
+Valuation from VRM,70p,Per Use
+Valuation from VIN,70p,Per Use
+Price Predictor Premium from VRM,59p,Per Use
+Fair Market Value from VRM,49p,Per Use
+Price Predictor from VRM,49p,Per Use
+Valuation from VRM,20p,Per Use
+Salvage Bid Predictor from VRM,59p,Per Use
+List Primary Damage Types,free,Per Use
+Desirability Rating (UK) from VIN,40p,Per Use
+Desirability Rating (UK) from VRM,40p,Per Use
+Market Demand from VRM,40p,Per Use
+Estimated Vehicle Life - Predict,10p,Per Use
+Estimated Vehicle Life - Statistics,10p,Per Use
+Current & Future Valuation (UK) from ID,91p,Per Use
+Current & Future Valuation (UK) from VIN,95p,Per Use
+Current & Future Valuation (UK) from VRM,95p,Per Use
+SMR Forecast from IDS code,75p,Per Use
+Service Schedules from IDS Code,9p,Per Use
+OE Wheel & Tyre Fitments,15p,Per Use
+Tyre Catalogue by Size,15p,Per Use
+OE Build Sheet (UK) from VRM,£1.90,Per Use
+OE Build Sheet (Europe) from VIN,£1.60,Per Use
+Vehicle & Model Details from VIN,20p,Per Use
+Vehicle & Model Details from VRM,20p,Per Use
+DVLA Data and IDS Code from VRM,20p,Per Use
+Search for IDS Code,free,Per Use
+List Price from IDS Code,9p,Per Use
+Cost Options from IDS Code,9p,Per Use
+Standard Equipment from IDS Code,9p,Per Use
+Technical Data from IDS Code,12p,Per Use
+Inventory Augmentation from IDS Code,30p,Per Use
+PPM Fuel Cost from IDS Code,20p,Per Use
+OE Build Sheet (Global) from VIN,£1.90,Per Use
+Used EV Range Estimate,£1.50,Per Use
+ID Search,50p,Per Use
+ID from VRM,70p,Per Use
+Onboard Charging - Car,50p,Per Use
+Onboard Charging - Van,50p,Per Use
+Fast Charging - Car,50p,Per Use
+Fast Charging - Van,50p,Per Use
+Range & Pence Per Mile - Car,50p,Per Use
+Range & Pence Per Mile - Van,50p,Per Use
+Range Efficiency & Battery - Car,50p,Per Use
+Range Efficiency & Battery - Van,50p,Per Use
+Core Data - Car,50p,Per Use
+Core Data - Van,50p,Per Use
+Bi-Directional Charging - Car,50p,Per Use
+Bi-Directional Charging - Van,50p,Per Use
+Pricing Grants & Taxes - Car,50p,Per Use
+Pricing Grants & Taxes - Van,50p,Per Use
+Vehicle Data - Car,50p,Per Use
+Vehicle Data - Van,50p,Per Use
+Keeper Check from VIN,50p,Per Result
+Keeper Check from VRM,50p,Per Result
+Stolen Check from VIN,50p,Per Result
+Stolen Check from VRM,50p,Per Result
+Scrap Marker Check from VIN,50p,Per Result
+Scrap Marker Check from VRM,50p,Per Result
+Deceased Check,£1.50,Per Use
+Goneaway Check,90p,Per Use
+Inventory Search,15p,Per Use
+Inventory From URL,15p,Per Use
+Similar Listings from VRM,49p,Per Use
+Inventory from VRM,19p,Per Use
+Historic Listings from VRM,49p,Per Use
+Previous Adverts from VRM,49p,Per Use
+Previous Adverts from VIN,49p,Per Use
+Global Image Search,free,Per Use
+Image Search by VRM,15p,Per Use
+Image from ID,15p,Per Use
+Image Search by VIN,15p,Per Use
+Vehicle Tax from VRM,10p,Per Use
+Postcode Lookup,3p,Per Use
+Insurance Rates,3p,Per Use
+Company Car Tax Calculator,50p,Per Use
+Settlement Calculation,15p,Per Use
+Vehicle Tax Calculator,10p,Per Use

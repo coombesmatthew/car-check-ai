@@ -48,6 +48,7 @@ from app.schemas.check import (
     PreviousSearches,
     PreviousSearchRecord,
     SalvageCheck,
+    VehicleImages,
 )
 
 
@@ -140,6 +141,11 @@ class CheckOrchestrator:
             dvla_data, raw_tests, mot_analysis.get("mileage_timeline", [])
         )
 
+        # Fetch vehicle images (free endpoint — available for all tiers)
+        vehicle_images = None
+        if dvla_data and self.oneauto_client:
+            vehicle_images = await self._build_vehicle_images(dvla_data)
+
         # Build provenance data (finance, stolen, write-off, plates, valuation)
         # Only for premium tier — costs ~£3.23 per check via One Auto API
         provenance = None
@@ -177,6 +183,7 @@ class CheckOrchestrator:
             high_risk=provenance.get("high_risk") if provenance else None,
             previous_searches=provenance.get("previous_searches") if provenance else None,
             salvage_check=provenance.get("salvage_check") if provenance else None,
+            vehicle_images=vehicle_images,
             checked_at=datetime.utcnow(),
             data_sources=data_sources,
         )
@@ -296,6 +303,36 @@ class CheckOrchestrator:
         if not stats:
             return None
         return VehicleStats(**stats)
+
+    async def _build_vehicle_images(self, dvla_data: Optional[Dict]) -> Optional[VehicleImages]:
+        """Fetch vehicle images from One Auto Global Image Search (free endpoint)."""
+        if not dvla_data or not self.oneauto_client:
+            return None
+
+        make = dvla_data.get("make")
+        model = dvla_data.get("model")
+        year = dvla_data.get("yearOfManufacture")
+
+        if not all([make, model, year]):
+            return None
+
+        try:
+            result = await self.oneauto_client.get_global_image_search(make, model, year)
+            if not result:
+                return None
+
+            # Parse result: result contains 'images' dict with angles and 'color_list'
+            images = result.get("images", {})
+            colors = result.get("color_list", [])
+
+            return VehicleImages(
+                images=images,
+                color_list=colors,
+                data_source="One Auto Global Image Search",
+            )
+        except Exception as e:
+            logger.warning(f"Global image search failed for {make} {model}: {e}")
+            return None
 
     async def _build_provenance_data(self, registration: str, current_mileage: Optional[int] = None) -> Optional[Dict]:
         """Build provenance data from One Auto API, falling back to demo."""

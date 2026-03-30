@@ -161,6 +161,25 @@ class OneAutoClient:
             {"evdb_vehicle_id": vehicle_id},
         )
 
+    async def get_global_image_search(
+        self,
+        manufacturer_desc: str,
+        model_range_desc: str,
+        manufactured_year: int,
+    ) -> Optional[Dict]:
+        """Global image search — returns available images by angle and colour options.
+
+        Returns: Dict with 'images' (8 angles) and 'color_list' available colours.
+        """
+        return await self._get(
+            "/vehicleimagery/imagesearch/",
+            {
+                "manufacturer_desc": manufacturer_desc,
+                "model_range_desc": model_range_desc,
+                "manufactured_year": manufactured_year,
+            },
+        )
+
     async def close(self):
         await self._client.aclose()
 
