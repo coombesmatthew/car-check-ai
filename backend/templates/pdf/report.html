@@ -347,6 +347,98 @@
   </div>
   {% endif %}
 
+  <!-- Battery Health -->
+  {% if battery_health %}
+  <div class="section">
+    <div class="section-title"><span style="color: #059669;">&#9889;</span> Battery Health</div>
+    <table class="data-table">
+      <tr><td><strong>Health Score</strong></td><td><span style="font-size: 14pt; font-weight: 700; color: {{ '#059669' if battery_health.score >= 80 else '#f59e0b' if battery_health.score >= 60 else '#dc2626' }};">{{ battery_health.score }}</span>/100 — Grade {{ battery_health.grade }}</td></tr>
+      <tr><td><strong>Degradation</strong></td><td>{{ battery_health.degradation_estimate_pct }}%</td></tr>
+      {% if battery_health.summary %}<tr><td><strong>Summary</strong></td><td>{{ battery_health.summary }}</td></tr>{% endif %}
+    </table>
+  </div>
+  {% endif %}
+
+  <!-- Range Estimate -->
+  {% if range_estimate %}
+  <div class="section">
+    <div class="section-title"><span style="color: #059669;">&#9889;</span> Range Estimate</div>
+    <table class="data-table">
+      <tr><td><strong>Official Range (WLTP)</strong></td><td>{{ range_estimate.official_range_miles }} miles</td></tr>
+      <tr><td><strong>Real-World Estimate</strong></td><td style="font-weight: 700; font-size: 11pt;">{{ range_estimate.estimated_range_miles }} miles</td></tr>
+      <tr><td><strong>Range Retention</strong></td><td>{{ range_estimate.range_retention_pct }}% of official</td></tr>
+      <tr><td><strong>Best Case</strong></td><td style="color: #059669;">{{ range_estimate.best_case_miles }} miles (warm city)</td></tr>
+      <tr><td><strong>Worst Case</strong></td><td style="color: #dc2626;">{{ range_estimate.worst_case_miles }} miles (cold motorway)</td></tr>
+    </table>
+    {% if range_scenarios %}
+    <table class="mot-table" style="margin-top: 3mm;">
+      <thead>
+        <tr><th>Scenario</th><th>Temperature</th><th>Range</th></tr>
+      </thead>
+      <tbody>
+        {% for s in range_scenarios %}
+        <tr><td>{{ s.scenario }}</td><td>{{ s.temperature_c }}°C</td><td style="font-weight: 600;">{{ s.estimated_miles }} mi</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- Charging Costs -->
+  {% if charging_costs %}
+  <div class="section">
+    <div class="section-title"><span style="color: #059669;">&#9889;</span> Charging & Running Costs</div>
+    <table class="mot-table">
+      <thead>
+        <tr><th>Method</th><th>Per Mile</th><th>Full Charge</th><th>Annual (10k mi)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Home (7kW)</td><td style="font-weight: 600;">{{ charging_costs.cost_per_mile_home }}p</td><td>&pound;{{ charging_costs.home_cost_per_full_charge }}</td><td style="font-weight: 600;">&pound;{{ charging_costs.annual_cost_estimate_home }}</td></tr>
+        <tr><td>Public Rapid</td><td style="font-weight: 600;">{{ charging_costs.cost_per_mile_rapid }}p</td><td>&pound;{{ charging_costs.rapid_cost_per_full_charge }}</td><td style="font-weight: 600;">&pound;{{ charging_costs.annual_cost_estimate_rapid }}</td></tr>
+      </tbody>
+    </table>
+    {% if charging_costs.vs_petrol_annual_saving %}
+    <p style="margin-top: 3mm; padding: 2mm 3mm; background-color: #d1fae5; border-radius: 3px; color: #065f46; font-weight: 600; font-size: 9pt;">Annual saving vs petrol: &pound;{{ charging_costs.vs_petrol_annual_saving }}</p>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- EV Specs -->
+  {% if ev_specs %}
+  <div class="section">
+    <div class="section-title"><span style="color: #059669;">&#9889;</span> EV Specifications</div>
+    <table class="data-table">
+      {% if ev_specs.battery_capacity_kwh %}<tr><td><strong>Battery Capacity</strong></td><td>{{ ev_specs.battery_capacity_kwh }} kWh ({{ ev_specs.usable_capacity_kwh }} kWh usable)</td></tr>{% endif %}
+      {% if ev_specs.battery_type %}<tr><td><strong>Battery Type</strong></td><td>{{ ev_specs.battery_type }}</td></tr>{% endif %}
+      {% if ev_specs.max_dc_charge_kw %}<tr><td><strong>Max DC Charging</strong></td><td>{{ ev_specs.max_dc_charge_kw }} kW</td></tr>{% endif %}
+      {% if ev_specs.charge_time_rapid_mins %}<tr><td><strong>Rapid Charge (10-80%)</strong></td><td>~{{ ev_specs.charge_time_rapid_mins }} mins</td></tr>{% endif %}
+      {% if ev_specs.charge_time_home_hours %}<tr><td><strong>Home Charge (7kW)</strong></td><td>~{{ ev_specs.charge_time_home_hours }} hours</td></tr>{% endif %}
+      {% if ev_specs.energy_consumption_kwh_per_mile %}<tr><td><strong>Energy Consumption</strong></td><td>{{ ev_specs.energy_consumption_kwh_per_mile }} kWh/mile</td></tr>{% endif %}
+    </table>
+  </div>
+  {% endif %}
+
+  <!-- Lifespan Prediction -->
+  {% if lifespan_prediction %}
+  <div class="section">
+    <div class="section-title"><span style="color: #059669;">&#9889;</span> Ownership Forecast</div>
+    <table class="data-table">
+      <tr><td><strong>Remaining Life</strong></td><td>{{ lifespan_prediction.predicted_remaining_years }} years / {{ "{:,}".format(lifespan_prediction.predicted_remaining_miles) }} miles</td></tr>
+      <tr><td><strong>Overall Condition</strong></td><td>{{ lifespan_prediction.overall_condition }}</td></tr>
+      {% if lifespan_prediction.confidence_level %}<tr><td><strong>Confidence</strong></td><td>{{ lifespan_prediction.confidence_level }}</td></tr>{% endif %}
+    </table>
+    {% if lifespan_prediction.risk_factors %}
+    <p style="margin-top: 2mm; font-size: 9pt; font-weight: 600; color: #1e293b;">Risk Factors:</p>
+    <ul style="margin: 1mm 0 0 5mm; font-size: 9pt; color: #334155;">
+      {% for rf in lifespan_prediction.risk_factors %}
+      <li>{{ rf }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </div>
+  {% endif %}
+
   <!-- Valuation -->
   {% if valuation %}
   <div class="section">

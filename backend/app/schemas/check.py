@@ -138,6 +138,8 @@ class TaxCalculation(BaseModel):
     monthly_total: float
     is_electric: bool = False
     is_diesel: bool = False
+    tax_regime: Optional[str] = None  # "Pre-April 2017" or "Post-April 2017"
+    year_of_manufacture: Optional[int] = None
 
 
 class SafetyRating(BaseModel):

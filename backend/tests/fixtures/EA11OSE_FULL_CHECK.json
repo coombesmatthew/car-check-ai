@@ -1,0 +1,88 @@
+{
+  "registration": "EA11OSE",
+  "vehicle_summary": {
+    "make": "MINI",
+    "model": "COOPER D",
+    "year": 2011,
+    "fuel": "DIESEL",
+    "body": "CONVERTIBLE",
+    "transmission": "MANUAL 6 GEAR",
+    "colour": "BLACK",
+    "engine_cc": 1598,
+    "co2_emissions_g_km": 105,
+    "seats": 4
+  },
+  "registration_info": {
+    "registration_date": "2011-04-20",
+    "tax_status": "Taxed",
+    "tax_due_date": "2026-12-01",
+    "mot_status": "Valid",
+    "mot_expiry_date": "2026-09-29",
+    "date_of_last_v5c_issued": "2020-12-15"
+  },
+  "mot_history": {
+    "total_tests": 14,
+    "total_passes": 11,
+    "total_failures": 3,
+    "latest_test": {
+      "date": "2025-09-30",
+      "result": "PASSED",
+      "odometer": 100440,
+      "expiry_date": "2026-09-29",
+      "advisories": 3
+    },
+    "first_used_date": "2011-04-20"
+  },
+  "premium_tier_data": {
+    "experian_autocheck": {
+      "status": "SUCCESS",
+      "registration_date": "2011-04-20",
+      "finance_outstanding": false,
+      "finance_records": 0,
+      "stolen": false,
+      "write_off": false,
+      "write_off_records": 0,
+      "keeper_count": 1,
+      "data_source": "Experian"
+    },
+    "brego_valuation": {
+      "status": "SUCCESS",
+      "current_mileage": 100440,
+      "retail_low": 2272,
+      "retail_average": 2737,
+      "retail_high": 3212,
+      "trade_low": 774,
+      "trade_average": 1124,
+      "trade_high": 1513,
+      "currency": "GBP",
+      "valuation_date": "2026-03-30",
+      "miles_per_annum_used": 6725,
+      "calculation_note": "Miles per annum calculated from registration_date (2011-04-20) to today (2026-03-30): 100440 miles / 14.94 years ≈ 6,725 mi/year"
+    },
+    "carguide_salvage": {
+      "status": "SUCCESS",
+      "salvage_found": false,
+      "records": []
+    }
+  },
+  "vehicle_stats": {
+    "age_years": 14.94,
+    "total_mileage": 100440,
+    "annual_mileage_avg": 6725,
+    "mileage_assessment": "Below average (UK avg ~12,000 mi/year)"
+  },
+  "summary": {
+    "verdict": "Good condition for age and mileage",
+    "valuation_range": "£2,272 - £3,212 (private sale), £774 - £1,513 (trade)",
+    "risk_level": "Low",
+    "working_apis": [
+      "DVLA VES",
+      "DVSA MOT",
+      "Experian AutoCheck",
+      "Brego Valuation",
+      "CarGuide Salvage"
+    ],
+    "test_date": "2026-03-30",
+    "test_apis_live": true
+  }
+}

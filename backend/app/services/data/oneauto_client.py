@@ -10,7 +10,7 @@ Live: api.oneautoapi.com (requires credit card, returns real data)
 """
 
 import httpx
-from datetime import date
+from datetime import date, datetime
 from typing import Dict, Optional
 
 from app.core.config import settings
@@ -50,13 +50,35 @@ class OneAutoClient:
             {"vehicle_registration_mark": registration},
         )
 
-    async def get_valuation(self, registration: str, mileage: int) -> Optional[Dict]:
-        """Brego vehicle valuation."""
+    async def get_valuation(self, registration: str, mileage: int, registration_date: Optional[str] = None) -> Optional[Dict]:
+        """Brego current & future valuations.
+
+        Required params: vehicle_registration_mark, current_mileage, forecast_date, miles_per_annum
+        Endpoint: /brego/currentandfuturevaluationsfromvrm/v2 (current + future valuations enabled on plan)
+        Note: /brego/valuationfromvrm/v2 is deprecated — use currentandfuture endpoint instead.
+
+        miles_per_annum: Calculated from registration_date to today. If not provided, defaults to 12000.
+        Returns: retail_low/average/high, trade_low/average/high valuations in GBP.
+        """
+        # Calculate average miles per year from registration to today
+        miles_per_annum = 12000  # Default fallback
+        if registration_date:
+            try:
+                reg_date = datetime.fromisoformat(registration_date).date()
+                today = date.today()
+                years_owned = (today - reg_date).days / 365.25
+                if years_owned > 0:
+                    miles_per_annum = max(1, int(mileage / years_owned))  # Ensure >= 1
+            except (ValueError, ZeroDivisionError):
+                pass  # Fall back to 12000
+
         return await self._get(
-            "/brego/valuationfromvrm/v2",
+            "/brego/currentandfuturevaluationsfromvrm/v2",
             {
                 "vehicle_registration_mark": registration,
                 "current_mileage": mileage,
+                "forecast_date": date.today().isoformat(),
+                "miles_per_annum": miles_per_annum,
             },
         )
 

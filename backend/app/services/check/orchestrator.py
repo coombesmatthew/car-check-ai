@@ -266,6 +266,7 @@ class CheckOrchestrator:
         result = calculate_tax(
             dvla_data.get("co2Emissions"),
             dvla_data.get("fuelType"),
+            year_of_manufacture=dvla_data.get("yearOfManufacture"),
         )
         if not result:
             return None
@@ -319,10 +320,22 @@ class CheckOrchestrator:
         return None
 
     async def _fetch_oneauto_provenance(self, registration: str, current_mileage: Optional[int] = None) -> Optional[Dict]:
-        """Fetch real provenance data from One Auto API (Experian + Brego)."""
-        autocheck_raw, valuation_raw, salvage_raw = await asyncio.gather(
-            self.oneauto_client.get_autocheck(registration),
-            self.oneauto_client.get_valuation(registration, current_mileage or 0),
+        """Fetch real provenance data from One Auto API (Experian + Brego).
+
+        Note: Brego valuation uses registration_date from AutoCheck to calculate
+        miles_per_annum (average annual mileage from registration to today).
+        """
+        # Fetch AutoCheck first to get registration date for valuation
+        autocheck_raw = await self.oneauto_client.get_autocheck(registration)
+
+        # Extract registration date from AutoCheck if available
+        registration_date = None
+        if isinstance(autocheck_raw, dict) and autocheck_raw.get("registration_date"):
+            registration_date = autocheck_raw["registration_date"]
+
+        # Now fetch valuation and salvage in parallel
+        valuation_raw, salvage_raw = await asyncio.gather(
+            self.oneauto_client.get_valuation(registration, current_mileage or 0, registration_date),
             self.oneauto_client.get_salvage(registration),
             return_exceptions=True,
         )
