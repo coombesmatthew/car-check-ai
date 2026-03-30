@@ -47,39 +47,42 @@ CO2_BANDS_PRE_2017 = [
     (float("inf"), "I"),  # 256+ g/km
 ]
 
-# First-year VED rates by CO2 band (petrol/diesel) — POST-APRIL 2017
-# Source: gov.uk vehicle tax rate tables
+# First-year VED rates by CO2 band — POST-APRIL 2017
+# Source: https://www.gov.uk/vehicle-tax-rate-tables
+# Cars registered from 1 April 2017 onwards
 FIRST_YEAR_RATES_POST_2017 = {
-    "A": 0,
-    "B": 10,
-    "C": 30,
-    "D": 135,
-    "E": 165,
-    "F": 185,
-    "G": 210,
-    "H": 250,
-    "I": 295,
-    "J": 350,
-    "K": 395,
-    "L": 650,
-    "M": 2745,
+    "A": 10,       # 0 g/km (electric/zero-emission, but gov.uk shows £10)
+    "B": 110,      # 1-50 g/km
+    "C": 130,      # 51-75 g/km
+    "D": 270,      # 76-90 g/km
+    "E": 350,      # 91-100 g/km
+    "F": 390,      # 101-110 g/km
+    "G": 440,      # 111-130 g/km
+    "H": 540,      # 131-150 g/km
+    "I": 1360,     # 151-170 g/km
+    "J": 2190,     # 171-190 g/km
+    "K": 3300,     # 191-225 g/km
+    "L": 4680,     # 226-255 g/km
+    "M": 5490,     # 256+ g/km
 }
 
-# Diesel supplement for first year (POST-2017, diesels not meeting RDE2)
+# Diesel supplement for first year (POST-2017, diesels NOT meeting RDE2)
+# Diesel cars not meeting RDE2 standards pay an additional supplement
+# Source: gov.uk rates for non-RDE2 diesel vehicles
 DIESEL_SUPPLEMENT_POST_2017 = {
     "A": 0,
-    "B": 30,
-    "C": 135,
-    "D": 165,
-    "E": 185,
-    "F": 210,
-    "G": 250,
-    "H": 295,
-    "I": 350,
-    "J": 395,
-    "K": 650,
-    "L": 2745,
-    "M": 2745,
+    "B": 120,      # 1-50: +£120 to 110 = 230
+    "C": 180,      # 51-75: +£180 to 130 = 310
+    "D": 300,      # 76-90: +£300 to 270 = 570
+    "E": 420,      # 91-100: +£420 to 350 = 770
+    "F": 495,      # 101-110: +£495 to 390 = 885
+    "G": 620,      # 111-130: +£620 to 440 = 1060
+    "H": 735,      # 131-150: +£735 to 540 = 1275
+    "I": 1920,     # 151-170: +£1920 to 1360 = 3280
+    "J": 2935,     # 171-190: +£2935 to 2190 = 5125
+    "K": 4505,     # 191-225: +£4505 to 3300 = 7805
+    "L": 6360,     # 226-255: +£6360 to 4680 = 11040
+    "M": 7485,     # 256+: +£7485 to 5490 = 12975
 }
 
 # Standard rates (year 2+) — PRE-APRIL 2017 (varied by CO2 band)
@@ -96,9 +99,11 @@ STANDARD_RATES_PRE_2017 = {
 }
 
 # Standard rate (year 2 onwards) — POST-APRIL 2017 (flat rate for most cars)
-STANDARD_ANNUAL_RATE_POST_2017 = 190
-STANDARD_SIX_MONTH_RATE_POST_2017 = 99.75  # 6-month payment (slightly more than half)
-STANDARD_MONTHLY_TOTAL_POST_2017 = 199.50  # 12 monthly instalments total
+# Source: https://www.gov.uk/vehicle-tax-rate-tables
+STANDARD_ANNUAL_RATE_POST_2017 = 195  # 12-month payment
+STANDARD_SIX_MONTH_RATE_POST_2017 = 107.25  # 6-month payment
+# Monthly instalments: gov.uk doesn't specify monthly rates, so calculate proportionally
+STANDARD_MONTHLY_TOTAL_POST_2017 = 195.00  # 12 instalments of ~£16.25
 
 # Electric vehicles
 ELECTRIC_ANNUAL_RATE = 0  # Zero until 2025, then £10 rising
