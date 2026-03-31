@@ -18,8 +18,92 @@ from app.core.logging import logger
 TEMPLATE_DIR = Path(__file__).resolve().parents[3] / "templates" / "pdf"
 
 
+def _normalize_text(text: str) -> str:
+    """Normalize common text patterns in AI reports."""
+    # Convert "If you are BUYING" to "If you are buying"
+    text = re.sub(r'\*\*If you are BUYING', r'**If you are buying', text)
+
+    # Clarify Known Issues section header
+    text = re.sub(
+        r'### Known Issues — ',
+        r'### Known Issues for ',
+        text
+    )
+    return text
+
+
+def _convert_decimal_years(text: str) -> str:
+    """Convert decimal years (e.g., 14.94 years) to years + months format."""
+    def replace_year(match):
+        decimal_years = float(match.group(1))
+        years = int(decimal_years)
+        months = round((decimal_years % 1) * 12)
+        return f"{years} years, {months} months"
+
+    return re.sub(r'(\d+\.\d+)\s+years?', replace_year, text)
+
+
+def _convert_known_issues_to_table(content: str) -> str:
+    """Convert Known Issues format (**PRIORITY — Name** + text) into a 3-column table."""
+    # Match pattern: **(HIGH|MEDIUM|LOW) PRIORITY — Issue Name** followed by text
+    pattern = r'\*\*((HIGH|MEDIUM|LOW)\s+PRIORITY)\s*—\s*([^*]+)\*\*\s+([^\n]*(?:\n(?!\*\*[HML][A-Z]+ PRIORITY)[^\n]*)*)'
+
+    def has_known_issues_header(text):
+        return 'Known Issues for' in text or 'Known Issues —' in text
+
+    if not has_known_issues_header(content):
+        return content
+
+    # Find where known issues section starts
+    known_issues_match = re.search(r'### Known Issues', content)
+    if not known_issues_match:
+        return content
+
+    # Get intro paragraph (from section to first proper issue)
+    section_start = known_issues_match.start()
+    first_issue = re.search(pattern, content[section_start:])
+
+    if not first_issue:
+        return content
+
+    # Extract all issues
+    issues_text = content[section_start + first_issue.start():]
+    matches = list(re.finditer(pattern, issues_text))
+
+    if len(matches) < 1:
+        return content
+
+    # Build table with 3 columns
+    table_html = '\n\n<table class="data-table" style="font-size: 9pt;"><thead><tr><th style="width:15%">Priority</th><th style="width:25%">Issue</th><th>Details & Action Items</th></tr></thead><tbody>'
+
+    for match in matches:
+        priority = match.group(1).strip()  # e.g., "HIGH PRIORITY"
+        issue_name = match.group(3).strip()  # Issue name after the em-dash
+        issue_text = match.group(4).strip()  # The detailed text
+        # Clean up text
+        issue_text = re.sub(r'\n+', ' ', issue_text)
+        table_html += f'<tr><td><strong>{priority}</strong></td><td><strong>{issue_name}</strong></td><td>{issue_text}</td></tr>'
+
+    table_html += '</tbody></table>'
+
+    # Replace the matched issues with the table
+    replacement_start = section_start + first_issue.start()
+    replacement_end = replacement_start + matches[-1].end()
+
+    return content[:replacement_start] + table_html + content[replacement_end:]
+
+
 def _md_to_html(content: str, citation_urls: Optional[Dict[int, str]] = None) -> str:
     """Convert markdown content block to HTML."""
+    # Normalize text patterns first
+    content = _normalize_text(content)
+
+    # Convert decimal years to years + months format
+    content = _convert_decimal_years(content)
+
+    # Convert known issues to table format
+    content = _convert_known_issues_to_table(content)
+
     # Markdown links [text](url) → clickable link
     content = re.sub(
         r"\[([^\]]+)\]\(([^)]+)\)",
@@ -165,7 +249,11 @@ def _extract_citation_urls(report_text: str) -> Dict[int, str]:
 
 
 def _parse_ai_sections(report_text: str) -> List[Dict[str, str]]:
-    """Parse markdown AI report into structured sections."""
+    """Parse markdown AI report into structured sections.
+
+    Skips vehicle identity headings (e.g., "MINI Cooper D Convertible (2011) — EA11 OSE")
+    as these are redundant with cover page and vehicle summary.
+    """
     sections = []
     if not report_text:
         return sections
@@ -177,17 +265,24 @@ def _parse_ai_sections(report_text: str) -> List[Dict[str, str]]:
 
     for line in report_text.split("\n"):
         if line.startswith("## "):
-            if current_title:
+            if current_title and not _is_vehicle_identity_heading(current_title):
                 sections.append({"title": current_title, "content": _md_to_html("\n".join(current_lines).strip(), citation_urls)})
             current_title = line.lstrip("# ").strip()
             current_lines = []
         else:
             current_lines.append(line)
 
-    if current_title:
+    if current_title and not _is_vehicle_identity_heading(current_title):
         sections.append({"title": current_title, "content": _md_to_html("\n".join(current_lines).strip(), citation_urls)})
 
     return sections
+
+
+def _is_vehicle_identity_heading(title: str) -> bool:
+    """Check if title is a vehicle identity heading (e.g., 'MINI Cooper D Convertible (2011) — EA11 OSE')."""
+    # Pattern: Make Model ... (Year) — Registration (with optional space)
+    # Contains year in parens and registration after em-dash
+    return bool(re.search(r'\(\d{4}\)\s*[—–-]\s*[A-Z0-9\s]{2,9}$', title))
 
 
 def _extract_verdict(report_text: str) -> Optional[str]:

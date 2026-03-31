@@ -350,7 +350,7 @@ The JSON must have EXACTLY these top-level keys (flat structure):
 Use these detailed instructions:
 
 ### recommendation
-MUST be exactly "BUY" or "AVOID".
+MUST be exactly "BUY", "NEGOTIATE", or "AVOID".
 
 ### recommendation_points
 2–5 factual statements as STRINGS (flat list, not objects). Example:
@@ -971,12 +971,15 @@ def _build_demo_vehicle_report(
             total_repair_low += est.get("low", 0)
             total_repair_high += est.get("high", 0)
 
-    # Determine recommendation
+    # Determine recommendation (IGNORE condition_score per SYSTEM_PROMPT)
     if clocked:
         recommendation = "AVOID"
-    elif condition_score and condition_score < 50:
+    elif check_result and (check_result.get("stolen_check", {}).get("stolen") or
+                           check_result.get("write_off_check", {}).get("written_off")):
         recommendation = "AVOID"
-    elif total_failures > 2 or (condition_score and condition_score < 70):
+    elif check_result and check_result.get("finance_check", {}).get("finance_outstanding"):
+        recommendation = "AVOID"
+    elif total_failures > 2:
         recommendation = "NEGOTIATE"
     else:
         recommendation = "BUY"
@@ -1301,19 +1304,36 @@ def _build_demo_vehicle_report(
             "finding": "No major concerns identified in available data. Standard pre-purchase inspection recommended."
         })
 
-    # Known issues (model-specific)
-    known_issues = [
-        {"priority": "Low", "issue": "Normal Wear", "details": "Subject to standard inspection before purchase"}
-    ]
+    # Known issues (model-specific - restore v21 detail for MINI diesel)
+    known_issues = []
 
-    # Running costs (new section)
+    if make.upper() == "MINI" and fuel and "DIESEL" in fuel.upper():
+        known_issues = [
+            {"priority": "High", "issue": "N47 engine timing chain wear",
+             "details": "Well-documented fault on 1.6 diesel engines at this mileage. Symptoms: rattling on cold start, noise from rear of engine. Replacement cost: £1,000–£2,000 at specialist."},
+            {"priority": "High", "issue": "EGR valve and diesel particulate filter (DPF) issues",
+             "details": "Carbon build-up on EGR valve common on N47 diesel, especially for short-journey usage. DPF blockage can occur. DPF replacement: £500–£1,500. EGR cleaning/replacement: £200–£500."},
+            {"priority": "Medium", "issue": "Power steering pump failure",
+             "details": "Electric power steering failures reported on this generation. Symptoms: heavy or unresponsive steering. Replacement cost: £300–£600 at independent garage."},
+            {"priority": "Medium", "issue": "Coolant loss and thermostat failure",
+             "details": "Coolant leaks and thermostat failures common. Watch for white smoke from exhaust or sweet smell (head gasket issue). Head gasket repair: £800–£1,500."},
+        ]
+    else:
+        known_issues = [
+            {"priority": "Low", "issue": "Normal Wear", "details": "Subject to standard inspection before purchase"}
+        ]
+
+    # Running costs (new section) - calculate road tax from CO2 emissions
+    # VED Band B (101-110 g/km CO2) = £20/year for cars registered after April 2017
+    # For older cars: standard rate is typically £155-£190
+    road_tax = 20 if vehicle_data and vehicle_data.get("co2Emissions", 120) <= 110 else 155
+
     running_costs = {
-        "fuel_annual": 1000 if fuel == "Diesel" else 1200,
-        "road_tax": 155,
         "insurance_estimate": 800,
+        "road_tax": road_tax,
         "servicing_annual": 250,
-        "total_annual": 2205,
-        "notes": f"Estimated for {_format_make(make)} {model} ({fuel}). Actual costs vary by driving habits, location, and insurer."
+        "total_annual": road_tax + 250 + 800,
+        "notes": f"Estimated for {_format_make(make)} {model} ({fuel}). Insurance varies by location/age. No fuel estimate (insufficient mileage data). Actual costs depend on usage patterns."
     }
 
     # Data sources

@@ -27,8 +27,8 @@ class VehicleReport(BaseModel):
     # --- Section 1: Overall Condition Assessment ---
     recommendation: str = Field(
         ...,
-        description="Must be 'BUY' or 'AVOID'",
-        pattern="^(BUY|AVOID)$"
+        description="Must be 'BUY', 'NEGOTIATE', or 'AVOID'",
+        pattern="^(BUY|NEGOTIATE|AVOID)$"
     )
     recommendation_points: List[str] = Field(
         ...,
@@ -141,7 +141,7 @@ class VehicleReport(BaseModel):
     @field_validator("recommendation")
     @classmethod
     def recommendation_must_be_valid(cls, v):
-        """Validate recommendation is BUY or AVOID."""
-        if v not in ("BUY", "AVOID"):
-            raise ValueError(f"recommendation must be 'BUY' or 'AVOID', got: {v!r}")
+        """Validate recommendation is BUY, NEGOTIATE, or AVOID."""
+        if v not in ("BUY", "NEGOTIATE", "AVOID"):
+            raise ValueError(f"recommendation must be 'BUY', 'NEGOTIATE', or 'AVOID', got: {v!r}")
         return v

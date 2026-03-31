@@ -140,31 +140,6 @@ def render_report_to_markdown(report: VehicleReport) -> str:
     lines.append("---")
     lines.append("")
 
-    # Mileage Timeline (from MOT tests)
-    if report.mot_tests and len(report.mot_tests) > 1:
-        lines.append("### Mileage Timeline")
-        lines.append("")
-        # Show first, middle, and last test to show progression
-        timeline_items = []
-        if len(report.mot_tests) >= 3:
-            timeline_items = [report.mot_tests[0], report.mot_tests[len(report.mot_tests)//2], report.mot_tests[-1]]
-        else:
-            timeline_items = report.mot_tests[:3]
-
-        for i, test in enumerate(timeline_items):
-            test_date = test.get("test_date", "Unknown")
-            mileage = test.get("mileage", "Unknown")
-            mileage_str = f"{mileage:,}" if isinstance(mileage, int) else str(mileage)
-            if i == 0:
-                lines.append(f"- **{test_date}:** {mileage_str} miles (first test)")
-            elif i == len(timeline_items) - 1:
-                lines.append(f"- **{test_date}:** {mileage_str} miles (latest test)")
-            else:
-                lines.append(f"- **{test_date}:** {mileage_str} miles")
-
-        lines.append("")
-        lines.append("---")
-        lines.append("")
 
     # MOT History Analysis
     lines.append("### MOT History Analysis")
@@ -265,16 +240,17 @@ def render_report_to_markdown(report: VehicleReport) -> str:
     lines.append("---")
     lines.append("")
 
-    # Provenance
+    # Provenance (converted to table for clarity)
     lines.append("### Provenance")
     lines.append("")
+    lines.append("| Check | Status | Details |")
+    lines.append("|-------|--------|---------|")
     for check in report.provenance:
         check_name = check.get("check", "")
         result = check.get("result", "")
         detail = check.get("detail", "")
-        lines.append(f"**{check_name}:** {result}")
-    lines.append("")
-    lines.append("**Summary:** The vehicle has a clean legal and financial history.")
+        status_icon = "✅" if "Clear" in result or "No" in result else "⚠️" if "Outstanding" in result or "Reported" in result else "❌"
+        lines.append(f"| {check_name} | {status_icon} {result} | {detail} |")
     lines.append("")
     lines.append("---")
     lines.append("")
