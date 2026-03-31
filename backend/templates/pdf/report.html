@@ -396,6 +396,40 @@
   {% endfor %}
   {% endif %}
 
+  <!-- MOT History (positioned after Overall Condition Assessment) -->
+  {% if mot_tests %}
+  <div class="section">
+    <div class="section-title">MOT History ({{ mot_tests|length }} tests)</div>
+    <table class="mot-table">
+      <thead>
+        <tr><th>#</th><th>Date</th><th>Result</th><th>Mileage</th><th>Defects / Advisories</th></tr>
+      </thead>
+      <tbody>
+        {% for test in mot_tests %}
+        <tr>
+          <td>{{ test.test_number }}</td>
+          <td>{{ test.date }}</td>
+          <td><span class="badge {{ 'badge-pass' if test.result == 'PASSED' else 'badge-fail' }}">{{ test.result }}</span></td>
+          <td>{% if test.odometer is not none %}{{ "{:,}".format(test.odometer) }} mi{% else %}—{% endif %}</td>
+          <td style="font-size: 7pt; line-height: 1.4;">
+            {% for d in test.get('failures', []) %}
+              <span style="color:#dc2626;">F: {{ d.text }}</span><br>
+            {% endfor %}
+            {% for d in test.get('dangerous', []) %}
+              <span style="color:#7f1d1d; font-weight:600;">D: {{ d.text }}</span><br>
+            {% endfor %}
+            {% for d in test.get('advisories', []) %}
+              <span style="color:#92400e;">A: {{ d.text }}</span><br>
+            {% endfor %}
+            {% if not test.get('failures') and not test.get('dangerous') and not test.get('advisories') %}—{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
   <!-- Battery Health -->
   {% if battery_health %}
   <div class="section">
@@ -499,40 +533,6 @@
       <tbody>
         {% for reading in mileage_timeline %}
         <tr><td>{{ reading.date }}</td><td>{{ "{:,}".format(reading.miles) }} miles</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-  {% endif %}
-
-  <!-- MOT History -->
-  {% if mot_tests %}
-  <div class="section">
-    <div class="section-title">MOT History ({{ mot_tests|length }} tests)</div>
-    <table class="mot-table">
-      <thead>
-        <tr><th>#</th><th>Date</th><th>Result</th><th>Mileage</th><th>Defects / Advisories</th></tr>
-      </thead>
-      <tbody>
-        {% for test in mot_tests %}
-        <tr>
-          <td>{{ test.test_number }}</td>
-          <td>{{ test.date }}</td>
-          <td><span class="badge {{ 'badge-pass' if test.result == 'PASSED' else 'badge-fail' }}">{{ test.result }}</span></td>
-          <td>{% if test.odometer is not none %}{{ "{:,}".format(test.odometer) }} mi{% else %}—{% endif %}</td>
-          <td style="font-size: 7pt; line-height: 1.4;">
-            {% for d in test.get('failures', []) %}
-              <span style="color:#dc2626;">F: {{ d.text }}</span><br>
-            {% endfor %}
-            {% for d in test.get('dangerous', []) %}
-              <span style="color:#7f1d1d; font-weight:600;">D: {{ d.text }}</span><br>
-            {% endfor %}
-            {% for d in test.get('advisories', []) %}
-              <span style="color:#92400e;">A: {{ d.text }}</span><br>
-            {% endfor %}
-            {% if not test.get('failures') and not test.get('dangerous') and not test.get('advisories') %}—{% endif %}
-          </td>
-        </tr>
         {% endfor %}
       </tbody>
     </table>

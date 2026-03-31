@@ -35,9 +35,9 @@ This vehicle's mileage is **typical** for its age and fuel type.
 
 | Category | # | Pattern | Action |
 |----------|---|---------|--------|
-| **tyre** | 17 | Tyre flagged 17 times in MOT history. | Have tyre inspected by qualified mechanic before purchase. |
-| **windscreen** | 3 | Windscreen flagged 3 times in MOT history. | Have windscreen inspected by qualified mechanic before purchase. |
-| **brake** | 3 | Brake flagged 3 times in MOT history. | Have brake inspected by qualified mechanic before purchase. |
+| **Tyre** | 17 | Tyre flagged 17 times in MOT history. | Have tyre inspected by qualified mechanic before purchase. |
+| **Windscreen** | 3 | Windscreen flagged 3 times in MOT history. | Have windscreen inspected by qualified mechanic before purchase. |
+| **Brake** | 3 | Brake flagged 3 times in MOT history. | Have brake inspected by qualified mechanic before purchase. |
 
 ---
 
@@ -115,9 +115,9 @@ At this age and mileage, Mini COOPER D vehicles have reached stable depreciation
 | Category | Level | Finding |
 |----------|-------|---------|
 | **MOT Failures** | **MEDIUM** | 3 failures recorded in history. Verify all issues resolved before purchase. |
-| **tyre** | **HIGH** | Recurring issue (17 times). Have professional mechanic inspect. Budget £350-£1250. |
-| **windscreen** | **MEDIUM** | Recurring issue (3 times). Have professional mechanic inspect. Budget £350-£1250. |
-| **brake** | **MEDIUM** | Recurring issue (3 times). Have professional mechanic inspect. Budget £350-£1250. |
+| **Tyre** | **HIGH** | Recurring issue (17 times). Have professional mechanic inspect. Budget £350-£1250. |
+| **Windscreen** | **MEDIUM** | Recurring issue (3 times). Have professional mechanic inspect. Budget £350-£1250. |
+| **Brake** | **MEDIUM** | Recurring issue (3 times). Have professional mechanic inspect. Budget £350-£1250. |
 
 ### Known Issues for This Model
 
@@ -171,9 +171,9 @@ No recalls on record for this model. Always verify at [DVSA recalls](https://www
 **Suggested Opening Offer:** Deduct £800 from asking price to cover predicted repairs.
 
 **Key Leverage Points:**
-- tyre flagged 17 times — budget £50-£150
-- windscreen flagged 3 times — budget £150-£400
-- brake flagged 3 times — budget £150-£700
+- Tyre flagged 17 times — budget £50-£150
+- Windscreen flagged 3 times — budget £150-£400
+- Brake flagged 3 times — budget £150-£700
 
 **Walk Away If:**
 - Seller cannot provide evidence recent repairs have been completed

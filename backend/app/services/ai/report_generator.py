@@ -1106,7 +1106,7 @@ def _build_demo_vehicle_report(
         cat_display = cat.title() if cat else cat  # Normalise capitalisation
 
         defect_patterns.append({
-            "category": cat,
+            "category": cat_display,  # Use capitalized version
             "flagged_count": occurrences,
             "flagged_dates": [],
             "factual_summary": f"{cat_display} flagged {occurrences} times in MOT history.",
@@ -1263,7 +1263,8 @@ def _build_demo_vehicle_report(
     if patterns and len(patterns) > 0:
         key_points = []
         for pattern in patterns[:3]:
-            key_points.append(f"{pattern['category']} flagged {pattern['occurrences']} times — budget £{_estimate_repair_cost(pattern['category'], make).get('low', 100) if _estimate_repair_cost(pattern['category'], make) else 100}-£{_estimate_repair_cost(pattern['category'], make).get('high', 500) if _estimate_repair_cost(pattern['category'], make) else 500}")
+            cat_display = pattern['category'].title() if pattern['category'] else pattern['category']
+            key_points.append(f"{cat_display} flagged {pattern['occurrences']} times — budget £{_estimate_repair_cost(pattern['category'], make).get('low', 100) if _estimate_repair_cost(pattern['category'], make) else 100}-£{_estimate_repair_cost(pattern['category'], make).get('high', 500) if _estimate_repair_cost(pattern['category'], make) else 500}")
 
         negotiation_guidance = {
             "asking_price_context": f"Based on MOT history and recurring defects, typical market value is lower than asking price. Repairs needed: £{total_repair_low}-£{total_repair_high}.",
@@ -1293,9 +1294,10 @@ def _build_demo_vehicle_report(
         })
     if patterns:
         for pattern in patterns[:3]:
+            cat_display = pattern['category'].title() if pattern['category'] else pattern['category']
             level = "HIGH" if pattern.get('concern_level') == 'high' else "MEDIUM"
             risk_matrix.append({
-                "category": pattern['category'],
+                "category": cat_display,  # Use capitalized version
                 "level": level,
                 "finding": f"Recurring issue ({pattern['occurrences']} times). Have professional mechanic inspect. Budget £{total_repair_low}-£{total_repair_high}."
             })
