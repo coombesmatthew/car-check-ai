@@ -31,27 +31,6 @@ This vehicle's mileage is **typical** for its age and fuel type.
 
 ---
 
-### MOT History (Full Test Records)
-
-| # | Date | Result | Mileage | Issues |
-|---|------|--------|---------|--------|
-| 1 | **2025-09-30** | PASSED | 100,440 mi | 3 advisories |
-| 2 | **2024-08-21** | PASSED | 98,126 mi | 5 advisories |
-| 3 | **2023-08-24** | PASSED | 90,983 mi | — |
-| 4 | **2022-04-22** | PASSED | 87,509 mi | F: Offside Windscreen wiper blade defective (3.4 (b) (i)) |
-| 5 | **2021-03-08** | PASSED | 82,540 mi | 1 advisories |
-| 6 | **2020-03-03** | PASSED | 80,034 mi | 3 advisories |
-| 7 | **2020-03-03** | FAILED | 80,034 mi | F: Offside Front Brake hose excessively deteriorated  Insecure  |
-| 8 | **2019-03-09** | PASSED | 71,440 mi | — |
-| 9 | **2017-07-13** | PASSED | 48,212 mi | 1 advisories |
-| 10 | **2017-07-13** | FAILED | 48,212 mi | F: Nearside Stop lamp not working (1.2.1b) |
-| 11 | **2016-07-12** | PASSED | 40,599 mi | — |
-| 12 | **2015-04-20** | PASSED | 34,198 mi | — |
-| 13 | **2014-04-12** | FAILED | 21,441 mi | F: Nearside Windscreen wiper does not clear the windscreen effe; F: Offside Windscreen wiper does not clear the windscreen effec; F: Nail in offside rear tyre |
-| 14 | **2014-04-12** | PASSED | 21,441 mi | F: Nail in offside rear tyre |
-
----
-
 ### Recurring Defect Patterns
 
 | Category | # | Pattern | Action |

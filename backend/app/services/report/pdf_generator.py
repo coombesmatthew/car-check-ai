@@ -172,44 +172,14 @@ def _md_to_html(content: str, citation_urls: Optional[Dict[int, str]] = None) ->
             if len(table_lines) >= 2:
                 html = '<table class="ai-table">'
                 first_data_row = True
-                is_mot_table = False
-
                 for row in table_lines:
                     cells = [c.strip() for c in row.strip().strip("|").split("|")]
                     # skip separator row (---|---)
                     if all(re.match(r"^[-: ]+$", c) for c in cells if c):
                         continue
-
                     tag = "th" if first_data_row else "td"
-
-                    # Detect MOT table by header row containing "Result"
-                    if first_data_row:
-                        is_mot_table = any("Result" in c or "result" in c.lower() for c in cells)
-
-                    # Determine row styling for MOT tables
-                    row_style = ""
-                    if not first_data_row and is_mot_table:
-                        # Check if any cell contains PASSED or FAILED
-                        row_text = " ".join(cells).upper()
-                        if "PASSED" in row_text:
-                            row_style = ' style="background:#f0fdf4"'
-                        elif "FAILED" in row_text:
-                            row_style = ' style="background:#fef2f2"'
-
                     first_data_row = False
-
-                    # Render cells with badge styling for PASSED/FAILED
-                    cell_html = ""
-                    for c in cells:
-                        cell_content = c
-                        if is_mot_table and ("PASSED" in c.upper() or "FAILED" in c.upper()):
-                            if "PASSED" in c.upper():
-                                cell_content = '<span class="badge-pass">PASSED</span>'
-                            elif "FAILED" in c.upper():
-                                cell_content = '<span class="badge-fail">FAILED</span>'
-                        cell_html += f"<{tag}>{cell_content}</{tag}>"
-
-                    html += f"<tr{row_style}>{cell_html}</tr>"
+                    html += "<tr>" + "".join(f"<{tag}>{c}</{tag}>" for c in cells) + "</tr>"
                 html += "</table>"
                 output.append(html)
 

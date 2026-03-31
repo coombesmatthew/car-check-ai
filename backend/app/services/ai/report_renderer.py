@@ -67,45 +67,6 @@ def render_report_to_markdown(report: VehicleReport) -> str:
     lines.append("---")
     lines.append("")
 
-    # MOT Full Test Records - Compact format (failures/dangerous only)
-    lines.append("### MOT History (Full Test Records)")
-    lines.append("")
-    lines.append("| # | Date | Result | Mileage | Issues |")
-    lines.append("|---|------|--------|---------|--------|")
-    for idx, test in enumerate(report.mot_tests, 1):
-        test_date = test.get("test_date", "N/A")
-        result = test.get("result", "N/A")
-        mileage = test.get("mileage", "N/A")
-        defects = test.get("defects", [])
-
-        # Format defects - only FAILURES and DANGEROUS (compact)
-        failure_lines = []
-        if isinstance(defects, list):
-            for d in defects:
-                if isinstance(d, dict):
-                    defect_type = d.get("type", "")
-                    defect_text = d.get("text", "")
-                    if defect_type in ("FAILURE", "DANGEROUS") and defect_text:
-                        # Use short notation: F: text or D: text
-                        prefix = "F" if defect_type == "FAILURE" else "D"
-                        failure_lines.append(f"{prefix}: {defect_text[:60]}")
-
-        # If no failures/dangerous, show advisories count
-        if not failure_lines:
-            advisory_count = sum(1 for d in defects if isinstance(d, dict) and d.get("type") == "ADVISORY")
-            if advisory_count > 0:
-                issues_str = f"{advisory_count} advisories"
-            else:
-                issues_str = "—"
-        else:
-            issues_str = "; ".join(failure_lines)
-
-        mileage_str = f"{mileage:,}" if isinstance(mileage, int) else str(mileage)
-        lines.append(f"| {idx} | **{test_date}** | {result} | {mileage_str} mi | {issues_str} |")
-    lines.append("")
-    lines.append("---")
-    lines.append("")
-
     # Recurring Defect Patterns - Table with better formatting
     lines.append("### Recurring Defect Patterns")
     lines.append("")
