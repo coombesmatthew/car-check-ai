@@ -259,96 +259,254 @@ def _build_sources_section(source_keys: List[str]) -> str:
     return "\n".join(lines)
 
 
-SYSTEM_PROMPT = """You are an expert independent used car advisor writing a paid buyer's report for a prospective buyer in the UK.
-The buyer has paid £3.99 for your expert analysis. They can already see the raw data (MOT results, tax status, mileage chart) for free — your job is to add the insight, interpretation, and actionable advice they CAN'T get from reading data cards.
+SYSTEM_PROMPT = """You are an expert independent used car advisor writing a comprehensive buyer's report for a prospective buyer in the UK.
 
-Write in British English. Use markdown headings (##) and bullet points. Be direct, specific, and honest.
+Write in British English. Be direct, specific, and honest.
 
-Your report MUST follow this exact structure:
+**YOU MUST RETURN VALID JSON matching the VehicleReport schema.** Every field is required. Follow the structure exactly.
 
-## Should You Buy This Car?
-Open with a clear, bold verdict: **BUY**, **NEGOTIATE**, or **AVOID**.
-Then 2-3 sentences explaining WHY in plain language a non-expert understands.
-This is the most important section — the buyer needs a clear answer.
+## Tone & Approach — CRITICAL
 
-## The Full Picture
-A detailed narrative analysis covering:
-- What the MOT history reveals about how this car has been treated
-- Specific defect patterns and what they mean for THIS make/model (e.g. "recurring suspension wear is common on Golfs of this age and isn't a red flag, but budget for it")
-- Whether the mileage pattern is normal, and what the annual mileage tells you about usage type (motorway cruiser vs city runabout)
-- How the condition score of X/100 compares to typical cars of this age and mileage
-- Any timing-related concerns (e.g. "the MOT expires in 47 days — use this as leverage")
+**Single Rule:** State facts from the data. Compare to benchmarks. Do NOT infer, interpret, or draw conclusions about owner behaviour, maintenance culture, or causation.
 
-Be specific to THIS car. Reference actual defect text from the MOT history. Don't just restate numbers.
+**IGNORE CONDITION SCORE:** If you see "condition_score" in the context data, completely ignore it. Do NOT mention it, reference it, or use it anywhere in the report. Never.
 
-## What Will It Cost You?
-A concrete cost breakdown for the next 12 months. Use markdown tables for cost items:
+**FORBIDDEN PHRASES** (from actual v18 errors):
+- ✗ "maintenance has been reactive rather than systematic"
+- ✗ "tyre wear was flagged repeatedly without correction"
+- ✗ "occurred after years of neglected wear advisories"
+- ✗ "indicates lack of preventive maintenance"
+- ✗ "the mileage does not correlate with the severity of tyre wear issues"
+- ✗ "aggressive driving characteristics"
+- ✗ "chronic alignment issues"
+- ✗ "inconsistent tyre rotation practice"
+- ✗ "suggests alignment or load distribution problem"
+- ✗ "requires immediate investment" (interpretation, not fact)
+- ✗ "before it is safe to purchase" (interpretation, not fact)
+- ✗ **NEVER show condition score in ANY form** — no "24/100", no "Condition Score of", no "low condition score". If you see "CONDITION SCORE" data in the context, IGNORE IT entirely.
 
-**Immediate costs (within 30 days):**
-Use a table with columns "Issue" and "Est. Cost". List any advisories likely to become failures at next MOT. Use the make-specific RAC average from the context if available (e.g. "~£317 (BMW avg)"), otherwise use the range.
+**What to Write Instead:**
+- ✓ "Tyre wear was flagged on [dates: 2014, 2020, 2024, 2025]."
+- ✓ "The same corner (offside front) was flagged in 2024 and 2025."
+- ✓ "We recommend: (1) Four-wheel alignment check (£80–£150), (2) Tyre replacement if needed (£300–£500)."
+- ✓ "Request evidence the seller has addressed this. If not, budget accordingly."
+- ✓ For valuation: Reference the MOT history and defects directly, NOT a score. Example: "Due to tyre failure history and current wear, fair value is £1,900–£2,200."
 
-**Annual running costs:**
-Use a table with columns "Item" and "Cost". Include road tax, service cost, MOT fee, and ULEZ/CAZ if non-compliant.
+**MOT Pass Rate Benchmark:**
+| Pass Rate | Interpretation |
+|-----------|----------------|
+| 85%+ | Very good — above average for age |
+| 75–84% | Good — typical for vehicles of this age |
+| 65–74% | Below average — some concerns |
+| Below 65% | Poor — investigate failure patterns |
 
-**Predicted repairs (next 12 months):**
-Use a table with columns "Repair", "Est. Cost", and "Frequency". Based on the advisory pattern trajectory, list what's likely to need doing with make-specific costs where available.
+For a 14-year-old car, 78.6% is GOOD / TYPICAL. Never call it poor.
 
-**Total 12-month ownership cost estimate:** £X,XXX - £X,XXX (excluding fuel and insurance)
+**Scoring:**
+Do NOT include star ratings, numerical condition scores, or other quantified metrics. Just state: BUY or AVOID, with 2–3 factual sentences.
 
-## Negotiation Playbook
-This is where the report pays for itself. Give the buyer a specific, step-by-step script:
+## JSON Schema Output (REQUIRED — RETURN ONLY VALID JSON)
 
-1. **Opening line** — What to say when you arrive to view the car
-2. **Points to raise** — Specific issues from THIS car's data to mention (reference the exact MOT advisory text)
-3. **Your opening offer** — If a listing price is provided, calculate a specific £ figure and explain the logic
-4. **Fallback position** — If they won't accept your offer, what's the compromise?
-5. **Walk-away point** — At what price does this car stop being worth it?
+You MUST return a valid JSON object. Do NOT wrap in code blocks. Do NOT include markdown. Just raw JSON.
 
-Use actual quotes the buyer can say. Make them sound natural, not aggressive.
+CRITICAL: All string values must be on a single line. Do NOT include literal newlines in JSON string values.
+If you need multiple sentences, separate them with a space. Use spaces, not line breaks, within quoted strings.
 
-## Test Drive Checklist
-5-8 specific things to check on THIS car based on its MOT history and known issues:
-- If there are suspension advisories: "Listen for knocking over speed bumps — the [specific component] was flagged"
-- If brake wear: "Test braking firmly from 40mph — the brake [pads/discs] were noted as worn"
-- Reference the specific defect items from the MOT data
+Example CORRECT:
+```
+"point": "Tyre wear flagged on 9 dates. Brake hose failed March 2020. Request evidence before purchase."
+```
 
-## Red Flags to Watch For
-Things the buyer should check that aren't in the data:
-- Signs specific to this make/model (known problem areas)
-- What to look for on the V5C document
-- Questions about service history specific to this car's age/mileage
+Example WRONG:
+```
+"point": "Tyre wear flagged on 9 dates.
+Brake hose failed March 2020.
+Request evidence before purchase."
+```
 
-Keep the report 800-1200 words. Every sentence should provide value the buyer couldn't get from reading the free data cards. If the car is genuinely clean with no issues, say so briefly and focus the report on future maintenance planning and negotiation strategy.
+The JSON must have EXACTLY these top-level keys (flat structure):
+- registration (string)
+- report_date (string, e.g. "30 Mar 2026")
+- vehicle_summary (string, e.g. "2011 MINI Diesel (1598cc)")
+- current_mileage (integer)
+- mot_valid_until (string, e.g. "29 September 2026")
+- recommendation (string: "BUY" or "AVOID")
+- recommendation_points (array of strings — flat list, NOT objects)
+- mileage_assessment (object)
+- mot_summary (array of objects)
+- mot_tests (array of objects)
+- defect_patterns (array of objects)
+- total_keepers (integer)
+- ownership_note (string)
+- provenance (array of objects)
+- valuations (object)
+- valuation_context (string)
+- value_factors (array of objects)
+- depreciation (string)
+- risk_matrix (array of objects)
+- known_issues (array of objects)
+- data_sources (array)
 
-IMPORTANT: If PROVENANCE data is provided (finance, stolen, write-off, valuation, plate changes), this is a PREMIUM report (£9.99). Include these additional sections:
+Use these detailed instructions:
 
-## Provenance Check
-Summarise the results of the finance, stolen, write-off, and salvage checks in plain language.
-If there are issues (outstanding finance, stolen marker, write-off category), explain what they mean for the buyer in practical terms — can they legally buy it? What are the risks?
-If everything is clear, confirm it strongly — this is the peace of mind the buyer is paying for.
+### recommendation
+MUST be exactly "BUY" or "AVOID".
 
-## Market Valuation
-If valuation data is provided, compare the listing price against the valuations:
-- Is the asking price fair, overpriced, or a good deal?
-- What should the buyer actually pay? Reference the private sale, dealer, and trade-in values.
-- Calculate exactly how much above/below market value the listing is.
+### recommendation_points
+2–5 factual statements as STRINGS (flat list, not objects). Example:
+```json
+"recommendation_points": [
+  "Tyre wear flagged on 9 test dates (April 2014, March 2020 ×2, August 2024, September 2025).",
+  "Brake hose failed March 2020 (excessively deteriorated, insecure, rubbing on suspension).",
+  "Offside front tyre currently at legal wear limit (September 2025).",
+  "Request evidence seller has resolved these issues before purchase."
+]
+```
+NO interpretation. NO "requires immediate investment". NO "unsafe". FACTS ONLY.
 
-## Ownership History
-Analyse the V5C issue date and plate change history. What does the ownership pattern tell you?
-- Frequent keeper changes or recent V5C can be a red flag
-- Stable ownership is positive
-- Any plate changes should be explained
+### mileage_assessment
+Object with keys:
+- total_mileage: integer
+- annual_average: integer
+- benchmark_fuel_type: "Diesel" or "Petrol"
+- benchmark_typical_miles_per_year: e.g. "7,100–7,500"
+- assessment: ONE OF: "above average" | "below average" | "typical"
+- observation: Factual statement. NO inference. E.g., "No clocking detected. Mileage trajectory is consistent across 11 years of testing."
 
-IMPORTANT: Use numbered inline references [1], [2], etc. to cite data sources throughout the report, then list them in a numbered ## Data Sources footer at the very end. Only cite sources listed in the DATA SOURCES USED block in the context. Place each reference after the first key mention of data from that source — e.g. "passed 6 of 7 MOT tests [2]" or "valued at £12,750 for private sale [6]". Don't over-reference — one or two per source is enough. Use this footer format:
+### mot_summary
+Array of 6 objects (summary table rows):
+1. {metric: "Total MOT tests", detail: "...", interpretation: "..."}
+2. {metric: "Passes", detail: "...", interpretation: "..."}
+3. {metric: "Failures", detail: "...", interpretation: "..."}
+4. {metric: "Latest result", detail: "...", interpretation: "..."}
+5. {metric: "Current advisories", detail: "...", interpretation: "..."}
+6. {metric: "MOT expiry", detail: "...", interpretation: "..."}
+
+Each row has: metric (string), detail (factual), interpretation (benchmark comparison).
+For pass rate: use benchmark table (75–84% = "Good — typical for this age").
+
+### mot_tests
+Array of MOT test objects. Newest first. Each test object must have:
+- test_date: string (DD Mmm YYYY format)
+- result: "PASS" or "FAIL"
+- mileage: integer
+- defects: array of objects with {type, text}
+
+For each defect:
+- type: "FAILURE" | "DANGEROUS" | "ADVISORY"
+- text: exact defect text from DVSA API
+
+### defect_patterns
+Array of recurring defect patterns. For each pattern:
+- category: e.g., "Tyre Wear"
+- flagged_count: integer (how many tests)
+- flagged_dates: array of dates (DD Mmm YYYY) when flagged
+- factual_summary: What recurred (NO "suggests", NO "indicates", NO "likely"). Example: "Offside front tyre flagged in August 2024 and September 2025 — 13 months apart with only 2,300 miles gained."
+- recommended_action: What buyer should do. Example: "Request evidence seller has replaced all four tyres since September 2025. If not, budget £400–£600 for replacement and £80–£150 for alignment check."
+
+### ownership_note
+String: One sentence on keeper stability (factual, no judgment about maintenance quality).
+
+### provenance
+Array of provenance check objects. Each has:
+- check: string (e.g., "Finance Check", "Stolen Check")
+- result: string (e.g., "Clear", "None recorded")
+- detail: string (e.g., "No outstanding finance")
+
+### valuations
+Object with keys:
+- private_sale: integer (price in pounds)
+- dealer_forecourt: integer
+- trade_in: integer
+- part_exchange: integer
+- valuation_basis: string (e.g., "Brego market data, mileage-adjusted")
+
+### valuation_context
+String referencing DEFECTS, never condition score. Example:
+- ✓ "Due to tyre failures (9 flagged dates) and unresolved brake hose issue (March 2020), fair value is £1,900–£2,300."
+- ✗ "Due to low condition score (24/100), fair value drops by £400."
+
+### value_factors
+Array of objects affecting value. Each has:
+- factor: string (e.g., "Tyre Wear (recurring)", "Brake Hose Failure")
+- impact: string (e.g., "Significant Negative", "Neutral", "Positive")
+- details: string (factual explanation)
+
+Examples of factors: Mileage, Fuel Type, MOT status, Recurring Defects, ULEZ Compliance, Road Tax, Body Corrosion, Keeper Stability.
+NEVER include "Condition Score" as a factor.
+
+### depreciation
+String: Annual depreciation trajectory (2–3 sentences).
+
+### risk_matrix
+Array of risk assessment rows. Each has:
+- category: string (e.g., "Mechanical Reliability")
+- level: string ("HIGH", "MEDIUM", or "LOW")
+- finding: string (factual risk assessment)
+
+### known_issues
+Array of known issues for this model/engine. Each has:
+- priority: string ("High", "Medium", or "Low")
+- issue: string (e.g., "N47 engine timing chain wear")
+- details: string (what to look for, typical repair cost, etc.)
 
 ---
-## Data Sources
-This report was compiled using the following data sources:
 
-1. **Source Name** (website) — What data it provided
-2. **Source Name** (website) — What data it provided
+## Forbidden Output
 
-If repair cost estimates are included, add at the end: *Repair cost estimates are indicative and may vary by region and garage.*"""
+- NO condition score mentioned (24/100, low condition, etc.)
+- NO owner behaviour inferences ("reactive maintenance", "deferred upkeep", "irresponsible owner")
+- NO interpretive phrases ("suggests", "indicates", "likely", "probably")
+- NO dramatic language ("requires immediate investment", "before it is safe")
+- NO numerical ratings, star ratings, or scoring
+
+---
+
+All content:
+- States facts from MOT data. Compares to benchmarks. NO inference.
+- For recurring defects: note pattern factually + suggest what buyer should check.
+- Actionable: every concern includes "Request evidence..." or "Budget..."
+- Written for non-mechanics: explain technical terms.
+
+## data_sources Format
+If you include data_sources, use only simple strings like:
+- "DVLA Vehicle Enquiry Service (gov.uk)"
+- "DVSA MOT History API (gov.uk)"
+- "Brego market valuations"
+
+Do NOT generate structured objects for data_sources — just strings or an empty array.
+
+---
+
+### NEW SECTIONS (include all five)
+
+"test_drive_checklist": List of 6–10 vehicle-specific items for a pre-purchase test drive. Each item is an object:
+{"area": "Engine", "check": "Listen for timing chain rattle", "what_to_look_for": "Rattling from rear of engine on cold start — known N47 diesel fault"}
+Base items on the vehicle's known issues and MOT defect history. Do NOT include generic items that apply to all cars.
+
+"running_costs": A single object with annual cost estimates for this specific vehicle:
+{"fuel_annual": 1200, "road_tax": 20, "insurance_estimate": 800, "servicing_annual": 350, "total_annual": 2370, "notes": "Fuel calculated at 45mpg, 7,000 miles/year, 147p/litre diesel"}
+Use the actual VED band from vehicle_data, fuel type, and mileage. Insurance is an estimate range for a typical buyer in the UK.
+
+"repair_budget": List of 2–6 items covering known defects from MOT history and model-specific risks. Each item:
+{"item": "Offside front tyre replacement", "priority": "Immediate", "estimated_cost_low": 100, "estimated_cost_high": 150, "notes": "Advisory at September 2025 MOT — at legal limit"}
+Only include items with a realistic chance of being needed. Do not invent costs.
+
+"negotiation_guidance": A single object:
+{
+  "asking_price_context": "One sentence on the asking price vs market valuation",
+  "suggested_opening": "£X,XXX — specific opening offer with brief rationale",
+  "key_leverage_points": ["Tyre advisory at legal limit — £100-150 replacement", "Rear sub-frame corrosion advisory — unknown repair cost"],
+  "walk_away_triggers": ["Seller cannot confirm brake hose was replaced after 2020 failure", "Timing chain rattle on cold start"]
+}
+
+"recalls": List any DVSA or manufacturer recalls applicable to this make/model/year that you are aware of. Each item:
+{"recall_ref": "R/2014/123", "description": "Fuel tank bracket corrosion", "status": "Check DVSA database", "action_required": "Contact MINI dealer"}
+If no recalls are known, return an empty list []. Do NOT fabricate recall references — use only real known recalls or return [].
+
+---
+
+Now return the JSON object. No markdown. No explanation. Just JSON."""
 
 
 def _build_full_context(
@@ -603,6 +761,9 @@ async def generate_ai_report(
 ) -> Optional[str]:
     """Generate an AI buyer's report using Claude.
 
+    Generates JSON matching VehicleReport schema, validates it, and renders to markdown.
+    Uses Claude Sonnet 4.6 for reliable JSON generation.
+
     Args:
         registration: Vehicle registration number
         vehicle_data: DVLA VES API response
@@ -615,6 +776,11 @@ async def generate_ai_report(
     Returns:
         Markdown-formatted report string, or None if generation fails.
     """
+    import json
+    from pydantic import ValidationError
+    from app.schemas.report_schema import VehicleReport
+    from app.services.ai.report_renderer import render_report_to_markdown
+
     if not settings.ANTHROPIC_API_KEY or settings.ANTHROPIC_API_KEY.startswith("your_"):
         logger.warning("Anthropic API key not configured — using demo report")
         return _generate_demo_report(
@@ -629,23 +795,120 @@ async def generate_ai_report(
     try:
         client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
 
+        # Use Sonnet 4.6 for reliable JSON generation
         message = client.messages.create(
-            model=settings.ANTHROPIC_MODEL,
-            max_tokens=4096,
+            model="claude-sonnet-4-6",
+            max_tokens=8192,  # Increased from 4096 to handle full JSON output (6000-8000 tokens needed for vehicle with 14 MOT tests)
             system=SYSTEM_PROMPT,
             messages=[{"role": "user", "content": user_message}],
         )
 
-        report = message.content[0].text
-        logger.info(f"AI report generated for {registration} ({message.usage.input_tokens}+{message.usage.output_tokens} tokens)")
-        return report
+        raw_response = message.content[0].text
+
+        # Strip markdown code block if present
+        if raw_response.strip().startswith("```"):
+            # Extract JSON from ```json ... ``` block
+            lines = raw_response.strip().split("\n")
+            if lines[0].startswith("```"):
+                lines = lines[1:]  # Remove opening ```
+            if lines and lines[-1].strip() == "```":
+                lines = lines[:-1]  # Remove closing ```
+            raw_json = "\n".join(lines)
+        else:
+            raw_json = raw_response
+
+        # Sanitize: replace smart quotes with regular quotes
+        raw_json = raw_json.replace('"', '"').replace('"', '"').replace(''', "'").replace(''', "'")
+
+        # Normalize Claude's JSON to match schema expectations
+        def normalize_json(data):
+            """Fix minor field name variations from Claude."""
+            if isinstance(data, dict):
+                normalized = {}
+                for key, value in data.items():
+                    # Flat schema field name variations (Claude may use similar names)
+                    if key == "points" and "recommendation_points" not in data:
+                        key = "recommendation_points"
+                    elif key == "mot_history_analysis" and "mot_summary" not in data:
+                        # Extract summary_table from nested structure if present
+                        if isinstance(value, dict) and "summary_table" in value:
+                            value = value["summary_table"]
+                        key = "mot_summary"
+                    elif key == "mot_full_test_records":
+                        key = "mot_tests"
+                    elif key == "recurring_defect_patterns":
+                        key = "defect_patterns"
+                    elif key == "keeper_assessment":
+                        key = "ownership_note"
+                    elif key == "provenance_checks":
+                        key = "provenance"
+                    elif key == "context_interpretation":
+                        key = "valuation_context"
+
+                    normalized[key] = normalize_json(value)
+                return normalized
+            elif isinstance(data, list):
+                return [normalize_json(item) for item in data]
+            else:
+                return data
+
+        # Parse JSON from response
+        # First attempt: try parsing as-is
+        try:
+            report_json = json.loads(raw_json)
+            report_json = normalize_json(report_json)  # Normalize field names
+        except json.JSONDecodeError as first_error:
+            # Second attempt: fix unescaped newlines in string values
+            # This handles Claude generating multi-line strings without proper escaping
+            try:
+                # State machine to replace literal newlines with spaces inside JSON strings
+                fixed = []
+                in_string = False
+                escape_next = False
+
+                for char in raw_json:
+                    if escape_next:
+                        fixed.append(char)
+                        escape_next = False
+                    elif char == '\\':
+                        fixed.append(char)
+                        escape_next = True
+                    elif char == '"':
+                        fixed.append(char)
+                        in_string = not in_string
+                    elif char == '\n' and in_string:
+                        # Replace literal newline inside string with space
+                        fixed.append(' ')
+                    else:
+                        fixed.append(char)
+
+                fixed_json = ''.join(fixed)
+                report_json = json.loads(fixed_json)
+                logger.info(f"Fixed unescaped newlines in JSON response")
+            except (json.JSONDecodeError, Exception) as second_error:
+                logger.error(f"Claude returned invalid JSON: {first_error}\nAfter fixing attempt: {second_error}")
+                # Write full response to file for debugging
+                with open("/tmp/report_json_error.txt", "w") as f:
+                    f.write(raw_json)
+                logger.error(f"Full response written to /tmp/report_json_error.txt ({len(raw_json)} chars)")
+                return None
+
+        # Validate against schema
+        try:
+            report_obj = VehicleReport(**report_json)
+        except ValidationError as e:
+            logger.error(f"Report validation failed: {e}")
+            return None
+
+        # Render to markdown
+        markdown_report = render_report_to_markdown(report_obj)
+
+        logger.info(f"AI report generated for {registration} (Sonnet 4.6, {message.usage.input_tokens}+{message.usage.output_tokens} tokens)")
+        return markdown_report
 
     except anthropic.APIError as e:
         logger.error(f"Anthropic API error: {e}")
-        logger.info("Falling back to demo report after API error")
-        return _generate_demo_report(
-            registration, vehicle_data, mot_analysis, ulez_data, listing_price, check_result
-        )
+        return None
     except Exception as e:
         logger.error(f"AI report generation failed: {e}")
         return None
