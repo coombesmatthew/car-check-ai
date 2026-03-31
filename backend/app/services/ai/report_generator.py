@@ -962,6 +962,15 @@ def _build_demo_vehicle_report(
     patterns = mot_analysis.get("failure_patterns", [])
     condition_score = mot_analysis.get("condition_score")
 
+    # Pre-calculate repair costs for patterns (needed for recommendation points)
+    total_repair_low = 0
+    total_repair_high = 0
+    for pattern in patterns:
+        est = _estimate_repair_cost(pattern.get("category", ""), make)
+        if est:
+            total_repair_low += est.get("low", 0)
+            total_repair_high += est.get("high", 0)
+
     # Determine recommendation
     if clocked:
         recommendation = "AVOID"
@@ -979,22 +988,44 @@ def _build_demo_vehicle_report(
     vehicle_summary = f"{year} {_format_make(make)} {model}" + (f" ({engine}cc)" if engine else "")
 
     # Recommendation points (factual, no condition score)
+    # Build rich narrative context for the recommendation
     recommendation_points = []
-    if clocked:
-        recommendation_points.append("Mileage discrepancies detected — odometer integrity questionable.")
-    if total_failures > 0:
-        recommendation_points.append(f"{total_failures} MOT failure(s) recorded in test history.")
-    if patterns:
-        recommendation_points.append(f"Recurring {patterns[0]['category']} issues flagged {patterns[0]['occurrences']} times.")
-    if check_result:
-        if check_result.get("finance_check", {}).get("finance_outstanding"):
-            recommendation_points.append("Outstanding finance agreement(s) detected.")
-        if check_result.get("stolen_check", {}).get("stolen"):
-            recommendation_points.append("Vehicle reported stolen.")
-        if check_result.get("write_off_check", {}).get("written_off"):
-            recommendation_points.append("Insurance write-off records found.")
 
-    if not recommendation_points:
+    if recommendation == "AVOID":
+        if clocked:
+            recommendation_points.append("Mileage discrepancies detected — odometer integrity questionable. This is a major red flag.")
+        elif check_result and check_result.get("stolen_check", {}).get("stolen"):
+            recommendation_points.append("Vehicle reported stolen. Do not purchase under any circumstances.")
+        elif check_result and check_result.get("write_off_check", {}).get("written_off"):
+            cat = check_result.get("write_off_check", {}).get("records", [{}])[0].get("category", "?")
+            recommendation_points.append(f"Insurance write-off (Category {cat}) recorded. Proceed only with detailed inspection.")
+        elif total_failures > 2:
+            recommendation_points.append(f"{total_failures} MOT failures recorded. Recurring defects suggest maintenance concerns.")
+        if patterns and len(patterns) > 0:
+            recommendation_points.append(f"Recurring {patterns[0]['category']} issues ({patterns[0]['occurrences']} times). Budget £{total_repair_low}-£{total_repair_high} for repairs.")
+    elif recommendation == "NEGOTIATE":
+        recommendation_points.append(f"Vehicle has {total_failures} MOT failure(s) and recurring defects. Use as negotiation leverage.")
+        if patterns:
+            recommendation_points.append(f"{patterns[0]['category']} flagged {patterns[0]['occurrences']} times — seek price reduction.")
+        if total_repair_low > 0:
+            recommendation_points.append(f"Budget £{total_repair_low}-£{total_repair_high} for repairs before purchasing.")
+    else:  # BUY
+        if total_passes > 0:
+            pass_rate = round(total_passes / total_tests * 100) if total_tests > 0 else 0
+            recommendation_points.append(f"MOT history is solid with {pass_rate}% pass rate ({total_passes}/{total_tests} tests).")
+        if not clocked:
+            recommendation_points.append("Mileage is consistent across MOT tests — no clocking detected.")
+        if total_keepers == 1:
+            recommendation_points.append("Single keeper from new — suggests stable ownership and regular maintenance.")
+        if not patterns or len(patterns) == 0:
+            recommendation_points.append("No recurring defect patterns identified in MOT history.")
+
+    if check_result and check_result.get("finance_check", {}).get("finance_outstanding"):
+        recommendation_points.append("WARNING: Outstanding finance agreement(s) detected. Do not proceed without settlement.")
+
+    if len(recommendation_points) > 5:
+        recommendation_points = recommendation_points[:5]
+    elif not recommendation_points:
         recommendation_points.append("Vehicle inspection data available for assessment.")
 
     # Mileage assessment
@@ -1019,7 +1050,10 @@ def _build_demo_vehicle_report(
     ]
 
     # MOT tests - render all available tests (not truncated)
+    # Also extract advisories for later use
     mot_tests_rendered = []
+    recent_advisories = []
+    recent_failures = []
     for test in mot_tests_raw:
         test_date = test.get("date", "unknown")
         result = test.get("result", "UNKNOWN")
@@ -1027,9 +1061,15 @@ def _build_demo_vehicle_report(
         defects = []
 
         for adv in test.get("advisories", []):
-            defects.append({"type": "ADVISORY", "text": adv.get("text", "")})
+            adv_text = adv.get("text", "")
+            defects.append({"type": "ADVISORY", "text": adv_text})
+            if adv_text and len(recent_advisories) < 5:
+                recent_advisories.append(adv_text)
         for fail in test.get("failures", []):
-            defects.append({"type": "FAILURE", "text": fail.get("text", "")})
+            fail_text = fail.get("text", "")
+            defects.append({"type": "FAILURE", "text": fail_text})
+            if fail_text and len(recent_failures) < 3:
+                recent_failures.append(fail_text)
 
         mot_tests_rendered.append({
             "test_date": test_date,
@@ -1038,15 +1078,82 @@ def _build_demo_vehicle_report(
             "defects": defects
         })
 
-    # Recurring defect patterns - include all patterns (not just top 1)
+    # Recurring defect patterns - include all patterns with real repair costs
     defect_patterns = []
+    repair_budget = []
+    total_repair_low = 0
+    total_repair_high = 0
+
     for pattern in patterns:
+        cat = pattern.get("category", "Unknown")
+        occurrences = pattern.get("occurrences", 0)
+
         defect_patterns.append({
-            "category": pattern.get("category", "Unknown"),
-            "flagged_count": pattern.get("occurrences", 0),
-            "flagged_dates": [],  # Would need to extract from individual tests
-            "factual_summary": f"{pattern['category']} flagged {pattern['occurrences']} times in MOT history.",
-            "recommended_action": f"Have {pattern['category'].lower()} inspected by qualified mechanic before purchase."
+            "category": cat,
+            "flagged_count": occurrences,
+            "flagged_dates": [],
+            "factual_summary": f"{cat} flagged {occurrences} times in MOT history.",
+            "recommended_action": f"Have {cat.lower()} inspected by qualified mechanic before purchase."
+        })
+
+        # Build repair budget with actual cost estimates
+        est = _estimate_repair_cost(cat, make)
+        if est:
+            low = est.get("low", 0)
+            high = est.get("high", 0)
+            priority = "High" if pattern.get("concern_level") == "high" else "Medium" if pattern.get("concern_level") == "medium" else "Low"
+
+            repair_budget.append({
+                "item": f"{cat} repair/replacement",
+                "priority": priority,
+                "estimated_cost_low": low,
+                "estimated_cost_high": high,
+                "notes": f"Flagged {occurrences} times in MOT history. {est.get('component', '')}."
+            })
+            total_repair_low += low
+            total_repair_high += high
+
+    # Test Drive Checklist - build from actual MOT advisories
+    test_drive_checklist = []
+    # Map advisory patterns to test drive checks
+    for adv in recent_advisories[:5]:
+        lower = adv.lower()
+        if "brake" in lower:
+            test_drive_checklist.append({
+                "area": "Brakes",
+                "check": "Test braking firmly from 40mph",
+                "what_to_look_for": f"Responsive, no sponginess or delay. (Advisory: {adv[:50]}...)"
+            })
+        elif "tyre" in lower or "tread" in lower:
+            test_drive_checklist.append({
+                "area": "Tyres",
+                "check": "Check tread depth on all four corners",
+                "what_to_look_for": f"All above 1.6mm legal minimum. (Advisory: {adv[:50]}...)"
+            })
+        elif "suspension" in lower or "shock" in lower or "spring" in lower:
+            test_drive_checklist.append({
+                "area": "Suspension",
+                "check": "Drive over speed bumps and listen for knocking",
+                "what_to_look_for": f"No clunking or unusual noises. (Advisory: {adv[:50]}...)"
+            })
+        elif "steering" in lower:
+            test_drive_checklist.append({
+                "area": "Steering",
+                "check": "Turn steering fully in both directions",
+                "what_to_look_for": f"Smooth, responsive. No stiffness or heaviness. (Advisory: {adv[:50]}...)"
+            })
+
+    # Add generic checks if not enough specific ones
+    if len(test_drive_checklist) < 3:
+        test_drive_checklist.append({
+            "area": "Engine",
+            "check": "Listen on cold start and during acceleration",
+            "what_to_look_for": "No rattling, knocking, or unusual noises from the engine bay"
+        })
+        test_drive_checklist.append({
+            "area": "Gearbox",
+            "check": "Test smoothness through all gears",
+            "what_to_look_for": "No crunching, grinding, or delayed engagement"
         })
 
     # Ownership
@@ -1097,30 +1204,102 @@ def _build_demo_vehicle_report(
     # Value context
     valuation_context = f"Based on {year} {_format_make(make)} {model} with {current_mileage} miles and MOT history. Market value varies by condition and service history."
 
-    # Value factors
+    # Value factors with detailed impact analysis
     value_factors = []
     if total_keepers == 1:
-        value_factors.append({"factor": "Single Keeper History", "impact": "Positive", "details": "Single owner from new suggests stable ownership"})
+        value_factors.append({"factor": "Single Keeper History", "impact": "Positive", "details": "Single owner from new typically indicates regular servicing and careful maintenance"})
     if not clocked:
-        value_factors.append({"factor": "Mileage Authenticity", "impact": "Positive", "details": "Consistent mileage readings across MOT tests"})
-    if patterns:
-        value_factors.append({"factor": f"{patterns[0]['category']}", "impact": "Negative", "details": f"Flagged {patterns[0]['occurrences']} times in MOT history"})
-    value_factors.append({"factor": "Mileage", "impact": "Neutral", "details": f"{current_mileage} miles — typical for {2026 - int(year) if year != 'Unknown' else 0} year old vehicle"})
+        value_factors.append({"factor": "Mileage Authenticity", "impact": "Positive", "details": "Mileage consistent across MOT tests — no odometer tampering detected"})
+    for pattern in patterns[:2]:
+        value_factors.append({
+            "factor": f"{pattern['category']} Wear",
+            "impact": "Negative",
+            "details": f"Flagged {pattern['occurrences']} times in {total_tests} MOT tests. Budget £{total_repair_low}-£{total_repair_high} for repairs."
+        })
+    if total_failures > 0:
+        value_factors.append({
+            "factor": "MOT Failures",
+            "impact": "Negative",
+            "details": f"{total_failures} failures recorded. Recent resolution status unknown — verify repairs before purchase."
+        })
+    value_factors.append({
+        "factor": "Mileage",
+        "impact": "Neutral",
+        "details": f"{current_mileage:,} miles — approximately {int(current_mileage / ((2026 - int(year)) + 1)) if year != 'Unknown' else '?'}/year. Typical for age."
+    })
+    if len(value_factors) > 8:
+        value_factors = value_factors[:8]
 
     # Depreciation
     depreciation = f"At this age and mileage, {_format_make(make)} {model} vehicles have reached stable depreciation. Annual value loss is typically modest unless major repairs are needed."
 
-    # Risk matrix
+    # Negotiation Guidance - build from defects and valuation
+    negotiation_guidance = {}
+
+    if patterns and len(patterns) > 0:
+        key_points = []
+        for pattern in patterns[:3]:
+            key_points.append(f"{pattern['category']} flagged {pattern['occurrences']} times — budget £{_estimate_repair_cost(pattern['category'], make).get('low', 100) if _estimate_repair_cost(pattern['category'], make) else 100}-£{_estimate_repair_cost(pattern['category'], make).get('high', 500) if _estimate_repair_cost(pattern['category'], make) else 500}")
+
+        negotiation_guidance = {
+            "asking_price_context": f"Based on MOT history and recurring defects, typical market value is lower than asking price. Repairs needed: £{total_repair_low}-£{total_repair_high}.",
+            "suggested_opening": f"Deduct £{int((total_repair_low + total_repair_high) / 2)} from asking price to cover predicted repairs.",
+            "key_leverage_points": key_points if key_points else ["Recurring defects justify price reduction"],
+            "walk_away_triggers": [
+                "Seller cannot provide evidence recent repairs have been completed",
+                "Test drive reveals issues flagged in MOT history",
+                "Any refusal to allow professional pre-purchase inspection"
+            ]
+        }
+    else:
+        negotiation_guidance = {
+            "asking_price_context": "Vehicle has clean MOT history. Market value reflects condition and age.",
+            "suggested_opening": "Standard market negotiation. No specific defects identified.",
+            "key_leverage_points": ["Mileage is typical for age"],
+            "walk_away_triggers": ["Any concerning sounds or handling during test drive"]
+        }
+
+    # Risk matrix with detailed findings
     risk_matrix = []
     if total_failures > 0:
-        risk_matrix.append({"category": "MOT Failures", "level": "MEDIUM", "finding": f"{total_failures} failures recorded. Have inspected."})
+        risk_matrix.append({
+            "category": "MOT Failures",
+            "level": "MEDIUM",
+            "finding": f"{total_failures} failures recorded in history. Verify all issues resolved before purchase."
+        })
     if patterns:
-        risk_matrix.append({"category": patterns[0]['category'], "level": "HIGH" if patterns[0].get('concern_level') == 'high' else "MEDIUM", "finding": f"Recurring issue. Budget for inspection and repair."})
+        for pattern in patterns[:3]:
+            level = "HIGH" if pattern.get('concern_level') == 'high' else "MEDIUM"
+            risk_matrix.append({
+                "category": pattern['category'],
+                "level": level,
+                "finding": f"Recurring issue ({pattern['occurrences']} times). Have professional mechanic inspect. Budget £{total_repair_low}-£{total_repair_high}."
+            })
     if check_result:
+        if check_result.get("finance_check", {}).get("finance_outstanding"):
+            risk_matrix.append({
+                "category": "Finance",
+                "level": "HIGH",
+                "finding": "Outstanding finance detected. Do not purchase without settlement and written confirmation."
+            })
         if check_result.get("write_off_check", {}).get("written_off"):
-            risk_matrix.append({"category": "Insurance History", "level": "HIGH", "finding": "Written off previously. Require repair documentation."})
+            risk_matrix.append({
+                "category": "Insurance History",
+                "level": "HIGH",
+                "finding": "Written off previously. Require detailed repair documentation and professional inspection."
+            })
+        if check_result.get("stolen_check", {}).get("stolen"):
+            risk_matrix.append({
+                "category": "Theft",
+                "level": "HIGH",
+                "finding": "Reported stolen. DO NOT PURCHASE. Legal title cannot be transferred."
+            })
     if not risk_matrix:
-        risk_matrix.append({"category": "General Condition", "level": "LOW", "finding": "No major concerns identified in available data"})
+        risk_matrix.append({
+            "category": "General Condition",
+            "level": "LOW",
+            "finding": "No major concerns identified in available data. Standard pre-purchase inspection recommended."
+        })
 
     # Known issues (model-specific)
     known_issues = [
@@ -1154,7 +1333,7 @@ def _build_demo_vehicle_report(
             current_mileage=int(current_mileage) if isinstance(current_mileage, int) else int(str(current_mileage).replace(",", "") or "100000"),
             mot_valid_until=mot_expiry or "Pending MOT",
             recommendation=recommendation,
-            recommendation_points=recommendation_points[:5],  # Limit to 5
+            recommendation_points=recommendation_points[:5],
             mileage_assessment=mileage_assessment,
             mot_summary=mot_summary_rows,
             mot_tests=mot_tests_rendered,
@@ -1168,7 +1347,10 @@ def _build_demo_vehicle_report(
             depreciation=depreciation,
             risk_matrix=risk_matrix,
             known_issues=known_issues,
+            test_drive_checklist=test_drive_checklist,
             running_costs=running_costs,
+            repair_budget=repair_budget,
+            negotiation_guidance=negotiation_guidance,
             data_sources=data_sources,
         )
         return report
