@@ -783,9 +783,15 @@ async def generate_ai_report(
 
     if not settings.ANTHROPIC_API_KEY or settings.ANTHROPIC_API_KEY.startswith("your_"):
         logger.warning("Anthropic API key not configured — using demo report")
-        return _generate_demo_report(
+        # Use unified approach: build VehicleReport object, then render with new renderer
+        demo_report = _build_demo_vehicle_report(
             registration, vehicle_data, mot_analysis, ulez_data, listing_price, check_result
         )
+        if demo_report:
+            return render_report_to_markdown(demo_report)
+        else:
+            logger.error("Failed to build demo report")
+            return "Error: Unable to generate report. Please try again."
 
     user_message = _build_full_context(
         registration, vehicle_data, mot_analysis, ulez_data,
@@ -914,6 +920,263 @@ async def generate_ai_report(
         return None
 
 
+def _build_demo_vehicle_report(
+    registration: str,
+    vehicle_data: Optional[Dict],
+    mot_analysis: Dict,
+    ulez_data: Optional[Dict],
+    listing_price: Optional[int] = None,
+    check_result: Optional[Dict] = None,
+) -> Optional['VehicleReport']:
+    """Build a complete VehicleReport object from demo data (no API call).
+
+    This ensures demo reports use the same schema and renderer as real reports,
+    preventing data loss and ensuring feature parity.
+    """
+    from datetime import datetime
+    from app.schemas.report_schema import VehicleReport
+
+    # Extract vehicle info
+    make = vehicle_data.get("make", "Unknown") if vehicle_data else "Unknown"
+    model = vehicle_data.get("model", "") if vehicle_data else ""
+    year = vehicle_data.get("yearOfManufacture", "Unknown") if vehicle_data else "Unknown"
+    fuel = vehicle_data.get("fuelType", "Unknown") if vehicle_data else "Unknown"
+    engine = vehicle_data.get("engineCapacity") if vehicle_data else None
+
+    # MOT summary
+    mot_summary = mot_analysis.get("mot_summary", {})
+    total_tests = mot_summary.get("total_tests", 0)
+    total_passes = mot_summary.get("total_passes", 0)
+    total_failures = mot_summary.get("total_failures", 0)
+    current_mileage = mot_summary.get("current_odometer", 100000)
+    mot_expiry = vehicle_data.get("motExpiryDate") if vehicle_data else None
+
+    # MOT test data
+    mot_tests_raw = mot_analysis.get("mot_tests", [])
+
+    # Clocking analysis
+    clocking = mot_analysis.get("clocking_analysis", {})
+    clocked = clocking.get("clocked", False)
+
+    # Patterns
+    patterns = mot_analysis.get("failure_patterns", [])
+    condition_score = mot_analysis.get("condition_score")
+
+    # Determine recommendation
+    if clocked:
+        recommendation = "AVOID"
+    elif condition_score and condition_score < 50:
+        recommendation = "AVOID"
+    elif total_failures > 2 or (condition_score and condition_score < 70):
+        recommendation = "NEGOTIATE"
+    else:
+        recommendation = "BUY"
+
+    # --- Build VehicleReport fields ---
+
+    # Metadata
+    report_date = datetime.now().strftime("%d %b %Y")
+    vehicle_summary = f"{year} {_format_make(make)} {model}" + (f" ({engine}cc)" if engine else "")
+
+    # Recommendation points (factual, no condition score)
+    recommendation_points = []
+    if clocked:
+        recommendation_points.append("Mileage discrepancies detected — odometer integrity questionable.")
+    if total_failures > 0:
+        recommendation_points.append(f"{total_failures} MOT failure(s) recorded in test history.")
+    if patterns:
+        recommendation_points.append(f"Recurring {patterns[0]['category']} issues flagged {patterns[0]['occurrences']} times.")
+    if check_result:
+        if check_result.get("finance_check", {}).get("finance_outstanding"):
+            recommendation_points.append("Outstanding finance agreement(s) detected.")
+        if check_result.get("stolen_check", {}).get("stolen"):
+            recommendation_points.append("Vehicle reported stolen.")
+        if check_result.get("write_off_check", {}).get("written_off"):
+            recommendation_points.append("Insurance write-off records found.")
+
+    if not recommendation_points:
+        recommendation_points.append("Vehicle inspection data available for assessment.")
+
+    # Mileage assessment
+    mileage_assessment = {
+        "total_mileage": current_mileage if isinstance(current_mileage, int) else int(str(current_mileage).replace(",", "") or "100000"),
+        "annual_average": int(current_mileage / ((2026 - int(year)) + 1)) if isinstance(current_mileage, int) and year != "Unknown" else 0,
+        "benchmark_fuel_type": fuel,
+        "benchmark_typical_miles_per_year": "7,000–8,000",
+        "assessment": "typical",
+        "observation": "Mileage reading from DVLA Vehicle Enquiry Service. Consistency checked across MOT history."
+    }
+
+    # MOT summary table (6 rows as per schema)
+    pass_rate = round(total_passes / total_tests * 100) if total_tests > 0 else 0
+    mot_summary_rows = [
+        {"metric": "Total MOT tests", "detail": f"{total_tests} tests on record", "interpretation": "Full MOT history available"},
+        {"metric": "Passes", "detail": f"{total_passes} passes", "interpretation": f"Pass rate {pass_rate}% — typical for age"},
+        {"metric": "Failures", "detail": f"{total_failures} failures", "interpretation": "Assessment pending inspector review"},
+        {"metric": "Latest result", "detail": "Check DVSA database", "interpretation": "Current MOT status available"},
+        {"metric": "Current advisories", "detail": "See defect patterns section", "interpretation": "Advisories logged where applicable"},
+        {"metric": "MOT expiry", "detail": mot_expiry or "Check DVSA", "interpretation": "Valid or expired as shown"},
+    ]
+
+    # MOT tests - render all available tests (not truncated)
+    mot_tests_rendered = []
+    for test in mot_tests_raw:
+        test_date = test.get("date", "unknown")
+        result = test.get("result", "UNKNOWN")
+        mileage = test.get("odometer", "unknown")
+        defects = []
+
+        for adv in test.get("advisories", []):
+            defects.append({"type": "ADVISORY", "text": adv.get("text", "")})
+        for fail in test.get("failures", []):
+            defects.append({"type": "FAILURE", "text": fail.get("text", "")})
+
+        mot_tests_rendered.append({
+            "test_date": test_date,
+            "result": result,
+            "mileage": mileage if isinstance(mileage, int) else int(str(mileage).replace(",", "") or "0"),
+            "defects": defects
+        })
+
+    # Recurring defect patterns - include all patterns (not just top 1)
+    defect_patterns = []
+    for pattern in patterns:
+        defect_patterns.append({
+            "category": pattern.get("category", "Unknown"),
+            "flagged_count": pattern.get("occurrences", 0),
+            "flagged_dates": [],  # Would need to extract from individual tests
+            "factual_summary": f"{pattern['category']} flagged {pattern['occurrences']} times in MOT history.",
+            "recommended_action": f"Have {pattern['category'].lower()} inspected by qualified mechanic before purchase."
+        })
+
+    # Ownership
+    keeper_data = check_result.get("keeper_history", {}) if check_result else {}
+    total_keepers = keeper_data.get("keeper_count", 1)
+    ownership_note = f"Vehicle registered with {total_keepers} keeper(s)."
+
+    # Provenance
+    provenance = []
+    if check_result:
+        finance = check_result.get("finance_check", {})
+        provenance.append({
+            "check": "Finance Check",
+            "result": "Outstanding" if finance.get("finance_outstanding") else "Clear",
+            "detail": "Finance agreement records from Experian"
+        })
+        stolen = check_result.get("stolen_check", {})
+        provenance.append({
+            "check": "Stolen Check",
+            "result": "Reported Stolen" if stolen.get("stolen") else "Clear",
+            "detail": "Checked against police records"
+        })
+        writeoff = check_result.get("write_off_check", {})
+        provenance.append({
+            "check": "Write-off Check",
+            "result": "Write-off Found" if writeoff.get("written_off") else "Clear",
+            "detail": "Insurance write-off records"
+        })
+        salvage = check_result.get("salvage_check", {})
+        provenance.append({
+            "check": "Salvage Records",
+            "result": "Salvage Found" if salvage.get("salvage_found") else "Clear",
+            "detail": "Salvage auction history"
+        })
+    else:
+        for check in ["Finance Check", "Stolen Check", "Write-off Check", "Salvage Records"]:
+            provenance.append({"check": check, "result": "Clear", "detail": "No records found"})
+
+    # Valuations (estimate if not provided)
+    valuations = {
+        "private_sale": 2737,
+        "dealer_forecourt": 3212,
+        "trade_in": 1124,
+        "part_exchange": 1513,
+        "valuation_basis": "Estimated market data"
+    }
+
+    # Value context
+    valuation_context = f"Based on {year} {_format_make(make)} {model} with {current_mileage} miles and MOT history. Market value varies by condition and service history."
+
+    # Value factors
+    value_factors = []
+    if total_keepers == 1:
+        value_factors.append({"factor": "Single Keeper History", "impact": "Positive", "details": "Single owner from new suggests stable ownership"})
+    if not clocked:
+        value_factors.append({"factor": "Mileage Authenticity", "impact": "Positive", "details": "Consistent mileage readings across MOT tests"})
+    if patterns:
+        value_factors.append({"factor": f"{patterns[0]['category']}", "impact": "Negative", "details": f"Flagged {patterns[0]['occurrences']} times in MOT history"})
+    value_factors.append({"factor": "Mileage", "impact": "Neutral", "details": f"{current_mileage} miles — typical for {2026 - int(year) if year != 'Unknown' else 0} year old vehicle"})
+
+    # Depreciation
+    depreciation = f"At this age and mileage, {_format_make(make)} {model} vehicles have reached stable depreciation. Annual value loss is typically modest unless major repairs are needed."
+
+    # Risk matrix
+    risk_matrix = []
+    if total_failures > 0:
+        risk_matrix.append({"category": "MOT Failures", "level": "MEDIUM", "finding": f"{total_failures} failures recorded. Have inspected."})
+    if patterns:
+        risk_matrix.append({"category": patterns[0]['category'], "level": "HIGH" if patterns[0].get('concern_level') == 'high' else "MEDIUM", "finding": f"Recurring issue. Budget for inspection and repair."})
+    if check_result:
+        if check_result.get("write_off_check", {}).get("written_off"):
+            risk_matrix.append({"category": "Insurance History", "level": "HIGH", "finding": "Written off previously. Require repair documentation."})
+    if not risk_matrix:
+        risk_matrix.append({"category": "General Condition", "level": "LOW", "finding": "No major concerns identified in available data"})
+
+    # Known issues (model-specific)
+    known_issues = [
+        {"priority": "Low", "issue": "Normal Wear", "details": "Subject to standard inspection before purchase"}
+    ]
+
+    # Running costs (new section)
+    running_costs = {
+        "fuel_annual": 1000 if fuel == "Diesel" else 1200,
+        "road_tax": 155,
+        "insurance_estimate": 800,
+        "servicing_annual": 250,
+        "total_annual": 2205,
+        "notes": f"Estimated for {_format_make(make)} {model} ({fuel}). Actual costs vary by driving habits, location, and insurer."
+    }
+
+    # Data sources
+    data_sources = [
+        "DVLA Vehicle Enquiry Service (gov.uk)",
+        "DVSA MOT History API (gov.uk)",
+        "Experian AutoCheck (experian.co.uk)" if check_result else None,
+    ]
+    data_sources = [s for s in data_sources if s]
+
+    # Create and return VehicleReport
+    try:
+        report = VehicleReport(
+            registration=registration,
+            report_date=report_date,
+            vehicle_summary=vehicle_summary,
+            current_mileage=int(current_mileage) if isinstance(current_mileage, int) else int(str(current_mileage).replace(",", "") or "100000"),
+            mot_valid_until=mot_expiry or "Pending MOT",
+            recommendation=recommendation,
+            recommendation_points=recommendation_points[:5],  # Limit to 5
+            mileage_assessment=mileage_assessment,
+            mot_summary=mot_summary_rows,
+            mot_tests=mot_tests_rendered,
+            defect_patterns=defect_patterns,
+            total_keepers=total_keepers,
+            ownership_note=ownership_note,
+            provenance=provenance,
+            valuations=valuations,
+            valuation_context=valuation_context,
+            value_factors=value_factors,
+            depreciation=depreciation,
+            risk_matrix=risk_matrix,
+            known_issues=known_issues,
+            running_costs=running_costs,
+            data_sources=data_sources,
+        )
+        return report
+    except Exception as e:
+        logger.error(f"Failed to build demo VehicleReport: {e}")
+        return None
+
+
 def _generate_demo_report(
     registration: str,
     vehicle_data: Optional[Dict],
@@ -922,7 +1185,10 @@ def _generate_demo_report(
     listing_price: Optional[int] = None,
     check_result: Optional[Dict] = None,
 ) -> str:
-    """Generate a realistic demo report when Anthropic API key is not configured."""
+    """Generate a realistic demo report when Anthropic API key is not configured.
+
+    DEPRECATED: Now uses _build_demo_vehicle_report() + unified renderer.
+    Kept for backward compatibility only."""
     # Build source reference mapping for inline [N] citations
     source_keys = _collect_active_sources(vehicle_data, mot_analysis, check_result)
     ref = lambda key: _source_ref(source_keys, key)

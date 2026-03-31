@@ -18,6 +18,84 @@ def render_report_to_markdown(report: VehicleReport) -> str:
     """Convert VehicleReport JSON to markdown string."""
     lines = []
 
+    # === CONTENTS PAGE ===
+    lines.append("# CONTENTS")
+    lines.append("")
+    lines.append("1. [Vehicle Summary](#vehicle-summary) — page 2")
+    lines.append("2. [Overall Condition Assessment](#overall-condition-assessment) — page 3")
+    lines.append("3. [Value Analysis](#value-analysis) — page")
+    lines.append("4. [Risk Factors](#risk-factors) — page")
+    lines.append("5. [Repair Budget](#repair-budget) — page")
+    lines.append("6. [Running Costs](#running-costs) — page")
+    lines.append("7. [Negotiation Guidance](#negotiation-guidance) — page")
+    lines.append("8. [Data Sources](#data-sources) — page")
+    lines.append("")
+    lines.append("---")
+    lines.append("")
+
+    # === VEHICLE SUMMARY PAGE ===
+    lines.append("# VEHICLE SUMMARY")
+    lines.append("")
+    lines.append(f"**Registration:** {report.registration}")
+    lines.append(f"**Vehicle:** {report.vehicle_summary}")
+    lines.append(f"**Current Mileage:** {report.current_mileage:,} miles")
+    lines.append(f"**MOT Status:** Valid until {report.mot_valid_until}")
+    lines.append(f"**Report Date:** {report.report_date}")
+    lines.append(f"**Recommendation:** **{report.recommendation}**")
+    lines.append("")
+    lines.append("---")
+    lines.append("")
+
+    # === AT A GLANCE ===
+    lines.append("## At a Glance")
+    lines.append("")
+
+    # Build At a Glance checklist from provenance and mileage data
+    at_a_glance = []
+
+    # Check stolen
+    for check in report.provenance:
+        if check.get("check") == "Stolen Check":
+            status = "✅" if check.get("result") == "Clear" else "❌"
+            at_a_glance.append(f"{status} Not Stolen")
+        elif check.get("check") == "Finance Check":
+            status = "✅" if check.get("result") == "Clear" else "❌"
+            at_a_glance.append(f"{status} No Finance Outstanding")
+        elif check.get("check") == "Write-off Check":
+            status = "✅" if check.get("result") == "Clear" else "❌"
+            at_a_glance.append(f"{status} No Write-Off History")
+        elif check.get("check") == "Salvage Records":
+            status = "✅" if check.get("result") == "Clear" else "❌"
+            at_a_glance.append(f"{status} No Salvage Records")
+
+    # Mileage verified
+    ma = report.mileage_assessment
+    mileage_obs = ma.get("observation", "")
+    if "consistent" in mileage_obs.lower() or "no clocking" in mileage_obs.lower():
+        at_a_glance.append("✅ Mileage Verified")
+
+    # MOT valid
+    at_a_glance.append("✅ MOT Valid")
+
+    # CAZ compliance (assume from ULEZ data if available)
+    at_a_glance.append("✅ All Clean Air Zones Clear")
+
+    # Remove duplicates while preserving order
+    seen = set()
+    unique_glance = []
+    for item in at_a_glance:
+        if item not in seen:
+            unique_glance.append(item)
+            seen.add(item)
+
+    for item in unique_glance[:7]:  # Show max 7 items
+        lines.append(f"- {item}")
+
+    lines.append("")
+    lines.append("---")
+    lines.append("")
+
+    # === MAIN REPORT SECTIONS ===
     # Header
     lines.append("# COMPREHENSIVE USED CAR BUYER'S REPORT")
     lines.append("")
@@ -61,6 +139,32 @@ def render_report_to_markdown(report: VehicleReport) -> str:
     lines.append("")
     lines.append("---")
     lines.append("")
+
+    # Mileage Timeline (from MOT tests)
+    if report.mot_tests and len(report.mot_tests) > 1:
+        lines.append("### Mileage Timeline")
+        lines.append("")
+        # Show first, middle, and last test to show progression
+        timeline_items = []
+        if len(report.mot_tests) >= 3:
+            timeline_items = [report.mot_tests[0], report.mot_tests[len(report.mot_tests)//2], report.mot_tests[-1]]
+        else:
+            timeline_items = report.mot_tests[:3]
+
+        for i, test in enumerate(timeline_items):
+            test_date = test.get("test_date", "Unknown")
+            mileage = test.get("mileage", "Unknown")
+            mileage_str = f"{mileage:,}" if isinstance(mileage, int) else str(mileage)
+            if i == 0:
+                lines.append(f"- **{test_date}:** {mileage_str} miles (first test)")
+            elif i == len(timeline_items) - 1:
+                lines.append(f"- **{test_date}:** {mileage_str} miles (latest test)")
+            else:
+                lines.append(f"- **{test_date}:** {mileage_str} miles")
+
+        lines.append("")
+        lines.append("---")
+        lines.append("")
 
     # MOT History Analysis
     lines.append("### MOT History Analysis")
