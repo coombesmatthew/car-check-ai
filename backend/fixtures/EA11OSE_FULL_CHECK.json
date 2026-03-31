@@ -1,0 +1,523 @@
+{
+  "registration": "EA11OSE",
+  "vehicle_summary": {
+    "make": "MINI",
+    "model": "COOPER D",
+    "year": 2011,
+    "fuel": "DIESEL",
+    "body": "CONVERTIBLE",
+    "transmission": "MANUAL 6 GEAR",
+    "colour": "BLACK",
+    "engine_cc": 1598,
+    "co2_emissions_g_km": 105,
+    "seats": 4
+  },
+  "registration_info": {
+    "registration_date": "2011-04-20",
+    "tax_status": "Taxed",
+    "tax_due_date": "2026-12-01",
+    "mot_status": "Valid",
+    "mot_expiry_date": "2026-09-29",
+    "date_of_last_v5c_issued": "2020-12-15"
+  },
+  "mot_history": {
+    "total_tests": 14,
+    "total_passes": 11,
+    "total_failures": 3,
+    "latest_test": {
+      "date": "2025-09-30",
+      "result": "PASSED",
+      "odometer": 100440,
+      "expiry_date": "2026-09-29",
+      "advisories": 3
+    },
+    "first_used_date": "2011-04-20"
+  },
+  "premium_tier_data": {
+    "experian_autocheck": {
+      "status": "SUCCESS",
+      "registration_date": "2011-04-20",
+      "finance_outstanding": false,
+      "finance_records": 0,
+      "stolen": false,
+      "write_off": false,
+      "write_off_records": 0,
+      "keeper_count": 1,
+      "data_source": "Experian"
+    },
+    "brego_valuation": {
+      "status": "SUCCESS",
+      "current_mileage": 100440,
+      "retail_low": 2272,
+      "retail_average": 2737,
+      "retail_high": 3212,
+      "trade_low": 774,
+      "trade_average": 1124,
+      "trade_high": 1513,
+      "currency": "GBP",
+      "valuation_date": "2026-03-30",
+      "miles_per_annum_used": 6725,
+      "calculation_note": "Miles per annum calculated from registration_date (2011-04-20) to today (2026-03-30): 100440 miles / 14.94 years \u2248 6,725 mi/year"
+    },
+    "carguide_salvage": {
+      "status": "SUCCESS",
+      "salvage_found": false,
+      "records": []
+    }
+  },
+  "vehicle_stats": {
+    "age_years": 14.94,
+    "total_mileage": 100440,
+    "annual_mileage_avg": 6725,
+    "mileage_assessment": "Below average (UK avg ~12,000 mi/year)"
+  },
+  "summary": {
+    "verdict": "Good condition for age and mileage",
+    "valuation_range": "\u00a32,272 - \u00a33,212 (private sale), \u00a3774 - \u00a31,513 (trade)",
+    "risk_level": "Low",
+    "working_apis": [
+      "DVLA VES",
+      "DVSA MOT",
+      "Experian AutoCheck",
+      "Brego Valuation",
+      "CarGuide Salvage"
+    ],
+    "test_date": "2026-03-30",
+    "test_apis_live": true
+  },
+  "mot_tests_full": [
+    {
+      "test_number": 1,
+      "test_id": "109434339657",
+      "date": "2025-09-30",
+      "result": "PASSED",
+      "odometer": 100440,
+      "odometer_unit": "MI",
+      "expiry_date": "2026-09-29",
+      "advisories": [
+        {
+          "type": "ADVISORY",
+          "text": "Offside Front Tyre worn close to legal limit/worn on edge (5.2.3 (e))"
+        },
+        {
+          "type": "ADVISORY",
+          "text": "Rear Registration plate deteriorated but not likely to be misread (0.1 (b))"
+        },
+        {
+          "type": "ADVISORY",
+          "text": "Offside Rear Direction indicator slightly discoloured (4.4.3 (a))"
+        }
+      ],
+      "failures": [],
+      "dangerous": [],
+      "total_defects": 3
+    },
+    {
+      "test_number": 2,
+      "test_id": "555997861085",
+      "date": "2024-08-21",
+      "result": "PASSED",
+      "odometer": 98126,
+      "odometer_unit": "MI",
+      "expiry_date": "2025-08-23",
+      "advisories": [
+        {
+          "type": "ADVISORY",
+          "text": "Front Headlamp has a product on the lens but not seriously reducing light output Both front (4.1.4 (b))"
+        },
+        {
+          "type": "ADVISORY",
+          "text": "All direction indicators slightly discoloured (4.4.3 (a))"
+        },
+        {
+          "type": "ADVISORY",
+          "text": "Front Undertray not fully secure (8.1.1 (b) (i))"
+        },
+        {
+          "type": "ADVISORY",
+          "text": "Rear Sub-frame corroded but not seriously weakened (5.3.3 (b) (i))"
+        },
+        {
+          "type": "ADVISORY",
+          "text": "Offside Front Tyre worn close to legal limit/worn on edge (5.2.3 (e))"
+        }
+      ],
+      "failures": [],
+      "dangerous": [],
+      "total_defects": 5
+    },
+    {
+      "test_number": 3,
+      "test_id": "872153979467",
+      "date": "2023-08-24",
+      "result": "PASSED",
+      "odometer": 90983,
+      "odometer_unit": "MI",
+      "expiry_date": "2024-08-23",
+      "advisories": [],
+      "failures": [],
+      "dangerous": [],
+      "total_defects": 0
+    },
+    {
+      "test_number": 4,
+      "test_id": "711847413145",
+      "date": "2022-04-22",
+      "result": "PASSED",
+      "odometer": 87509,
+      "odometer_unit": "MI",
+      "expiry_date": "2023-04-21",
+      "advisories": [
+        {
+          "type": "ADVISORY",
+          "text": "Nearside Rear Direction indicator slightly discoloured (4.4.3 (a))"
+        },
+        {
+          "type": "ADVISORY",
+          "text": "Offside Rear Direction indicator slightly discoloured (4.4.3 (a))"
+        }
+      ],
+      "failures": [
+        {
+          "type": "MINOR",
+          "text": "Offside Windscreen wiper blade defective (3.4 (b) (i))"
+        }
+      ],
+      "dangerous": [],
+      "total_defects": 3
+    },
+    {
+      "test_number": 5,
+      "test_id": "711098708847",
+      "date": "2021-03-08",
+      "result": "PASSED",
+      "odometer": 82540,
+      "odometer_unit": "MI",
+      "expiry_date": "2022-03-08",
+      "advisories": [
+        {
+          "type": "ADVISORY",
+          "text": "Direction indicator slightly discoloured Both rear (4.4.3 (a))"
+        }
+      ],
+      "failures": [],
+      "dangerous": [],
+      "total_defects": 1
+    },
+    {
+      "test_number": 6,
+      "test_id": "502011926686",
+      "date": "2020-03-03",
+      "result": "PASSED",
+      "odometer": 80034,
+      "odometer_unit": "MI",
+      "expiry_date": "2021-03-08",
+      "advisories": [
+        {
+          "type": "ADVISORY",
+          "text": "N/s/front tyrs bald on edges + close to ware indicator"
+        },
+        {
+          "type": "ADVISORY",
+          "text": "O/s/rear tyre worn to ware indicator"
+        },
+        {
+          "type": "ADVISORY",
+          "text": "N/s/rear tyre close to ware indicator"
+        }
+      ],
+      "failures": [],
+      "dangerous": [],
+      "total_defects": 3
+    },
+    {
+      "test_number": 7,
+      "test_id": "591887685788",
+      "date": "2020-03-03",
+      "result": "FAILED",
+      "odometer": 80034,
+      "odometer_unit": "MI",
+      "expiry_date": null,
+      "advisories": [
+        {
+          "type": "ADVISORY",
+          "text": "N/s/front tyrs bald on edges + close to ware indicator"
+        },
+        {
+          "type": "ADVISORY",
+          "text": "O/s/rear tyre worn to ware indicator"
+        },
+        {
+          "type": "ADVISORY",
+          "text": "N/s/rear tyre close to ware indicator"
+        }
+      ],
+      "failures": [
+        {
+          "type": "MAJOR",
+          "text": "Offside Front Brake hose excessively deteriorated  Insecure in mounting rubbing on shock absorber (1.1.12 (b) (ii))"
+        }
+      ],
+      "dangerous": [
+        {
+          "type": "DANGEROUS",
+          "text": "Offside Front Tyre has ply or cords exposed (5.2.3 (d) (ii))"
+        }
+      ],
+      "total_defects": 5
+    },
+    {
+      "test_number": 8,
+      "test_id": "507941275617",
+      "date": "2019-03-09",
+      "result": "PASSED",
+      "odometer": 71440,
+      "odometer_unit": "MI",
+      "expiry_date": "2020-03-08",
+      "advisories": [],
+      "failures": [],
+      "dangerous": [],
+      "total_defects": 0
+    },
+    {
+      "test_number": 9,
+      "test_id": "814002896697",
+      "date": "2017-07-13",
+      "result": "PASSED",
+      "odometer": 48212,
+      "odometer_unit": "MI",
+      "expiry_date": "2018-07-12",
+      "advisories": [
+        {
+          "type": "ADVISORY",
+          "text": "Front Brake pad(s) wearing thin (3.5.1g)"
+        }
+      ],
+      "failures": [],
+      "dangerous": [],
+      "total_defects": 1
+    },
+    {
+      "test_number": 10,
+      "test_id": "435546215247",
+      "date": "2017-07-13",
+      "result": "FAILED",
+      "odometer": 48212,
+      "odometer_unit": "MI",
+      "expiry_date": null,
+      "advisories": [
+        {
+          "type": "ADVISORY",
+          "text": "Front Brake pad(s) wearing thin (3.5.1g)"
+        }
+      ],
+      "failures": [
+        {
+          "type": "PRS",
+          "text": "Nearside Stop lamp not working (1.2.1b)"
+        }
+      ],
+      "dangerous": [],
+      "total_defects": 2
+    },
+    {
+      "test_number": 11,
+      "test_id": "107061884454",
+      "date": "2016-07-12",
+      "result": "PASSED",
+      "odometer": 40599,
+      "odometer_unit": "MI",
+      "expiry_date": "2017-07-11",
+      "advisories": [],
+      "failures": [],
+      "dangerous": [],
+      "total_defects": 0
+    },
+    {
+      "test_number": 12,
+      "test_id": "298980815437",
+      "date": "2015-04-20",
+      "result": "PASSED",
+      "odometer": 34198,
+      "odometer_unit": "MI",
+      "expiry_date": "2016-04-20",
+      "advisories": [],
+      "failures": [],
+      "dangerous": [],
+      "total_defects": 0
+    },
+    {
+      "test_number": 13,
+      "test_id": "336952104104",
+      "date": "2014-04-12",
+      "result": "FAILED",
+      "odometer": 21441,
+      "odometer_unit": "MI",
+      "expiry_date": null,
+      "advisories": [
+        {
+          "type": "ADVISORY",
+          "text": "Nearside Front Tyre worn close to the legal limit (4.1.E.1)"
+        },
+        {
+          "type": "ADVISORY",
+          "text": "Offside Front Tyre worn close to the legal limit (4.1.E.1)"
+        },
+        {
+          "type": "ADVISORY",
+          "text": "Nearside Rear Tyre worn close to the legal limit (4.1.E.1)"
+        },
+        {
+          "type": "ADVISORY",
+          "text": "Offside Rear Tyre worn close to the legal limit (4.1.E.1)"
+        }
+      ],
+      "failures": [
+        {
+          "type": "PRS",
+          "text": "Nearside Windscreen wiper does not clear the windscreen effectively (8.2.2)"
+        },
+        {
+          "type": "PRS",
+          "text": "Offside Windscreen wiper does not clear the windscreen effectively (8.2.2)"
+        },
+        {
+          "type": "USER ENTERED",
+          "text": "Nail in offside rear tyre"
+        }
+      ],
+      "dangerous": [],
+      "total_defects": 7
+    },
+    {
+      "test_number": 14,
+      "test_id": "876752104152",
+      "date": "2014-04-12",
+      "result": "PASSED",
+      "odometer": 21441,
+      "odometer_unit": "MI",
+      "expiry_date": "2015-04-20",
+      "advisories": [
+        {
+          "type": "ADVISORY",
+          "text": "Nearside Front Tyre worn close to the legal limit (4.1.E.1)"
+        },
+        {
+          "type": "ADVISORY",
+          "text": "Offside Front Tyre worn close to the legal limit (4.1.E.1)"
+        },
+        {
+          "type": "ADVISORY",
+          "text": "Nearside Rear Tyre worn close to the legal limit (4.1.E.1)"
+        },
+        {
+          "type": "ADVISORY",
+          "text": "Offside Rear Tyre worn close to the legal limit (4.1.E.1)"
+        }
+      ],
+      "failures": [
+        {
+          "type": "USER ENTERED",
+          "text": "Nail in offside rear tyre"
+        }
+      ],
+      "dangerous": [],
+      "total_defects": 5
+    }
+  ],
+  "mileage_timeline": [
+    {
+      "date": "2014-04-12",
+      "miles": 21441,
+      "unit": "MI"
+    },
+    {
+      "date": "2014-04-12",
+      "miles": 21441,
+      "unit": "MI"
+    },
+    {
+      "date": "2015-04-20",
+      "miles": 34198,
+      "unit": "MI"
+    },
+    {
+      "date": "2016-07-12",
+      "miles": 40599,
+      "unit": "MI"
+    },
+    {
+      "date": "2017-07-13",
+      "miles": 48212,
+      "unit": "MI"
+    },
+    {
+      "date": "2017-07-13",
+      "miles": 48212,
+      "unit": "MI"
+    },
+    {
+      "date": "2019-03-09",
+      "miles": 71440,
+      "unit": "MI"
+    },
+    {
+      "date": "2020-03-03",
+      "miles": 80034,
+      "unit": "MI"
+    },
+    {
+      "date": "2020-03-03",
+      "miles": 80034,
+      "unit": "MI"
+    },
+    {
+      "date": "2021-03-08",
+      "miles": 82540,
+      "unit": "MI"
+    },
+    {
+      "date": "2022-04-22",
+      "miles": 87509,
+      "unit": "MI"
+    },
+    {
+      "date": "2023-08-24",
+      "miles": 90983,
+      "unit": "MI"
+    },
+    {
+      "date": "2024-08-21",
+      "miles": 98126,
+      "unit": "MI"
+    },
+    {
+      "date": "2025-09-30",
+      "miles": 100440,
+      "unit": "MI"
+    }
+  ],
+  "failure_patterns": [
+    {
+      "category": "tyre",
+      "occurrences": 17,
+      "concern_level": "high"
+    },
+    {
+      "category": "windscreen",
+      "occurrences": 3,
+      "concern_level": "medium"
+    },
+    {
+      "category": "brake",
+      "occurrences": 3,
+      "concern_level": "medium"
+    }
+  ],
+  "clocking_analysis": {
+    "clocked": false,
+    "risk_level": "none",
+    "flags": []
+  },
+  "condition_score": 24
+}

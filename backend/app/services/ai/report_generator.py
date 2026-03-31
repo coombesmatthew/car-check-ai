@@ -330,7 +330,7 @@ The JSON must have EXACTLY these top-level keys (flat structure):
 - vehicle_summary (string, e.g. "2011 MINI Diesel (1598cc)")
 - current_mileage (integer)
 - mot_valid_until (string, e.g. "29 September 2026")
-- recommendation (string: "BUY" or "AVOID")
+- recommendation (string: "BUY", "NEGOTIATE", or "AVOID")
 - recommendation_points (array of strings — flat list, NOT objects)
 - mileage_assessment (object)
 - mot_summary (array of objects)
@@ -351,6 +351,11 @@ Use these detailed instructions:
 
 ### recommendation
 MUST be exactly "BUY", "NEGOTIATE", or "AVOID".
+
+**Guidance:**
+- **AVOID:** Only for critical safety/legal issues: stolen marker, outstanding finance, write-off history, salvage records, mileage clocking, or invalid MOT. These are deal-breakers.
+- **NEGOTIATE:** For moderate concerns: 3+ MOT failures, recurring defect patterns (tyre, brake, suspension), or other cost/reliability issues. Buyer should negotiate price.
+- **BUY:** Everything else. The vehicle is acceptable to purchase, though buyer should be aware of and budget for any noted defects.
 
 ### recommendation_points
 2–5 factual statements as STRINGS (flat list, not objects). Example:
@@ -972,12 +977,20 @@ def _build_demo_vehicle_report(
             total_repair_high += est.get("high", 0)
 
     # Determine recommendation (IGNORE condition_score per SYSTEM_PROMPT)
+    # Extract critical checks
+    salvage_found = bool(check_result.get("salvage_check", {}).get("salvage_found")) if check_result else False
+    mot_status = vehicle_data.get("motStatus", "").upper() if vehicle_data else ""
+    mot_status_invalid = mot_status in ("NO MOT", "NOT VALID", "INVALID") if mot_status else False
+
     if clocked:
         recommendation = "AVOID"
     elif check_result and (check_result.get("stolen_check", {}).get("stolen") or
-                           check_result.get("write_off_check", {}).get("written_off")):
+                           check_result.get("write_off_check", {}).get("written_off") or
+                           salvage_found):
         recommendation = "AVOID"
     elif check_result and check_result.get("finance_check", {}).get("finance_outstanding"):
+        recommendation = "AVOID"
+    elif mot_status_invalid:
         recommendation = "AVOID"
     elif total_failures > 2:
         recommendation = "NEGOTIATE"
@@ -1090,12 +1103,13 @@ def _build_demo_vehicle_report(
     for pattern in patterns:
         cat = pattern.get("category", "Unknown")
         occurrences = pattern.get("occurrences", 0)
+        cat_display = cat.title() if cat else cat  # Normalise capitalisation
 
         defect_patterns.append({
             "category": cat,
             "flagged_count": occurrences,
             "flagged_dates": [],
-            "factual_summary": f"{cat} flagged {occurrences} times in MOT history.",
+            "factual_summary": f"{cat_display} flagged {occurrences} times in MOT history.",
             "recommended_action": f"Have {cat.lower()} inspected by qualified mechanic before purchase."
         })
 
@@ -1107,7 +1121,7 @@ def _build_demo_vehicle_report(
             priority = "High" if pattern.get("concern_level") == "high" else "Medium" if pattern.get("concern_level") == "medium" else "Low"
 
             repair_budget.append({
-                "item": f"{cat} repair/replacement",
+                "item": f"{cat_display} repair/replacement",
                 "priority": priority,
                 "estimated_cost_low": low,
                 "estimated_cost_high": high,
@@ -1159,10 +1173,16 @@ def _build_demo_vehicle_report(
             "what_to_look_for": "No crunching, grinding, or delayed engagement"
         })
 
-    # Ownership
+    # Ownership — with source attribution
     keeper_data = check_result.get("keeper_history", {}) if check_result else {}
-    total_keepers = keeper_data.get("keeper_count", 1)
-    ownership_note = f"Vehicle registered with {total_keepers} keeper(s)."
+    total_keepers = keeper_data.get("total_keepers", keeper_data.get("keeper_count", 1))
+
+    if check_result:
+        source_str = "Source: Experian AutoCheck / DVLA"
+    else:
+        source_str = "Source: DVLA Vehicle Enquiry Service"
+
+    ownership_note = f"Vehicle registered with {total_keepers} keeper(s). {source_str}."
 
     # Provenance
     provenance = []
@@ -1214,8 +1234,9 @@ def _build_demo_vehicle_report(
     if not clocked:
         value_factors.append({"factor": "Mileage Authenticity", "impact": "Positive", "details": "Mileage consistent across MOT tests — no odometer tampering detected"})
     for pattern in patterns[:2]:
+        cat_display = pattern['category'].title() if pattern['category'] else pattern['category']
         value_factors.append({
-            "factor": f"{pattern['category']} Wear",
+            "factor": f"{cat_display} Wear",
             "impact": "Negative",
             "details": f"Flagged {pattern['occurrences']} times in {total_tests} MOT tests. Budget £{total_repair_low}-£{total_repair_high} for repairs."
         })
@@ -1328,12 +1349,13 @@ def _build_demo_vehicle_report(
     # For older cars: standard rate is typically £155-£190
     road_tax = 20 if vehicle_data and vehicle_data.get("co2Emissions", 120) <= 110 else 155
 
+    insurance_estimate = 627  # ABI average for insurance group 13
     running_costs = {
-        "insurance_estimate": 800,
+        "insurance_estimate": insurance_estimate,
         "road_tax": road_tax,
         "servicing_annual": 250,
-        "total_annual": road_tax + 250 + 800,
-        "notes": f"Estimated for {_format_make(make)} {model} ({fuel}). Insurance varies by location/age. No fuel estimate (insufficient mileage data). Actual costs depend on usage patterns."
+        "total_annual": road_tax + 250 + insurance_estimate,
+        "notes": f"Estimated for {_format_make(make)} {model} ({fuel}). Insurance: ABI average for insurance group 13 (~£627/yr; varies by driver age, location, no-claims history). Road tax: VED Band B (101–110g/km CO2). No fuel estimate (insufficient mileage data)."
     }
 
     # Data sources

@@ -1,0 +1,123 @@
+{
+  "registration": "EA11OSE",
+  "vehicle_summary": {
+    "make": "MINI",
+    "model": "COOPER D",
+    "year": 2011,
+    "fuel": "DIESEL",
+    "body": "CONVERTIBLE",
+    "transmission": "MANUAL 6 GEAR",
+    "colour": "BLACK",
+    "engine_cc": 1598,
+    "co2_emissions_g_km": 105,
+    "seats": 4
+  },
+  "api_calls": {
+    "autocheck_v3": {
+      "status": "SUCCESS",
+      "endpoint": "/experian/autocheck/v3",
+      "data": {
+        "date_last_updated": "2025-10-02",
+        "does_vehicle_registration_mark_match": true,
+        "registration_date": "2011-04-20",
+        "manufactured_year": 2011,
+        "vin": "XXXXXXXXXXXX56206",
+        "is_scrapped": false,
+        "was_exported": false,
+        "is_imported": false,
+        "colour": "BLACK",
+        "number_previous_colours": 0,
+        "engine_number": "70247610",
+        "max_netpower_kw": 82,
+        "stationary_soundlevel_db": 79,
+        "provenance": {
+          "keeper_changes": 1,
+          "last_keeper_change_date": "2020-12-09",
+          "previous_keepers": 1,
+          "v5c_issues": 2,
+          "last_v5c_issued": "2020-12-15",
+          "finance_outstanding": false,
+          "stolen": false,
+          "write_off": false,
+          "colour_changes": 0,
+          "cherished_plates": false,
+          "high_risk": false,
+          "previous_searches": 1,
+          "last_search": {
+            "date": "2025-08-03",
+            "time": "15:25:11",
+            "business_type": "MOTOR TRADE & OTHER"
+          }
+        }
+      }
+    },
+    "brego_valuation": {
+      "status": "FAILED",
+      "endpoint": "/brego/valuationfromvrm/v2",
+      "error": "The requested service has not been enabled. It can be enabled in the 'Your Plan' section when logged into the One Auto API website.",
+      "note": "Brego service not enabled on current One Auto plan"
+    },
+    "carguide_salvage": {
+      "status": "SUCCESS",
+      "endpoint": "/carguide/salvagecheck/v2",
+      "data": {
+        "salvage_auction_record_found": false,
+        "salvage_auction_records": []
+      },
+      "note": "No salvage records found for EA11 OSE"
+    },
+    "clearwatt_battery": {
+      "status": "FAILED",
+      "endpoint": "/clearwatt/expectedrangefromvrm/",
+      "error": "Please contact support at help@oneautoapi.com for assistance",
+      "note": "Non-electric vehicle - ClearWatt only works with EVs"
+    },
+    "evdb_search": {
+      "status": "FAILED",
+      "endpoint": "/evdatabase/uk/searchfromvrm/",
+      "error": "This vrm does not match to an electric vehicle.",
+      "note": "EV Database only works with electric vehicles"
+    },
+    "autopredict_predict": {
+      "status": "FAILED",
+      "endpoint": "/autopredict/predict/v2",
+      "error": "The requested service has not been enabled. It can be enabled in the 'Your Plan' section when logged into the One Auto API website.",
+      "note": "AutoPredict service not enabled on current One Auto plan"
+    },
+    "autopredict_statistics": {
+      "status": "FAILED",
+      "endpoint": "/autopredict/statistics/v2",
+      "error": "The requested service has not been enabled. It can be enabled in the 'Your Plan' section when logged into the One Auto API website.",
+      "note": "AutoPredict service not enabled on current One Auto plan"
+    }
+  },
+  "summary": {
+    "api_plan_status": "LIMITED",
+    "working_endpoints": [
+      "AutoCheck v3 (Experian provenance)"
+    ],
+    "disabled_endpoints": [
+      "Brego Valuation (not enabled)",
+      "AutoPredict Predict (not enabled)",
+      "AutoPredict Statistics (not enabled)"
+    ],
+    "not_applicable_endpoints": [
+      "ClearWatt (not an EV)",
+      "EVDB Search (not an EV)"
+    ],
+    "data_received": {
+      "autocheck": "FULL - All provenance data available",
+      "valuation": "NONE - Brego service not enabled",
+      "salvage": "EMPTY - No salvage records",
+      "ev_data": "N/A - Vehicle is diesel, not electric"
+    },
+    "recommendation": "Current One Auto plan appears to be a limited/trial plan. To get full PREMIUM tier data, need to upgrade plan to include Brego Valuation and AutoPredict services."
+  },
+  "test_details": {
+    "registration_tested": "EA11 OSE",
+    "vehicle_type": "Diesel Mini Cooper Convertible (2011)",
+    "api_url": "https://api.oneautoapi.com (LIVE)",
+    "test_date": "2025-03-30",
+    "mileage_passed": 35000
+  }
+}
