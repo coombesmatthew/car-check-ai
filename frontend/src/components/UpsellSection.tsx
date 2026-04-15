@@ -7,10 +7,6 @@ interface UpsellSectionProps {
   registration: string;
   showUpsell: boolean;
   setShowUpsell: (show: boolean) => void;
-  listingUrl: string;
-  setListingUrl: (url: string) => void;
-  listingPrice: string;
-  setListingPrice: (price: string) => void;
   reportError: string | null;
 }
 
@@ -324,10 +320,6 @@ export default function UpsellSection({
   registration,
   showUpsell,
   setShowUpsell,
-  listingUrl,
-  setListingUrl,
-  listingPrice,
-  setListingPrice,
   reportError,
 }: UpsellSectionProps) {
   const [email, setEmail] = useState("");
@@ -350,16 +342,10 @@ export default function UpsellSection({
     setCheckoutLoading(true);
 
     try {
-      const priceInPence = listingPrice
-        ? Math.round(parseFloat(listingPrice) * 100)
-        : undefined;
-
       const { checkout_url } = await createCheckout(
         registration,
         email,
         tier,
-        listingUrl || undefined,
-        priceInPence
       );
 
       window.location.href = checkout_url;
@@ -513,7 +499,7 @@ export default function UpsellSection({
               {config.label} &mdash; &pound;{config.price}
             </h3>
             <p className="text-slate-300 text-sm">
-              Enter your email and optionally add listing details for a personalised report
+              Enter your email to receive your personalised report
             </p>
           </div>
           <span className={`${selectedTier === "premium" ? "bg-purple-600" : "bg-blue-600"} text-white text-xs font-bold px-2.5 py-1 rounded-full uppercase`}>
@@ -574,36 +560,6 @@ export default function UpsellSection({
             required
           />
           <p className="text-xs text-slate-400 mt-1">Your PDF report will be sent here</p>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
-            Listing URL (optional)
-          </label>
-          <input
-            type="url"
-            value={listingUrl}
-            onChange={(e) => setListingUrl(e.target.value)}
-            placeholder="https://autotrader.co.uk/listing/..."
-            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
-            Listed Price (optional)
-          </label>
-          <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-              &pound;
-            </span>
-            <input
-              type="number"
-              value={listingPrice}
-              onChange={(e) => setListingPrice(e.target.value)}
-              placeholder="8,995"
-              className="w-full pl-7 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
-            />
-          </div>
         </div>
 
         {(checkoutError || reportError) && (

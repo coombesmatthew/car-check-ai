@@ -344,17 +344,11 @@ export async function runFreeCheck(
 
 export async function runBasicCheckPreview(
   registration: string,
-  listingUrl?: string,
-  listingPrice?: number
 ): Promise<BasicCheckPreviewResponse> {
   const res = await fetch(`${API_URL}/api/v1/checks/basic/preview`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      registration,
-      listing_url: listingUrl || null,
-      listing_price: listingPrice || null,
-    }),
+    body: JSON.stringify({ registration }),
   });
 
   if (!res.ok) {
@@ -374,65 +368,15 @@ export async function createCheckout(
   registration: string,
   email: string,
   tier: string = "basic",
-  listingUrl?: string,
-  listingPrice?: number
 ): Promise<CheckoutResponse> {
   const res = await fetch(`${API_URL}/api/v1/checks/basic/checkout`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      registration,
-      email,
-      tier,
-      listing_url: listingUrl || null,
-      listing_price: listingPrice || null,
-    }),
+    body: JSON.stringify({ registration, email, tier }),
   });
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({ detail: "Checkout failed" }));
-    throw new Error(err.detail || `HTTP ${res.status}`);
-  }
-
-  return res.json();
-}
-
-export interface ListingData {
-  url: string;
-  platform: string;
-  title: string | null;
-  price_pence: number | null;
-  mileage: number | null;
-  registration: string | null;
-  description: string | null;
-  seller_type: string | null;
-  location: string | null;
-  features: string[];
-  images_count: number | null;
-  scrape_success: boolean;
-  scrape_errors: string[];
-  demo_mode: boolean;
-}
-
-export interface ListingCheckResponse {
-  listing: ListingData;
-  free_check: FreeCheckResponse | null;
-  ai_report: string | null;
-  price_assessment: string | null;
-}
-
-export async function checkListing(
-  url: string,
-  registration?: string
-): Promise<ListingCheckResponse> {
-  const res = await fetch(`${API_URL}/api/v1/checks/listing`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ url, registration: registration || null }),
-  });
-
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({ detail: "Listing check failed" }));
     throw new Error(err.detail || `HTTP ${res.status}`);
   }
 

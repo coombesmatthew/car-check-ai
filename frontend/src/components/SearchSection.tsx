@@ -14,8 +14,6 @@ export default function SearchSection() {
 
   // BASIC tier upsell state
   const [showUpsell, setShowUpsell] = useState(false);
-  const [listingUrl, setListingUrl] = useState("");
-  const [listingPrice, setListingPrice] = useState("");
   const [reportError, setReportError] = useState<string | null>(null);
   const [checkCount, setCheckCount] = useState<number | null>(null);
 
@@ -186,10 +184,6 @@ export default function SearchSection() {
             registration={result.registration}
             showUpsell={showUpsell}
             setShowUpsell={setShowUpsell}
-            listingUrl={listingUrl}
-            setListingUrl={setListingUrl}
-            listingPrice={listingPrice}
-            setListingPrice={setListingPrice}
             reportError={reportError}
           />
         </section>
