@@ -8,6 +8,7 @@ import {
 import Badge from "@/components/ui/Badge";
 import Card from "@/components/ui/Card";
 import { DetailRow, icons } from "./shared";
+import PremiumPreview from "./PremiumPreview";
 
 interface FullCheckSectionProps {
   finance_check: FinanceCheck | null;
@@ -31,40 +32,7 @@ export default function FullCheckSection({
 
   /* Free tier: prominent upsell card */
   if (!hasPremiumData) {
-    return (
-      <div className="bg-gradient-to-br from-purple-50 to-slate-50 border-2 border-purple-200 rounded-xl overflow-hidden">
-        <div className="bg-gradient-to-r from-purple-700 to-purple-800 px-5 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-white font-bold text-lg">Full Vehicle History Check</h3>
-              <p className="text-purple-200 text-sm">Full ownership &amp; history checks powered by Experian data</p>
-            </div>
-            <span className="bg-purple-500/30 text-white text-xs font-bold px-3 py-1 rounded-full border border-purple-400/30">&pound;9.99</span>
-          </div>
-        </div>
-        <div className="p-5">
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-2.5">
-            {["Finance & Outstanding Debt", "Stolen Vehicle Check", "Insurance Write-off History", "Market Valuation", "Salvage Auction Check", "Keeper History", "Plate Changes", "High Risk Indicators", "AI Report & PDF"].map((item) => (
-              <div key={item} className="flex items-center gap-2">
-                <svg className="w-4 h-4 text-purple-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
-                </svg>
-                <span className="text-sm text-slate-700">{item}</span>
-              </div>
-            ))}
-          </div>
-          <div className="mt-5 flex items-center gap-4">
-            <a href="#full-report" className="inline-flex items-center gap-2 px-6 py-2.5 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors text-sm">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-              </svg>
-              Unlock Full Check &mdash; &pound;9.99
-            </a>
-            <span className="text-xs text-slate-400">One-off payment &middot; No subscription</span>
-          </div>
-        </div>
-      </div>
-    );
+    return <PremiumPreview registration={registration} />;
   }
 
   /* Paid tier: render actual premium data cards */

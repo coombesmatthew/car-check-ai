@@ -9,7 +9,7 @@ const SECTIONS = [
   { id: "section-fullcheck", label: "Full Check" },
 ];
 
-export default function SectionNav() {
+export default function SectionNav({ hasPremium }: { hasPremium?: boolean }) {
   const activeId = useActiveSection(SECTIONS.map((s) => s.id));
 
   const scrollTo = (id: string) => {
@@ -23,12 +23,17 @@ export default function SectionNav() {
           <button
             key={section.id}
             onClick={() => scrollTo(section.id)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
+            className={`flex items-center px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
               activeId === section.id
                 ? "bg-blue-600 text-white shadow-sm"
                 : "text-slate-500 hover:text-slate-700 hover:bg-slate-100"
             }`}
           >
+            {section.id === "section-fullcheck" && !hasPremium && (
+              <svg className="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+              </svg>
+            )}
             {section.label}
           </button>
         ))}

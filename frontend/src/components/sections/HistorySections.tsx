@@ -21,50 +21,39 @@ export default function HistorySections({ mot_summary, clocking_analysis, mileag
           title="MOT History"
           icon={icons.document}
           status={
-            mot_summary.total_tests > 0
-              ? mot_summary.total_passes / mot_summary.total_tests >= 0.7
-                ? "pass"
-                : "warn"
+            mot_summary.latest_test?.result === "PASSED" ? "pass"
+              : mot_summary.latest_test?.result === "FAILED" ? "fail"
               : "neutral"
           }
         >
-          <DetailRow label="Total Tests" value={mot_summary.total_tests} />
-          <DetailRow label="Passes" value={mot_summary.total_passes} />
-          <DetailRow label="Failures" value={mot_summary.total_failures} />
-          <MOTPassFailBars passes={mot_summary.total_passes} failures={mot_summary.total_failures} />
           {mot_summary.latest_test && (
-            <>
-              <div className="mt-3 pt-3 border-t border-slate-100" />
-              <DetailRow
-                label="Latest Test"
-                value={
-                  <span className="flex items-center gap-1.5">
-                    {mot_summary.latest_test.date}{" "}
-                    <Badge
-                      variant={
-                        mot_summary.latest_test.result === "PASSED"
-                          ? "pass"
-                          : "fail"
-                      }
-                      label={mot_summary.latest_test.result || ""}
-                    />
-                  </span>
-                }
+            <div className="mb-3 flex items-center justify-between">
+              <div>
+                <p className="text-xs text-slate-400">Latest Test</p>
+                <p className="text-sm font-medium text-slate-700">{mot_summary.latest_test.date}</p>
+              </div>
+              <Badge
+                variant={mot_summary.latest_test.result === "PASSED" ? "pass" : "fail"}
+                label={mot_summary.latest_test.result || ""}
+                size="md"
               />
-              <DetailRow
-                label="Current Mileage"
-                value={
-                  mot_summary.current_odometer
-                    ? `${Number(mot_summary.current_odometer).toLocaleString()} miles`
-                    : "N/A"
-                }
-              />
-              <DetailRow
-                label="MOT Expiry"
-                value={mot_summary.latest_test.expiry_date}
-              />
-            </>
+            </div>
           )}
+          {mot_summary.latest_test?.expiry_date && (
+            <DetailRow label="Expires" value={mot_summary.latest_test.expiry_date} />
+          )}
+          {mot_summary.current_odometer && (
+            <DetailRow label="Mileage at Test" value={`${Number(mot_summary.current_odometer).toLocaleString()} miles`} />
+          )}
+          <div className="mt-3 pt-3 border-t border-slate-100" />
+          <div className="flex items-center gap-4 text-sm">
+            <span className="text-slate-500">{mot_summary.total_tests} tests</span>
+            <span className="text-emerald-600 font-medium">{mot_summary.total_passes} passed</span>
+            {mot_summary.total_failures > 0 && (
+              <span className="text-red-600 font-medium">{mot_summary.total_failures} failed</span>
+            )}
+          </div>
+          <MOTPassFailBars passes={mot_summary.total_passes} failures={mot_summary.total_failures} />
         </Card>
       )}
 
@@ -83,6 +72,27 @@ export default function HistorySections({ mot_summary, clocking_analysis, mileag
               : "warn"
           }
         >
+          {/* Headline mileage numbers */}
+          {mot_summary?.current_odometer && (
+            <div className="flex items-baseline justify-between mb-3">
+              <div>
+                <span className="text-2xl font-bold text-slate-900 font-mono">{Number(mot_summary.current_odometer).toLocaleString()}</span>
+                <span className="text-sm text-slate-400 ml-1">miles</span>
+              </div>
+              {mileage_timeline.length >= 2 && (() => {
+                const first = mileage_timeline[0];
+                const last = mileage_timeline[mileage_timeline.length - 1];
+                const years = (new Date(last.date).getTime() - new Date(first.date).getTime()) / (365.25 * 24 * 60 * 60 * 1000);
+                const annual = years > 0 ? Math.round((last.miles - first.miles) / years) : null;
+                return annual ? (
+                  <div className="text-right">
+                    <span className="text-lg font-bold text-slate-700 font-mono">{annual.toLocaleString()}</span>
+                    <span className="text-xs text-slate-400 ml-1">/yr</span>
+                  </div>
+                ) : null;
+              })()}
+            </div>
+          )}
           <div className="mb-3">
             {clocking_analysis.clocked ? (
               <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-lg px-3 py-2">

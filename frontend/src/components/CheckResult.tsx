@@ -67,6 +67,8 @@ export default function CheckResult({ data }: { data: FreeCheckResponse }) {
     salvage_check, keeper_history, high_risk, previous_searches,
   } = data;
 
+  const hasPremium = !!(finance_check || stolen_check || write_off_check || valuation);
+
   return (
     <div className="space-y-4 pb-20 md:pb-0">
       {/* Title bar with score gauge */}
@@ -134,7 +136,7 @@ export default function CheckResult({ data }: { data: FreeCheckResponse }) {
       )}
 
       {/* Section navigation */}
-      <SectionNav />
+      <SectionNav hasPremium={hasPremium} />
 
       {/* Overview */}
       <div id="section-overview" className="grid grid-cols-1 md:grid-cols-2 gap-3">

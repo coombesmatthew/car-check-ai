@@ -24,38 +24,38 @@ export default function EmissionsSections({ ulez_compliance, tax_calculation }: 
               : "neutral"
           }
         >
-          <div className="mb-3 flex items-center gap-3">
-            <Badge
-              variant={
-                ulez_compliance.compliant === true
-                  ? "pass"
-                  : ulez_compliance.compliant === false
-                  ? "fail"
-                  : "neutral"
-              }
-              label={
-                ulez_compliance.compliant === true
-                  ? "ALL ZONES CLEAR"
-                  : ulez_compliance.compliant === false
-                  ? "NON-COMPLIANT"
-                  : "UNKNOWN"
-              }
-              size="md"
-            />
-            {ulez_compliance.total_zones && (
-              <span className="text-xs text-slate-400">
-                {ulez_compliance.compliant_zones}/{ulez_compliance.total_zones} zones
-              </span>
+          <div className="mb-3">
+            {ulez_compliance.compliant === true ? (
+              <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
+                <svg className="w-5 h-5 text-emerald-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span className="text-sm font-semibold text-emerald-800">
+                  All Clean Air Zones Clear
+                  {ulez_compliance.total_zones && <span className="font-normal text-emerald-600"> ({ulez_compliance.compliant_zones}/{ulez_compliance.total_zones} zones)</span>}
+                </span>
+              </div>
+            ) : ulez_compliance.compliant === false ? (
+              <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+                <svg className="w-5 h-5 text-red-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                </svg>
+                <div>
+                  <span className="text-sm font-semibold text-red-800">Non-Compliant</span>
+                  {ulez_compliance.daily_charge && (
+                    <span className="text-sm text-red-600"> — {ulez_compliance.daily_charge}</span>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2">
+                <svg className="w-5 h-5 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
+                </svg>
+                <span className="text-sm font-semibold text-slate-600">Unable to determine compliance</span>
+              </div>
             )}
           </div>
-          <p className="text-sm text-slate-600 mb-3">
-            {ulez_compliance.reason}
-          </p>
-          {ulez_compliance.daily_charge && (
-            <div className="text-sm text-red-600 font-medium mb-3 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
-              Charges: {ulez_compliance.daily_charge}
-            </div>
-          )}
           {ulez_compliance.zone_details && ulez_compliance.zone_details.length > 0 ? (
             <>
               {/* Zones that affect cars */}
