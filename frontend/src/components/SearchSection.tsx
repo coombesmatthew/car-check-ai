@@ -6,7 +6,7 @@ import TrustBar from "@/components/ui/TrustBar";
 import CheckResult from "@/components/CheckResult";
 import UpsellSection from "@/components/UpsellSection";
 
-export default function SearchSection() {
+export default function SearchSection({ onCheckComplete }: { onCheckComplete?: (hasResult: boolean) => void }) {
   const [registration, setRegistration] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -28,6 +28,7 @@ export default function SearchSection() {
     setError(null);
     setResult(null);
     setShowUpsell(false);
+    onCheckComplete?.(false);
 
     const cleaned = registration.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
     if (cleaned.length < 2 || cleaned.length > 8) {
@@ -39,6 +40,7 @@ export default function SearchSection() {
     try {
       const data = await runFreeCheck(cleaned);
       setResult(data);
+      onCheckComplete?.(true);
       // Refresh counter after successful check
       getCheckCount().then((c) => { if (c > 0) setCheckCount(c); });
     } catch (err) {
