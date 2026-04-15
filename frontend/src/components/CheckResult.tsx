@@ -6,6 +6,8 @@ import OverviewSections from "@/components/sections/OverviewSections";
 import HistorySections from "@/components/sections/HistorySections";
 import EmissionsSections from "@/components/sections/EmissionsSections";
 import FullCheckSection from "@/components/sections/FullCheckSection";
+import SectionNav from "@/components/SectionNav";
+import PremiumBottomBar from "@/components/PremiumBottomBar";
 
 function EmailCapture({ registration }: { registration: string }) {
   const [email, setEmail] = useState("");
@@ -66,7 +68,7 @@ export default function CheckResult({ data }: { data: FreeCheckResponse }) {
   } = data;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 pb-20 md:pb-0">
       {/* Title bar with score gauge */}
       <div className="flex items-center justify-between bg-white border border-slate-200 rounded-xl p-6">
         <div>
@@ -131,6 +133,9 @@ export default function CheckResult({ data }: { data: FreeCheckResponse }) {
         </div>
       )}
 
+      {/* Section navigation */}
+      <SectionNav />
+
       {/* Overview */}
       <div id="section-overview" className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <OverviewSections vehicle={vehicle} mot_summary={mot_summary} tax_calculation={tax_calculation} vehicle_stats={vehicle_stats} safety_rating={safety_rating} />
@@ -172,6 +177,9 @@ export default function CheckResult({ data }: { data: FreeCheckResponse }) {
         This report is for informational purposes only and should not be the sole basis for a purchasing decision. Data sourced from DVLA, DVSA, and third-party providers &mdash; accuracy not guaranteed. We recommend an independent mechanical inspection before purchase. See our{" "}
         <a href="/terms" className="underline hover:text-slate-600">Terms of Service</a>.
       </p>
+
+      {/* Premium upsell bottom bar (mobile only) */}
+      <PremiumBottomBar hasPremium={!!(finance_check || stolen_check || write_off_check || valuation)} />
     </div>
   );
 }
