@@ -1,11 +1,11 @@
 """EV Health Check API endpoints.
 
-GET  /api/v1/ev/count        — Total EV checks performed
-POST /api/v1/ev/check        — Free EV check (validates EV, returns basic data)
-POST /api/v1/ev/preview      — Free AI preview report (DVLA + MOT data only)
-POST /api/v1/ev/checkout     — Create Stripe checkout for paid EV report
-POST /api/v1/ev/fulfil       — Fulfil paid EV report after Stripe payment
-POST /api/v1/ev/webhook      — Stripe webhook for EV payments
+GET  /api/v1/ev/count        - Total EV checks performed
+POST /api/v1/ev/check        - Free EV check (validates EV, returns basic data)
+POST /api/v1/ev/preview      - Free AI preview report (DVLA + MOT data only)
+POST /api/v1/ev/checkout     - Create Stripe checkout for paid EV report
+POST /api/v1/ev/fulfil       - Fulfil paid EV report after Stripe payment
+POST /api/v1/ev/webhook      - Stripe webhook for EV payments
 """
 
 from fastapi import APIRouter, HTTPException, Request
@@ -16,10 +16,9 @@ from app.core.logging import logger
 from app.core.cache import cache
 from app.schemas.ev import EVCheckRequest, EVCheckResponse, EVCheckoutRequest
 from app.services.ev.orchestrator import EVOrchestrator
-from app.services.payment.stripe_service import create_checkout_session, retrieve_session, verify_webhook_signature
-from app.services.ai.ev_report_generator import generate_ev_report, generate_ev_preview_report
-from app.services.report.ev_pdf_generator import generate_ev_pdf, extract_ev_verdict
-from app.services.notification.email_sender import send_report_email
+from app.services.payment.stripe_service import create_checkout_session, verify_webhook_signature
+from app.services.ai.ev_report_generator import generate_ev_preview_report
+from app.services.fulfilment import fulfil_report, handle_webhook
 
 router = APIRouter()
 
@@ -73,12 +72,11 @@ async def ev_preview(request: EVCheckRequest):
     """Generate a FREE AI preview report for an EV.
 
     Uses only DVLA + MOT data (no paid API calls). The report teases
-    what the full paid report (£8.99) would include.
+    what the full paid report would include.
     Non-EVs get rejected with a 400 error.
     """
     orchestrator = EVOrchestrator()
     try:
-        # Run the free EV check first
         result = await orchestrator.run_ev_check(request.registration)
 
         if not result.is_electric:
@@ -87,11 +85,10 @@ async def ev_preview(request: EVCheckRequest):
                 detail="This vehicle is not an electric vehicle. EV reports are only available for electric and plug-in hybrid vehicles.",
             )
 
-        # Generate free AI preview report using DVLA + MOT data
         ai_report = await generate_ev_preview_report(
             registration=request.registration,
-            vehicle_data=orchestrator._raw_dvla_data if hasattr(orchestrator, '_raw_dvla_data') else None,
-            mot_analysis=orchestrator._raw_mot_analysis if hasattr(orchestrator, '_raw_mot_analysis') else {},
+            vehicle_data=getattr(orchestrator, '_raw_dvla_data', None),
+            mot_analysis=getattr(orchestrator, '_raw_mot_analysis', {}),
             ev_check_data=result.model_dump(),
         )
 
@@ -124,8 +121,6 @@ async def ev_checkout(request: EVCheckoutRequest):
             registration=request.registration,
             email=request.email,
             tier=request.tier,
-            success_url=None,  # uses default from stripe_service
-            cancel_url=None,
         )
         return EVCheckoutResponse(**result)
     except RuntimeError as e:
@@ -144,7 +139,7 @@ class EVFulfilmentResponse(BaseModel):
     verdict: Optional[str] = None
     payment_status: str
     ai_report: Optional[str] = None
-    ev_check: Optional[EVCheckResponse] = None
+    ev_check: Optional[dict] = None
 
 
 @router.post("/fulfil", response_model=EVFulfilmentResponse)
@@ -153,77 +148,28 @@ async def fulfil_ev_report(session_id: str):
 
     Verifies payment, runs full EV check with paid data,
     generates AI report + PDF, and emails to customer.
+    Uses the shared fulfilment pipeline (see services/fulfilment.py).
     """
     try:
-        session = retrieve_session(session_id)
-    except Exception as e:
-        logger.error(f"EV session retrieval failed: {e}")
-        raise HTTPException(status_code=400, detail="Invalid payment session")
-
-    if session["payment_status"] != "paid":
-        raise HTTPException(
-            status_code=402,
-            detail=f"Payment not completed (status: {session['payment_status']})",
-        )
-
-    registration = session["registration"]
-    email = session["email"]
-
-    orchestrator = EVOrchestrator()
-    try:
-        # Run full paid EV check
-        result = await orchestrator.run_ev_check(registration, tier="ev_paid")
-        check_data = result.model_dump()
-
-        # Generate EV-specific AI report
-        ai_report = await generate_ev_report(
-            registration=registration,
-            vehicle_data=orchestrator._raw_dvla_data if hasattr(orchestrator, '_raw_dvla_data') else None,
-            mot_analysis=orchestrator._raw_mot_analysis if hasattr(orchestrator, '_raw_mot_analysis') else {},
-            ev_check_data=check_data,
-        )
-
-        # Generate EV-branded PDF
-        pdf_bytes = generate_ev_pdf(check_data, ai_report)
-        verdict = extract_ev_verdict(ai_report) if ai_report else None
-
-        import uuid
-        from datetime import datetime as dt
-        report_ref = f"EV-{dt.utcnow().strftime('%Y%m%d')}-{uuid.uuid4().hex[:8].upper()}"
-
-        # Send email
-        email_sent = await send_report_email(
-            to_email=email,
-            check_data=check_data,
-            pdf_bytes=pdf_bytes,
-            verdict=verdict,
-            report_ref=report_ref,
-        )
-
-        logger.info(
-            f"EV report fulfilled for {registration} "
-            f"(ref: {report_ref}, session: {session_id}, email: {email_sent})"
-        )
-
+        result = await fulfil_report(session_id)
         return EVFulfilmentResponse(
-            registration=registration,
-            report_ref=report_ref,
-            email_sent=email_sent,
-            pdf_size_bytes=len(pdf_bytes),
-            verdict=verdict,
-            payment_status="paid",
-            ai_report=ai_report,
-            ev_check=result,
+            registration=result.registration,
+            report_ref=result.report_ref,
+            email_sent=result.email_sent,
+            pdf_size_bytes=result.pdf_size_bytes,
+            verdict=result.verdict,
+            payment_status=result.payment_status,
+            ai_report=result.ai_report,
+            ev_check=result.check_data,
         )
-
+    except HTTPException:
+        raise
     except Exception as e:
-        logger.error(f"EV report fulfilment failed for {registration}: {e}")
+        logger.error(f"EV report fulfilment failed: {e}")
         raise HTTPException(
             status_code=500,
             detail="Report generation failed after payment - please contact support",
         )
-    finally:
-        await orchestrator.close()
 
 
 @router.post("/webhook")
@@ -241,12 +187,4 @@ async def ev_webhook(request: Request):
         logger.warning(f"EV webhook signature verification failed: {e}")
         raise HTTPException(status_code=400, detail="Invalid signature")
 
-    if event["type"] == "checkout.session.completed":
-        session = event["data"]["object"]
-        logger.info(
-            f"EV webhook: checkout.session.completed for "
-            f"{session.get('metadata', {}).get('registration', 'unknown')} "
-            f"(session: {session.get('id')})"
-        )
-
-    return {"received": True}
+    return handle_webhook(event)

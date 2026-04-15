@@ -219,6 +219,7 @@ class EVOrchestrator:
             high_risk=provenance.get("high_risk") if provenance else None,
             previous_searches=provenance.get("previous_searches") if provenance else None,
             salvage_check=provenance.get("salvage_check") if provenance else None,
+            valuation=provenance.get("valuation") if provenance else None,
             checked_at=datetime.utcnow(),
             data_sources=data_sources,
         )
@@ -265,25 +266,38 @@ class EVOrchestrator:
             return None
 
     async def _fetch_provenance_data(self, registration: str, current_mileage: Optional[int] = None) -> Optional[Dict]:
-        """Fetch AutoCheck + Salvage Check for vehicle history."""
+        """Fetch AutoCheck + Brego valuation + Salvage Check for vehicle history."""
         try:
-            autocheck_raw, salvage_raw = await asyncio.gather(
-                self.oneauto_client.get_autocheck(registration),
-                self.oneauto_client.get_salvage(registration),
-                return_exceptions=True,
-            )
+            # Fetch AutoCheck first (need registration_date for Brego)
+            autocheck_raw = await self.oneauto_client.get_autocheck(registration)
 
             if isinstance(autocheck_raw, Exception):
                 logger.warning(f"One Auto AutoCheck failed: {autocheck_raw}")
                 autocheck_raw = None
+
+            # Extract registration date for Brego valuation
+            registration_date = None
+            if isinstance(autocheck_raw, dict) and autocheck_raw.get("registration_date"):
+                registration_date = autocheck_raw["registration_date"]
+
+            # Fetch valuation + salvage in parallel
+            valuation_raw, salvage_raw = await asyncio.gather(
+                self.oneauto_client.get_valuation(registration, current_mileage or 0, registration_date),
+                self.oneauto_client.get_salvage(registration),
+                return_exceptions=True,
+            )
+
+            if isinstance(valuation_raw, Exception):
+                logger.warning(f"One Auto Brego valuation failed: {valuation_raw}")
+                valuation_raw = None
             if isinstance(salvage_raw, Exception):
                 logger.warning(f"One Auto Salvage check failed: {salvage_raw}")
                 salvage_raw = None
 
-            # Parse AutoCheck response using helper from oneauto_client
-            from app.services.data.oneauto_client import parse_autocheck, parse_salvage
+            from app.services.data.oneauto_client import parse_autocheck, parse_salvage, parse_valuation
 
             parsed = parse_autocheck(autocheck_raw)
+            parsed["valuation"] = parse_valuation(valuation_raw, current_mileage or 0)
             parsed["salvage_check"] = parse_salvage(salvage_raw)
 
             return self._build_provenance_from_raw(parsed, "Experian via One Auto API")
@@ -362,6 +376,11 @@ class EVOrchestrator:
                 records=sv.get("records", []),
                 data_source=sv.get("data_source", "CarGuide"),
             )
+
+        val = raw.get("valuation")
+        if val:
+            from app.schemas.check import Valuation
+            result["valuation"] = Valuation(**val)
 
         return result
 

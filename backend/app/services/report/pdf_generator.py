@@ -142,7 +142,12 @@ def _md_to_html(content: str, citation_urls: Optional[Dict[int, str]] = None) ->
 
         # H2 subheading (Claude sometimes uses ## inside sections)
         if stripped.startswith("## "):
-            output.append(f'<h3 style="font-size:11pt;font-weight:700;color:#1e293b;margin:4mm 0 2mm;">{stripped[3:].strip()}</h3>')
+            heading_text = stripped[3:].strip()
+            # Numbered sections (e.g. "1. OVERALL CONDITION ASSESSMENT") → h2 triggers page break
+            if re.match(r"^\d+\.", heading_text):
+                output.append(f'<h2 style="font-size:13pt;font-weight:700;color:#1e293b;margin:0 0 3mm;">{heading_text}</h2>')
+            else:
+                output.append(f'<h3 style="font-size:11pt;font-weight:700;color:#1e293b;margin:4mm 0 2mm;">{heading_text}</h3>')
             i += 1
 
         # H3 subheading
@@ -179,7 +184,15 @@ def _md_to_html(content: str, citation_urls: Optional[Dict[int, str]] = None) ->
                         continue
                     tag = "th" if first_data_row else "td"
                     first_data_row = False
-                    html += "<tr>" + "".join(f"<{tag}>{c}</{tag}>" for c in cells) + "</tr>"
+
+                    # Detect and style Total row specially
+                    is_total_row = cells and "Total" in cells[0]
+                    if is_total_row:
+                        html += '<tr style="background: #f1f5f9; font-weight: 700; border-top: 2px solid #1e293b;">'
+                        html += "".join(f"<{tag} style='font-weight:700;'>{c}</{tag}>" for c in cells)
+                        html += "</tr>"
+                    else:
+                        html += "<tr>" + "".join(f"<{tag}>{c}</{tag}>" for c in cells) + "</tr>"
                 html += "</table>"
                 output.append(html)
 
@@ -411,7 +424,7 @@ def generate_pdf(
     env = Environment(loader=FileSystemLoader(str(TEMPLATE_DIR)))
     template = env.get_template("report.html")
 
-    # Extract data
+    # Extract data (shared fields — standard + EV)
     vehicle = check_data.get("vehicle") or {}
     mot_summary = check_data.get("mot_summary") or {}
     ulez = check_data.get("ulez_compliance") or {}
@@ -426,6 +439,14 @@ def generate_pdf(
     writeoff = check_data.get("write_off_check")
     plates = check_data.get("plate_changes")
     valuation = check_data.get("valuation")
+
+    # EV-specific fields (present only for EV tier checks)
+    battery_health = check_data.get("battery_health")
+    range_estimate = check_data.get("range_estimate")
+    range_scenarios = check_data.get("range_scenarios", [])
+    charging_costs = check_data.get("charging_costs")
+    ev_specs = check_data.get("ev_specs")
+    lifespan_prediction = check_data.get("lifespan_prediction")
 
     # Verdict
     verdict = _extract_verdict(ai_report) if ai_report else None
@@ -450,8 +471,10 @@ def generate_pdf(
     # AI sections
     ai_sections = _parse_ai_sections(ai_report) if ai_report else []
 
-    # Report reference
-    report_ref = f"CV-{datetime.utcnow().strftime('%Y%m%d')}-{uuid.uuid4().hex[:8].upper()}"
+    # Report reference (EV prefix for electric vehicles)
+    is_ev = battery_health is not None or check_data.get("is_electric")
+    ref_prefix = "EV" if is_ev else "CV"
+    report_ref = f"{ref_prefix}-{datetime.utcnow().strftime('%Y%m%d')}-{uuid.uuid4().hex[:8].upper()}"
 
     context = {
         "registration": check_data.get("registration", ""),
@@ -480,6 +503,13 @@ def generate_pdf(
         "writeoff": writeoff,
         "plates": plates,
         "valuation": valuation,
+        # EV fields (template guards with {% if battery_health %} etc.)
+        "battery_health": battery_health,
+        "range_estimate": range_estimate,
+        "range_scenarios": range_scenarios,
+        "charging_costs": charging_costs,
+        "ev_specs": ev_specs,
+        "lifespan_prediction": lifespan_prediction,
     }
 
     html_content = template.render(**context)

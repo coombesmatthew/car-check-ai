@@ -695,8 +695,8 @@ RANGE ESTIMATE:
 Official WLTP: {re_data.get('official_range_miles', 'N/A')} miles
 Real-World Estimate: {re_data.get('estimated_range_miles', 'N/A')} miles
 Range Retention: {re_data.get('range_retention_pct', 'N/A')}%
-Worst Case: {re_data.get('worst_case_miles', 'N/A')} miles
-Best Case: {re_data.get('best_case_miles', 'N/A')} miles""")
+Worst Case: {re_data.get('min_range_now_miles', 'N/A')} miles
+Best Case: {re_data.get('max_range_now_miles', 'N/A')} miles""")
 
         # Scenarios
         scenarios = ev_check_data.get("range_scenarios", [])
@@ -715,9 +715,9 @@ Battery: {specs.get('battery_capacity_kwh', 'N/A')} kWh total, {specs.get('usabl
 Type: {specs.get('battery_type', 'N/A')}
 DC Max: {specs.get('max_dc_charge_kw', 'N/A')} kW
 AC Max: {specs.get('max_ac_charge_kw', 'N/A')} kW
-Home (7kW): {specs.get('charge_time_home_hours', 'N/A')} hours
+Home (7kW): {round(specs.get('charge_time_home_mins', 0) / 60, 1) if specs.get('charge_time_home_mins') else 'N/A'} hours
 Rapid 10-80%: {specs.get('charge_time_rapid_mins', 'N/A')} mins
-Consumption: {specs.get('energy_consumption_kwh_per_mile', 'N/A')} kWh/mile""")
+Consumption: {round(specs.get('energy_consumption_wh_per_mile', 0) / 1000, 2) if specs.get('energy_consumption_wh_per_mile') else 'N/A'} kWh/mile""")
 
         # Charging costs
         cc = ev_check_data.get("charging_costs")
@@ -736,9 +736,46 @@ vs Petrol saving: £{cc.get('vs_petrol_annual_saving', 'N/A')}/year""")
             parts.append(f"""
 LIFESPAN PREDICTION:
 Remaining years: {lp.get('predicted_remaining_years', 'N/A')}
-Remaining miles: {lp.get('predicted_remaining_miles', 'N/A')}
-Condition: {lp.get('overall_condition', 'N/A')}
-Risk factors: {', '.join(lp.get('risk_factors', []))}""")
+Prediction range: {lp.get('prediction_range', 'N/A')} years
+1-year survival: {lp.get('one_year_survival_pct', 'N/A')}%
+Model avg final mileage: {lp.get('model_avg_final_miles', 'N/A')} miles""")
+
+        # Provenance data (EV Complete tier only)
+        finance = ev_check_data.get("finance_check")
+        if finance:
+            parts.append(f"""
+FINANCE CHECK:
+Outstanding: {finance.get('finance_outstanding', False)}
+Records: {finance.get('record_count', 0)}""")
+            for rec in finance.get("records", []):
+                parts.append(f"  - {rec.get('agreement_type', '?')}: {rec.get('finance_company', '?')} ({rec.get('agreement_date', '?')})")
+
+        stolen = ev_check_data.get("stolen_check")
+        if stolen:
+            parts.append(f"\nSTOLEN CHECK: {'REPORTED STOLEN' if stolen.get('stolen') else 'Clear'}")
+
+        writeoff = ev_check_data.get("write_off_check")
+        if writeoff:
+            parts.append(f"\nWRITE-OFF CHECK: {'WRITTEN OFF' if writeoff.get('written_off') else 'Clear'}")
+            for rec in writeoff.get("records", []):
+                parts.append(f"  - Cat {rec.get('category', '?')}: {rec.get('loss_date', '?')} ({rec.get('loss_type', '?')})")
+
+        salvage = ev_check_data.get("salvage_check")
+        if salvage:
+            parts.append(f"\nSALVAGE CHECK: {'SALVAGE FOUND' if salvage.get('salvage_found') else 'Clear'}")
+
+        keeper = ev_check_data.get("keeper_history")
+        if keeper:
+            parts.append(f"\nKEEPER HISTORY: {keeper.get('total_keepers', '?')} keepers")
+
+        valuation = ev_check_data.get("valuation")
+        if valuation:
+            parts.append(f"""
+VALUATION (Brego):
+Private sale: £{valuation.get('private_sale', 'N/A')}
+Dealer forecourt: £{valuation.get('dealer_forecourt', 'N/A')}
+Trade-in: £{valuation.get('trade_in', 'N/A')}
+Part exchange: £{valuation.get('part_exchange', 'N/A')}""")
 
     parts.append(f"\nTODAY'S DATE: {datetime.utcnow().strftime('%d %B %Y')}")
 
@@ -752,6 +789,12 @@ Risk factors: {', '.join(lp.get('risk_factors', []))}""")
                 parts.append(f"  [{i}] {src['name']} ({src['site']}) — {src['desc']}")
 
     parts.append("\n=== END OF DATA ===")
-    parts.append("\nREPORT TIER: PAID EV HEALTH CHECK (£8.99)")
+
+    # Determine tier from data presence
+    has_provenance = any(ev_check_data.get(k) for k in ("finance_check", "stolen_check", "write_off_check")) if ev_check_data else False
+    if has_provenance:
+        parts.append("\nREPORT TIER: EV COMPLETE (£13.99) — includes full vehicle history")
+    else:
+        parts.append("\nREPORT TIER: EV HEALTH CHECK (£8.99)")
 
     return "\n".join(parts)

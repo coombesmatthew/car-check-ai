@@ -23,7 +23,7 @@ def render_report_to_markdown(report: VehicleReport) -> str:
     # Renderer starts directly at the numbered sections.
     lines.append("## 1. OVERALL CONDITION ASSESSMENT")
     lines.append("")
-    lines.append(f"**Recommendation: {report.recommendation}**")
+    lines.append(f"Recommendation: **{report.recommendation}**")
     lines.append("")
     lines.append("---")
     lines.append("")
@@ -62,7 +62,7 @@ def render_report_to_markdown(report: VehicleReport) -> str:
         metric = row.get("metric", "")
         detail = row.get("detail", "")
         interpretation = row.get("interpretation", "")
-        lines.append(f"| **{metric}** | {detail} | {interpretation} |")
+        lines.append(f"| {metric} | {detail} | {interpretation} |")
     lines.append("")
     lines.append("---")
     lines.append("")
@@ -71,19 +71,26 @@ def render_report_to_markdown(report: VehicleReport) -> str:
     lines.append("### Recurring Defect Patterns")
     lines.append("")
     if report.defect_patterns:
-        lines.append("| Category | # | Pattern | Action |")
-        lines.append("|----------|---|---------|--------|")
+        lines.append("| Category | Tests | First/Last Seen | Action |")
+        lines.append("|----------|-------|-----------------|--------|")
         for pattern in report.defect_patterns:
             category = pattern.get("category", "Unknown")
             flagged_count = pattern.get("flagged_count", 0)
-            factual_summary = pattern.get("factual_summary", "")
+            flagged_dates = pattern.get("flagged_dates", [])
             recommended_action = pattern.get("recommended_action", "")
 
-            # Truncate long content for readability in table
-            pattern_short = factual_summary[:100] + "..." if len(factual_summary) > 100 else factual_summary
+            # Build First/Last Seen column
+            if flagged_dates:
+                first_seen = flagged_dates[0]
+                last_seen = flagged_dates[-1]
+                seen_range = f"{first_seen} → {last_seen}" if first_seen != last_seen else first_seen
+            else:
+                seen_range = "—"
+
+            # Truncate action for readability
             action_short = recommended_action[:80] + "..." if len(recommended_action) > 80 else recommended_action
 
-            lines.append(f"| **{category}** | {flagged_count} | {pattern_short} | {action_short} |")
+            lines.append(f"| **{category}** | {flagged_count} | {seen_range} | {action_short} |")
     lines.append("")
     lines.append("---")
     lines.append("")
@@ -135,23 +142,26 @@ def render_report_to_markdown(report: VehicleReport) -> str:
     lines.append("")
     lines.append("### Market Valuation Summary")
     lines.append("")
-    lines.append("| Channel | Valuation |")
-    lines.append("|---------|-----------|")
-
+    # Output as HTML grid instead of markdown table for better styling
     vals = report.valuations
-    channels = [
-        ("Private Sale", "private_sale"),
-        ("Dealer Forecourt", "dealer_forecourt"),
-        ("Trade-in", "trade_in"),
-        ("Part Exchange", "part_exchange"),
-    ]
-    for channel_label, channel_key in channels:
-        amount = vals.get(channel_key)
-        if amount is not None:
-            amount_str = _format_currency(int(amount)) if isinstance(amount, (int, float)) else str(amount)
-            lines.append(f"| **{channel_label}** | {amount_str} |")
+    ps = vals.get("private_sale", "—")
+    dc = vals.get("dealer_forecourt", "—")
+    ti = vals.get("trade_in", "—")
+    pe = vals.get("part_exchange", "—")
 
+    ps_str = _format_currency(int(ps)) if isinstance(ps, (int, float)) else str(ps)
+    dc_str = _format_currency(int(dc)) if isinstance(dc, (int, float)) else str(dc)
+    ti_str = _format_currency(int(ti)) if isinstance(ti, (int, float)) else str(ti)
+    pe_str = _format_currency(int(pe)) if isinstance(pe, (int, float)) else str(pe)
+
+    lines.append('<div class="valuation-grid">')
+    lines.append(f'<div class="val-cell val-primary"><div class="val-label">Private Sale</div><div class="val-amount">{ps_str}</div></div>')
+    lines.append(f'<div class="val-cell val-primary"><div class="val-label">Dealer Forecourt</div><div class="val-amount">{dc_str}</div></div>')
+    lines.append(f'<div class="val-cell"><div class="val-label">Trade-in</div><div class="val-amount">{ti_str}</div></div>')
+    lines.append(f'<div class="val-cell"><div class="val-label">Part Exchange</div><div class="val-amount">{pe_str}</div></div>')
+    lines.append('</div>')
     lines.append("")
+
     valuation_basis = vals.get("valuation_basis", "Market data (mileage-adjusted)")
     lines.append(f"*Valuation basis: {valuation_basis}*")
     lines.append("")
@@ -222,9 +232,11 @@ def render_report_to_markdown(report: VehicleReport) -> str:
             lines.append(f"| {ref} | {desc} | {status} | {action} |")
         lines.append("")
     else:
+        from datetime import date as _date
+        verification_date = _date.today().strftime("%d %B %Y")
         lines.append("### Recall Status")
         lines.append("")
-        lines.append("No recalls on record for this model. Always verify at [DVSA recalls](https://www.gov.uk/check-vehicle-recall).")
+        lines.append(f"No open recalls on record for this model. Verified via DVSA database as of {verification_date}. Always verify at [DVSA recalls](https://www.gov.uk/check-vehicle-recall).")
         lines.append("")
     lines.append("---")
     lines.append("")
@@ -249,7 +261,8 @@ def render_report_to_markdown(report: VehicleReport) -> str:
             total_high += high if isinstance(high, (int, float)) else 0
             cost_str = f"£{low:,}–£{high:,}" if isinstance(low, (int, float)) and low > 0 else "—"
             lines.append(f"| {name} | {priority} | {cost_str} | {notes} |")
-        lines.append(f"| **Total** | | **£{total_low:,}–£{total_high:,}** | Estimated repair budget |")
+        # Total row with proper HTML formatting to ensure correct alignment
+        lines.append(f"| Total | | £{total_low:,}–£{total_high:,} | Estimated repair budget |")
     lines.append("")
     lines.append("---")
     lines.append("")

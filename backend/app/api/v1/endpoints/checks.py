@@ -1,16 +1,17 @@
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import Response
 from pydantic import BaseModel, EmailStr
-from typing import Optional, List
+from typing import Optional
 
 from app.core.logging import logger
 from app.core.cache import cache
-from app.schemas.check import FreeCheckRequest, FreeCheckResponse, BasicCheckRequest
+from app.schemas.check import FreeCheckRequest, FreeCheckResponse
 from app.services.check.orchestrator import CheckOrchestrator
 from app.services.ai.report_generator import generate_ai_report
 from app.services.report.pdf_generator import generate_pdf, _extract_verdict
 from app.services.notification.email_sender import send_report_email
-from app.services.payment.stripe_service import create_checkout_session, retrieve_session, verify_webhook_signature
+from app.services.payment.stripe_service import create_checkout_session, verify_webhook_signature
+from app.services.fulfilment import fulfil_report, handle_webhook
 from app.services.listing.scraper import scrape_listing
 
 router = APIRouter()
@@ -279,80 +280,30 @@ class FulfilmentResponse(BaseModel):
 
 @router.post("/basic/fulfil", response_model=FulfilmentResponse)
 async def fulfil_basic_report(session_id: str):
-    """Fulfil a BASIC tier report after successful Stripe payment.
+    """Fulfil a BASIC/PREMIUM tier report after successful Stripe payment.
 
     Verifies payment, generates the report, and sends the email.
     Called by the frontend after the customer returns from Stripe Checkout.
+    Uses the shared fulfilment pipeline (see services/fulfilment.py).
     """
-    # 1. Verify payment with Stripe
     try:
-        session = retrieve_session(session_id)
-    except Exception as e:
-        logger.error(f"Session retrieval failed: {e}")
-        raise HTTPException(status_code=400, detail="Invalid payment session")
-
-    if session["payment_status"] != "paid":
-        raise HTTPException(
-            status_code=402,
-            detail=f"Payment not completed (status: {session['payment_status']})",
-        )
-
-    registration = session["registration"]
-    email = session["email"]
-    listing_url = session.get("listing_url")
-    listing_price = session.get("listing_price")
-    tier = session.get("tier", "basic")
-
-    # 2. Generate the report (premium tier includes provenance data)
-    orchestrator = CheckOrchestrator()
-    try:
-        free_result = await orchestrator.run_free_check(registration, tier=tier)
-
-        check_data = free_result.model_dump()
-
-        ai_report = await generate_ai_report(
-            registration=registration,
-            vehicle_data=orchestrator._raw_dvla_data if hasattr(orchestrator, '_raw_dvla_data') else None,
-            mot_analysis=orchestrator._raw_mot_analysis if hasattr(orchestrator, '_raw_mot_analysis') else {},
-            ulez_data=orchestrator._raw_ulez_data if hasattr(orchestrator, '_raw_ulez_data') else None,
-            listing_price=listing_price,
-            listing_url=listing_url,
-            check_result=check_data,
-        )
-        pdf_bytes = generate_pdf(check_data, ai_report)
-        verdict = _extract_verdict(ai_report) if ai_report else None
-
-        import uuid
-        from datetime import datetime as dt
-        report_ref = f"CV-{dt.utcnow().strftime('%Y%m%d')}-{uuid.uuid4().hex[:8].upper()}"
-
-        email_sent = await send_report_email(
-            to_email=email,
-            check_data=check_data,
-            pdf_bytes=pdf_bytes,
-            verdict=verdict,
-            report_ref=report_ref,
-        )
-
-        logger.info(
-            f"{tier.upper()} report fulfilled for {registration} "
-            f"(ref: {report_ref}, session: {session_id}, email: {email_sent})"
-        )
-
+        result = await fulfil_report(session_id)
         return FulfilmentResponse(
-            registration=registration,
-            report_ref=report_ref,
-            email_sent=email_sent,
-            pdf_size_bytes=len(pdf_bytes),
-            verdict=verdict,
-            payment_status="paid",
+            registration=result.registration,
+            report_ref=result.report_ref,
+            email_sent=result.email_sent,
+            pdf_size_bytes=result.pdf_size_bytes,
+            verdict=result.verdict,
+            payment_status=result.payment_status,
         )
-
+    except HTTPException:
+        raise
     except Exception as e:
-        logger.error(f"Report fulfilment failed for {registration}: {e}")
-        raise HTTPException(status_code=500, detail="Report generation failed after payment - please contact support")
-    finally:
-        await orchestrator.close()
+        logger.error(f"Report fulfilment failed: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail="Report generation failed after payment - please contact support",
+        )
 
 
 # --- Stripe Webhook ---
@@ -377,18 +328,7 @@ async def stripe_webhook(request: Request):
         logger.warning(f"Webhook signature verification failed: {e}")
         raise HTTPException(status_code=400, detail="Invalid signature")
 
-    if event["type"] == "checkout.session.completed":
-        session = event["data"]["object"]
-        logger.info(
-            f"Webhook: checkout.session.completed for "
-            f"{session.get('metadata', {}).get('registration', 'unknown')} "
-            f"(session: {session.get('id')})"
-        )
-        # The success page handles fulfilment via /basic/fulfil.
-        # This webhook logs the event for monitoring.
-        # Future: add idempotent fulfilment here as a fallback.
-
-    return {"received": True}
+    return handle_webhook(event)
 
 
 # --- Lead Capture ---

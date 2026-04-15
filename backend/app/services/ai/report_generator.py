@@ -1003,6 +1003,10 @@ def _build_demo_vehicle_report(
     report_date = datetime.now().strftime("%d %b %Y")
     vehicle_summary = f"{year} {_format_make(make)} {model}" + (f" ({engine}cc)" if engine else "")
 
+    # Extract keeper data early (needed for recommendation logic below)
+    keeper_data = check_result.get("keeper_history", {}) if check_result else {}
+    total_keepers = keeper_data.get("total_keepers", keeper_data.get("keeper_count", 1))
+
     # Recommendation points (factual, no condition score)
     # Build rich narrative context for the recommendation
     recommendation_points = []
@@ -1044,24 +1048,42 @@ def _build_demo_vehicle_report(
     elif not recommendation_points:
         recommendation_points.append("Vehicle inspection data available for assessment.")
 
-    # Mileage assessment
+    # Mileage assessment — use Brego if available, else calculate from current date
+    from datetime import date as _date
+    brego = check_result.get("brego_valuation", {}) if check_result else {}
+    brego_mpa = brego.get("miles_per_annum_used")
+
+    if brego_mpa and isinstance(brego_mpa, (int, float)):
+        annual_average = int(brego_mpa)
+    elif year != "Unknown":
+        # approx mid-year registration: today.year - year + (today.month - 6)/12
+        age_years = _date.today().year - int(year) + (_date.today().month - 6) / 12
+        annual_average = int(current_mileage / max(age_years, 1))
+    else:
+        annual_average = 0
+
     mileage_assessment = {
         "total_mileage": current_mileage if isinstance(current_mileage, int) else int(str(current_mileage).replace(",", "") or "100000"),
-        "annual_average": int(current_mileage / ((2026 - int(year)) + 1)) if isinstance(current_mileage, int) and year != "Unknown" else 0,
+        "annual_average": annual_average,
         "benchmark_fuel_type": fuel,
         "benchmark_typical_miles_per_year": "7,000–8,000",
         "assessment": "typical",
         "observation": "Mileage reading from DVLA Vehicle Enquiry Service. Consistency checked across MOT history."
     }
 
-    # MOT summary table (6 rows as per schema)
+    # MOT summary table (6 rows as per schema) — extract from real data
     pass_rate = round(total_passes / total_tests * 100) if total_tests > 0 else 0
+    latest_test = mot_tests_raw[0] if mot_tests_raw else {}
+    latest_result = latest_test.get("result", "Check DVSA database")
+    latest_date = latest_test.get("date", "")
+    latest_adv_count = len(latest_test.get("advisories", []))
+
     mot_summary_rows = [
         {"metric": "Total MOT tests", "detail": f"{total_tests} tests on record", "interpretation": "Full MOT history available"},
         {"metric": "Passes", "detail": f"{total_passes} passes", "interpretation": f"Pass rate {pass_rate}% — typical for age"},
-        {"metric": "Failures", "detail": f"{total_failures} failures", "interpretation": "Assessment pending inspector review"},
-        {"metric": "Latest result", "detail": "Check DVSA database", "interpretation": "Current MOT status available"},
-        {"metric": "Current advisories", "detail": "See defect patterns section", "interpretation": "Advisories logged where applicable"},
+        {"metric": "Failures", "detail": f"{total_failures} failures", "interpretation": "All resolved — vehicle subsequently passed" if total_failures > 0 and total_passes > 0 else "None recorded"},
+        {"metric": "Latest result", "detail": f"{latest_result} ({latest_date})", "interpretation": "Most recent MOT test"},
+        {"metric": "Current advisories", "detail": f"{latest_adv_count} advisory item{'s' if latest_adv_count != 1 else ''}", "interpretation": "From most recent MOT — monitor at next service"},
         {"metric": "MOT expiry", "detail": mot_expiry or "Check DVSA", "interpretation": "Valid or expired as shown"},
     ]
 
@@ -1094,6 +1116,17 @@ def _build_demo_vehicle_report(
             "defects": defects
         })
 
+    # Pre-compute category → set of unique test dates to deduplicate retests on same date
+    from collections import defaultdict
+    cat_dates: dict = defaultdict(set)
+    for test in mot_tests_raw:
+        test_date = test.get("date", "")
+        for item in test.get("advisories", []) + test.get("failures", []):
+            text_lower = item.get("text", "").lower()
+            for cat_key in ["tyre", "brake", "windscreen", "suspension", "steering", "light", "exhaust", "emission"]:
+                if cat_key in text_lower:
+                    cat_dates[cat_key].add(test_date)
+
     # Recurring defect patterns - include all patterns with real repair costs
     defect_patterns = []
     repair_budget = []
@@ -1102,14 +1135,19 @@ def _build_demo_vehicle_report(
 
     for pattern in patterns:
         cat = pattern.get("category", "Unknown")
+        cat_key = cat.lower()
         occurrences = pattern.get("occurrences", 0)
         cat_display = cat.title() if cat else cat  # Normalise capitalisation
 
+        # Use unique test session count, not raw occurrence count
+        unique_test_sessions = len(cat_dates.get(cat_key, set()))
+        session_label = f"in {unique_test_sessions} of {total_tests} MOT tests"
+
         defect_patterns.append({
             "category": cat_display,  # Use capitalized version
-            "flagged_count": occurrences,
-            "flagged_dates": [],
-            "factual_summary": f"{cat_display} flagged {occurrences} times in MOT history.",
+            "flagged_count": unique_test_sessions,
+            "flagged_dates": sorted(cat_dates.get(cat_key, set())),
+            "factual_summary": f"{cat_display} flagged {session_label}.",
             "recommended_action": f"Have {cat.lower()} inspected by qualified mechanic before purchase."
         })
 
@@ -1120,12 +1158,21 @@ def _build_demo_vehicle_report(
             high = est.get("high", 0)
             priority = "High" if pattern.get("concern_level") == "high" else "Medium" if pattern.get("concern_level") == "medium" else "Low"
 
+            # Special case: windscreen → wiper blade
+            if cat_key == "windscreen":
+                item_name = "Wiper blade replacement"
+                low, high = 20, 40
+                notes_str = f"Flagged {unique_test_sessions} times in MOT history. Wiper blade replacement."
+            else:
+                item_name = f"{cat_display} repair/replacement"
+                notes_str = f"Flagged {unique_test_sessions} times in MOT history. {est.get('component', '')}."
+
             repair_budget.append({
-                "item": f"{cat_display} repair/replacement",
+                "item": item_name,
                 "priority": priority,
                 "estimated_cost_low": low,
                 "estimated_cost_high": high,
-                "notes": f"Flagged {occurrences} times in MOT history. {est.get('component', '')}."
+                "notes": notes_str
             })
             total_repair_low += low
             total_repair_high += high
@@ -1160,6 +1207,24 @@ def _build_demo_vehicle_report(
                 "what_to_look_for": f"Smooth, responsive. No stiffness or heaviness. (Advisory: {adv[:50]}...)"
             })
 
+    # Add model-specific checks for MINI Diesel N47
+    if make.upper() == "MINI" and fuel and "DIESEL" in fuel.upper():
+        test_drive_checklist.insert(0, {
+            "area": "Engine (cold start)",
+            "check": "Start from cold — listen for the first 30 seconds",
+            "what_to_look_for": "Any rattling or ticking from rear of engine = timing chain wear. Walk away if present."
+        })
+        test_drive_checklist.append({
+            "area": "DPF / EGR",
+            "check": "Accelerate hard from 30mph to 60mph",
+            "what_to_look_for": "Full power, no hesitation or limp mode. Black smoke = DPF or injector issue."
+        })
+        test_drive_checklist.append({
+            "area": "Power steering",
+            "check": "Turn steering lock-to-lock at low speed",
+            "what_to_look_for": "Smooth and light. Heavy or unresponsive = power steering pump fault (£300–£600)."
+        })
+
     # Add generic checks if not enough specific ones
     if len(test_drive_checklist) < 3:
         test_drive_checklist.append({
@@ -1174,9 +1239,6 @@ def _build_demo_vehicle_report(
         })
 
     # Ownership — with source attribution
-    keeper_data = check_result.get("keeper_history", {}) if check_result else {}
-    total_keepers = keeper_data.get("total_keepers", keeper_data.get("keeper_count", 1))
-
     if check_result:
         source_str = "Source: Experian AutoCheck / DVLA"
     else:
@@ -1221,11 +1283,11 @@ def _build_demo_vehicle_report(
         "dealer_forecourt": 3212,
         "trade_in": 1124,
         "part_exchange": 1513,
-        "valuation_basis": "Estimated market data"
+        "valuation_basis": "Brego by One Auto API" if brego and brego.get("private_sale") else "Estimated market data"
     }
 
     # Value context
-    valuation_context = f"Based on {year} {_format_make(make)} {model} with {current_mileage} miles and MOT history. Market value varies by condition and service history."
+    valuation_context = f"Brego market valuation for {year} {_format_make(make)} {model} with {current_mileage:,} miles. Valuations are adjusted for mileage, age, and fuel type. Actual transaction price depends on condition, service history, and local demand."
 
     # Value factors with detailed impact analysis
     value_factors = []
@@ -1234,11 +1296,13 @@ def _build_demo_vehicle_report(
     if not clocked:
         value_factors.append({"factor": "Mileage Authenticity", "impact": "Positive", "details": "Mileage consistent across MOT tests — no odometer tampering detected"})
     for pattern in patterns[:2]:
+        cat_key = pattern['category'].lower()
         cat_display = pattern['category'].title() if pattern['category'] else pattern['category']
+        unique_sessions = len(cat_dates.get(cat_key, set()))
         value_factors.append({
             "factor": f"{cat_display} Wear",
             "impact": "Negative",
-            "details": f"Flagged {pattern['occurrences']} times in {total_tests} MOT tests. Budget £{total_repair_low}-£{total_repair_high} for repairs."
+            "details": f"Flagged in {unique_sessions} of {total_tests} MOT tests. Budget £{total_repair_low}-£{total_repair_high} for repairs."
         })
     if total_failures > 0:
         value_factors.append({
@@ -1249,7 +1313,7 @@ def _build_demo_vehicle_report(
     value_factors.append({
         "factor": "Mileage",
         "impact": "Neutral",
-        "details": f"{current_mileage:,} miles — approximately {int(current_mileage / ((2026 - int(year)) + 1)) if year != 'Unknown' else '?'}/year. Typical for age."
+        "details": f"{current_mileage:,} miles — approximately {annual_average:,}/year. Typical for age."
     })
     if len(value_factors) > 8:
         value_factors = value_factors[:8]
@@ -1257,18 +1321,35 @@ def _build_demo_vehicle_report(
     # Depreciation
     depreciation = f"At this age and mileage, {_format_make(make)} {model} vehicles have reached stable depreciation. Annual value loss is typically modest unless major repairs are needed."
 
-    # Negotiation Guidance - build from defects and valuation
+    # Negotiation Guidance - build from defects and valuation with itemized calculation
     negotiation_guidance = {}
 
     if patterns and len(patterns) > 0:
         key_points = []
+        deductions = []
         for pattern in patterns[:3]:
+            cat_key = pattern['category'].lower()
             cat_display = pattern['category'].title() if pattern['category'] else pattern['category']
-            key_points.append(f"{cat_display} flagged {pattern['occurrences']} times — budget £{_estimate_repair_cost(pattern['category'], make).get('low', 100) if _estimate_repair_cost(pattern['category'], make) else 100}-£{_estimate_repair_cost(pattern['category'], make).get('high', 500) if _estimate_repair_cost(pattern['category'], make) else 500}")
+            unique_sessions = len(cat_dates.get(cat_key, set()))
+            est = _estimate_repair_cost(pattern['category'], make)
+            if est:
+                deductions.append((cat_display, est.get('low', 100), est.get('high', 500)))
+            key_points.append(f"{cat_display} flagged in {unique_sessions} of {total_tests} MOT tests — budget £{est.get('low', 100) if est else 100}-£{est.get('high', 500) if est else 500}")
+
+        if deductions:
+            deduction_items = " + ".join(f"£{low}–{high} ({cat})" for cat, low, high in deductions)
+            total_low_ded = sum(low for _, low, _ in deductions)
+            total_high_ded = sum(high for _, _, high in deductions)
+            private_sale = valuations.get("private_sale", 2737)
+            suggested_price_low = max(0, private_sale - total_high_ded)
+            suggested_price_high = max(0, private_sale - total_low_ded)
+            opening = f"Target £{suggested_price_low:,}–£{suggested_price_high:,} (private sale £{private_sale:,} minus repair budget {deduction_items} = £{total_low_ded:,}–£{total_high_ded:,})"
+        else:
+            opening = f"Deduct £{int((total_repair_low + total_repair_high) / 2)} from asking price to cover predicted repairs."
 
         negotiation_guidance = {
             "asking_price_context": f"Based on MOT history and recurring defects, typical market value is lower than asking price. Repairs needed: £{total_repair_low}-£{total_repair_high}.",
-            "suggested_opening": f"Deduct £{int((total_repair_low + total_repair_high) / 2)} from asking price to cover predicted repairs.",
+            "suggested_opening": opening,
             "key_leverage_points": key_points if key_points else ["Recurring defects justify price reduction"],
             "walk_away_triggers": [
                 "Seller cannot provide evidence recent repairs have been completed",
@@ -1294,12 +1375,14 @@ def _build_demo_vehicle_report(
         })
     if patterns:
         for pattern in patterns[:3]:
+            cat_key = pattern['category'].lower()
             cat_display = pattern['category'].title() if pattern['category'] else pattern['category']
             level = "HIGH" if pattern.get('concern_level') == 'high' else "MEDIUM"
+            unique_sessions = len(cat_dates.get(cat_key, set()))
             risk_matrix.append({
                 "category": cat_display,  # Use capitalized version
                 "level": level,
-                "finding": f"Recurring issue ({pattern['occurrences']} times). Have professional mechanic inspect. Budget £{total_repair_low}-£{total_repair_high}."
+                "finding": f"Recurring issue (in {unique_sessions} of {total_tests} MOT tests). Have professional mechanic inspect. Budget £{total_repair_low}-£{total_repair_high}."
             })
     if check_result:
         if check_result.get("finance_check", {}).get("finance_outstanding"):
@@ -1320,6 +1403,37 @@ def _build_demo_vehicle_report(
                 "level": "HIGH",
                 "finding": "Reported stolen. DO NOT PURCHASE. Legal title cannot be transferred."
             })
+
+    # Add model-specific risk rows for MINI Diesel N47
+    if make.upper() == "MINI" and fuel and "DIESEL" in fuel.upper():
+        risk_matrix.append({
+            "category": "Engine / Drivetrain",
+            "level": "HIGH",
+            "finding": "N47 timing chain is a known fault at this mileage. Cold-start rattle = inspect immediately. Budget £1,000–£2,000 if replacement needed."
+        })
+        risk_matrix.append({
+            "category": "Emissions System",
+            "level": "MEDIUM",
+            "finding": "DPF and EGR carbon build-up common on short-journey usage. Symptoms: reduced power, warning lights. Budget £200–£1,500."
+        })
+
+    # Always add structural and electrical rows
+    risk_matrix.append({
+        "category": "Bodywork / Corrosion",
+        "level": "LOW",
+        "finding": "No corrosion flags in MOT history. Inspect sill edges, wheel arches, and underside visually before purchase."
+    })
+    risk_matrix.append({
+        "category": "Electrical",
+        "level": "LOW",
+        "finding": "No electrical faults recorded. Test all electronics (windows, lights, heated seats) on test drive."
+    })
+    risk_matrix.append({
+        "category": "Provenance",
+        "level": "LOW",
+        "finding": "Single keeper from new. Ownership chain is clean with no concerning gaps." if total_keepers == 1 else "Multiple ownership history — verify service records at each keeper transition."
+    })
+
     if not risk_matrix:
         risk_matrix.append({
             "category": "General Condition",
@@ -1340,6 +1454,10 @@ def _build_demo_vehicle_report(
              "details": "Electric power steering failures reported on this generation. Symptoms: heavy or unresponsive steering. Replacement cost: £300–£600 at independent garage."},
             {"priority": "Medium", "issue": "Coolant loss and thermostat failure",
              "details": "Coolant leaks and thermostat failures common. Watch for white smoke from exhaust or sweet smell (head gasket issue). Head gasket repair: £800–£1,500."},
+            {"priority": "Medium", "issue": "Fuel injector failure",
+             "details": "Injector seal leaks and injector failure reported on high-mileage N47 engines. Symptoms: rough idle, black smoke, fuel smell. Replacement: £150–£400 per injector at independent garage."},
+            {"priority": "Low", "issue": "Turbocharger wear",
+             "details": "Turbo lag or loss of boost reported above 100k miles. Check for blue smoke on acceleration or deceleration. Replacement: £400–£900 at independent specialist."},
         ]
     else:
         known_issues = [

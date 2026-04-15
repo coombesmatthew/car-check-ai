@@ -14,6 +14,7 @@ from app.schemas.check import (
     HighRiskCheck,
     PreviousSearches,
     SalvageCheck,
+    Valuation,
 )
 
 
@@ -182,7 +183,10 @@ class EVCheckResponse(BaseModel):
     range_scenarios: List[RangeScenario] = []
     battery_health: Optional[BatteryHealth] = None
     charging_costs: Optional[ChargingCosts] = None
-    # Vehicle history (EV Complete tier only)
+    # EV specs + lifespan (populated when EVDB/AutoPredict available)
+    ev_specs: Optional[EVSpecs] = None
+    lifespan_prediction: Optional[LifespanPrediction] = None
+    # Vehicle history + valuation (EV Complete tier only)
     finance_check: Optional[FinanceCheck] = None
     stolen_check: Optional[StolenCheck] = None
     write_off_check: Optional[WriteOffCheck] = None
@@ -191,6 +195,7 @@ class EVCheckResponse(BaseModel):
     high_risk: Optional[HighRiskCheck] = None
     previous_searches: Optional[PreviousSearches] = None
     salvage_check: Optional[SalvageCheck] = None
+    valuation: Optional[Valuation] = None
     # Meta
     checked_at: datetime = Field(default_factory=datetime.utcnow)
     data_sources: List[str] = []
