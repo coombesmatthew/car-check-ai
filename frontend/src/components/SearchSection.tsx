@@ -65,7 +65,7 @@ export default function SearchSection() {
 
         {/* Registration search form */}
         <form onSubmit={handleSubmit} className="max-w-md mx-auto">
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <div className="relative flex-1">
                   <div className="absolute left-3 top-1/2 -translate-y-1/2 bg-blue-600 text-white text-xs font-bold px-1.5 py-0.5 rounded">
                     GB
@@ -85,7 +85,7 @@ export default function SearchSection() {
                 <button
                   type="submit"
                   disabled={loading || registration.length < 2}
-                  className="px-6 py-3.5 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors"
+                  className="w-full sm:w-auto px-6 py-3.5 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors"
                 >
                   {loading ? (
                     <span className="flex items-center gap-2">

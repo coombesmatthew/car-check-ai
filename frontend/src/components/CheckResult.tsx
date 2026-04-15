@@ -297,6 +297,60 @@ function MOTTestItem({ test }: { test: MOTTestRecord }) {
   );
 }
 
+/* Collapsible recurring issue category accordion */
+function RecurringIssueItem({ category, occurrences, concernLevel, defects }: {
+  category: string;
+  occurrences: number;
+  concernLevel: string;
+  defects: { text: string; type: string; date: string }[];
+}) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="border border-slate-100 rounded-lg overflow-hidden">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between p-3 text-left hover:bg-slate-50 transition-colors"
+      >
+        <span className="text-sm font-medium capitalize text-slate-700">
+          {category}
+        </span>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-slate-400">
+            {occurrences} issue{occurrences !== 1 ? "s" : ""}
+          </span>
+          <Badge
+            variant={
+              concernLevel === "high"
+                ? "fail"
+                : concernLevel === "medium"
+                ? "warn"
+                : "neutral"
+            }
+            label={concernLevel}
+          />
+          <svg
+            className={`w-4 h-4 text-slate-400 transition-transform ${open ? "rotate-180" : ""}`}
+            fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+          </svg>
+        </div>
+      </button>
+      {open && defects.length > 0 && (
+        <div className="px-3 pb-3 space-y-1">
+          {defects.map((d, j) => (
+            <div key={j} className="flex items-start justify-between gap-2 text-xs px-2 py-1 bg-slate-50 rounded">
+              <span className="text-slate-500 leading-snug">{d.text}</span>
+              <span className="text-slate-300 whitespace-nowrap flex-shrink-0">{d.date}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function EmailCapture({ registration }: { registration: string }) {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
@@ -1339,9 +1393,8 @@ export default function CheckResult({ data }: { data: FreeCheckResponse }) {
                 : "neutral"
             }
           >
-            <div className="space-y-3">
+            <div className="space-y-2">
               {failure_patterns.map((p, i) => {
-                // Collect individual defects from MOT history matching this category
                 const categoryDefects: { text: string; type: string; date: string }[] = [];
                 mot_tests.forEach((test) => {
                   [...test.advisories, ...test.failures, ...test.dangerous].forEach((d) => {
@@ -1352,39 +1405,13 @@ export default function CheckResult({ data }: { data: FreeCheckResponse }) {
                 });
 
                 return (
-                  <div key={i}>
-                    <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-sm font-medium capitalize text-slate-700">
-                        {p.category}
-                      </span>
-                      <span className="flex items-center gap-2">
-                        <span className="text-xs text-slate-400">
-                          {p.occurrences}x
-                        </span>
-                        <Badge
-                          variant={
-                            p.concern_level === "high"
-                              ? "fail"
-                              : p.concern_level === "medium"
-                              ? "warn"
-                              : "neutral"
-                          }
-                          label={p.concern_level}
-                        />
-                      </span>
-                    </div>
-                    {categoryDefects.length > 0 && (
-                      <div className="space-y-1 ml-1 pl-3 border-l-2 border-slate-100">
-                        {categoryDefects.map((d, j) => (
-                          <div key={j} className="flex items-start justify-between gap-2">
-                            <span className="text-xs text-slate-500 leading-snug">{d.text}</span>
-                            <span className="text-xs text-slate-300 whitespace-nowrap flex-shrink-0">{d.date}</span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                    {i < failure_patterns.length - 1 && <div className="border-b border-slate-100 mt-3" />}
-                  </div>
+                  <RecurringIssueItem
+                    key={i}
+                    category={p.category}
+                    occurrences={p.occurrences}
+                    concernLevel={p.concern_level}
+                    defects={categoryDefects}
+                  />
                 );
               })}
             </div>

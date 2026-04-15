@@ -395,7 +395,7 @@ export default function Home() {
           </div>
           {/* Car checks row */}
           <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">Car Checks</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Free tier */}
             <div className="border border-slate-200 rounded-xl p-6">
               <div className="mb-4">
