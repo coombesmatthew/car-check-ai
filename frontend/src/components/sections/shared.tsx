@@ -276,8 +276,7 @@ export function RecurringIssueItem({ category, occurrences, concernLevel, defect
   );
 }
 
-/* Icons for card headers */
-/* Peek card with gradient fade + sample label — used for premium previews */
+/* Peek card — blurred preview with lock overlay for premium teasers */
 export function PeekCard({ children, title, icon, status }: {
   children: React.ReactNode;
   title: string;
@@ -287,10 +286,18 @@ export function PeekCard({ children, title, icon, status }: {
   return (
     <div className="relative overflow-hidden">
       <Card title={title} icon={icon} status={status}>
-        {children}
+        <div className="blur-[2.5px] select-none pointer-events-none" aria-hidden="true">
+          {children}
+        </div>
       </Card>
-      <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-white via-white/95 to-transparent pointer-events-none" />
-      <span className="absolute top-3 right-3 text-[10px] font-medium text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">Sample</span>
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <div className="flex items-center gap-1.5 bg-white/95 border border-slate-200 shadow-sm px-3 py-1.5 rounded-full">
+          <svg className="w-3.5 h-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+          </svg>
+          <span className="text-xs font-medium text-slate-600">Preview &mdash; unlock to reveal</span>
+        </div>
+      </div>
     </div>
   );
 }

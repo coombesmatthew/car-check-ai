@@ -1,36 +1,36 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "next/navigation";
 import { runEVCheck, getEVCheckCount, EVCheckResponse } from "@/lib/api";
 import EVCheckResult from "./EVCheckResult";
 import EVUpsellSection from "./EVUpsellSection";
 import EVAIReport from "./EVAIReport";
 
 export default function EVSearchSection({ onCheckComplete }: { onCheckComplete?: (hasResult: boolean) => void }) {
+  const searchParams = useSearchParams();
   const [registration, setRegistration] = useState("");
   const [loading, setLoading] = useState(false);
   const [evCheckCount, setEvCheckCount] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [result, setResult] = useState<EVCheckResponse | null>(null);
+  const autoSubmittedRef = useRef(false);
 
   useEffect(() => {
     getEVCheckCount().then((count) => {
       if (count > 0) setEvCheckCount(count);
     });
   }, []);
-  const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<EVCheckResponse | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setResult(null);
-    onCheckComplete?.(false);
-
-    const cleaned = registration.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
+  const runCheck = async (reg: string) => {
+    const cleaned = reg.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
     if (cleaned.length < 2 || cleaned.length > 8) {
       setError("Please enter a valid UK registration number");
       return;
     }
-
+    setError(null);
+    setResult(null);
+    onCheckComplete?.(false);
     setLoading(true);
     try {
       const data = await runEVCheck(cleaned);
@@ -42,6 +42,21 @@ export default function EVSearchSection({ onCheckComplete }: { onCheckComplete?:
     } finally {
       setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    const regParam = searchParams.get("reg");
+    if (regParam && !autoSubmittedRef.current) {
+      autoSubmittedRef.current = true;
+      setRegistration(regParam.toUpperCase());
+      runCheck(regParam);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await runCheck(registration);
   };
 
 

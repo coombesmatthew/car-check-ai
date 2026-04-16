@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import EVSearchSection from "@/components/ev/EVSearchSection";
 
 const faqItems = [
@@ -46,7 +46,9 @@ export default function EVPageContent() {
 
   return (
     <>
-      <EVSearchSection onCheckComplete={setHasResult} />
+      <Suspense fallback={null}>
+        <EVSearchSection onCheckComplete={setHasResult} />
+      </Suspense>
 
       {!hasResult && (
         <>

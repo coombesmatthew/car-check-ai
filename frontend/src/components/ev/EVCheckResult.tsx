@@ -11,10 +11,9 @@ import PremiumBottomBar from "@/components/PremiumBottomBar";
 
 const EV_SECTIONS: SectionConfig[] = [
   { id: "ev-section-overview", label: "Overview" },
-  { id: "ev-section-battery", label: "Battery & Range" },
   { id: "ev-section-history", label: "History" },
-  { id: "ev-section-fullcheck", label: "EV Check", locked: true },
-  { id: "nav-full-check", label: "Full Check", locked: true, href: "/" },
+  { id: "ev-section-battery", label: "EV Check", locked: true },
+  { id: "ev-section-fullcheck", label: "Full Check", locked: true },
 ];
 
 function EmailCapture({ registration }: { registration: string }) {
@@ -133,18 +132,6 @@ export default function EVCheckResult({ result }: Props) {
         />
       </div>
 
-      {/* Battery & Range */}
-      <div id="ev-section-battery" className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <EVBatterySections
-          battery_health={battery_health}
-          range_estimate={range_estimate}
-          range_scenarios={range_scenarios}
-          charging_costs={charging_costs}
-          ev_specs={ev_specs}
-          lifespan_prediction={lifespan_prediction}
-        />
-      </div>
-
       {/* History */}
       <div id="ev-section-history" className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <EVHistorySections
@@ -157,7 +144,19 @@ export default function EVCheckResult({ result }: Props) {
         />
       </div>
 
-      {/* Full Check */}
+      {/* EV Check (battery, range, charging, lifespan) */}
+      <div id="ev-section-battery" className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <EVBatterySections
+          battery_health={battery_health}
+          range_estimate={range_estimate}
+          range_scenarios={range_scenarios}
+          charging_costs={charging_costs}
+          ev_specs={ev_specs}
+          lifespan_prediction={lifespan_prediction}
+        />
+      </div>
+
+      {/* Full Check (finance, stolen, write-off, etc.) */}
       <div id="ev-section-fullcheck">
         <EVFullCheckSection registration={result.registration} />
       </div>

@@ -88,31 +88,6 @@ export default function CheckResult({ data }: { data: FreeCheckResponse }) {
         </div>
       </div>
 
-      {/* EV Cross-sell Banner */}
-      {vehicle?.fuel_type && ["ELECTRICITY", "ELECTRIC DIESEL", "ELECTRIC PETROL"].includes(vehicle.fuel_type.toUpperCase()) && (
-        <a
-          href="/ev"
-          className="block bg-emerald-50 border border-emerald-200 rounded-xl p-4 hover:bg-emerald-100 transition-colors group"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
-              <svg className="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
-              </svg>
-            </div>
-            <div className="flex-1">
-              <p className="font-semibold text-emerald-800">This is an electric vehicle</p>
-              <p className="text-sm text-emerald-700 mt-0.5">
-                Try our EV Health Check for battery health, real-world range, and charging cost analysis.
-              </p>
-            </div>
-            <svg className="w-5 h-5 text-emerald-400 group-hover:translate-x-1 transition-transform flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-            </svg>
-          </div>
-        </a>
-      )}
-
       {/* Outstanding Recall Warning */}
       {mot_summary?.has_outstanding_recall === "Yes" && (
         <div className="bg-red-50 border-2 border-red-300 rounded-xl p-4 flex items-start gap-3">

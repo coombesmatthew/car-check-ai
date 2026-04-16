@@ -1,12 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { runFreeCheck, getCheckCount, FreeCheckResponse } from "@/lib/api";
 import TrustBar from "@/components/ui/TrustBar";
 import CheckResult from "@/components/CheckResult";
 import UpsellSection from "@/components/UpsellSection";
 
+const EV_FUEL_TYPES = ["ELECTRICITY", "ELECTRIC"];
+
 export default function SearchSection({ onCheckComplete }: { onCheckComplete?: (hasResult: boolean) => void }) {
+  const router = useRouter();
   const [registration, setRegistration] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -39,9 +43,13 @@ export default function SearchSection({ onCheckComplete }: { onCheckComplete?: (
     setLoading(true);
     try {
       const data = await runFreeCheck(cleaned);
+      const fuel = data.vehicle?.fuel_type?.toUpperCase() ?? "";
+      if (EV_FUEL_TYPES.includes(fuel)) {
+        router.replace(`/ev?reg=${cleaned}`);
+        return;
+      }
       setResult(data);
       onCheckComplete?.(true);
-      // Refresh counter after successful check
       getCheckCount().then((c) => { if (c > 0) setCheckCount(c); });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
@@ -152,30 +160,6 @@ export default function SearchSection({ onCheckComplete }: { onCheckComplete?: (
       {result && (
         <section className="mx-auto max-w-5xl px-4 pb-8 w-full">
           <CheckResult data={result} />
-        </section>
-      )}
-
-      {/* EV cross-sell — shown when the checked vehicle is electric */}
-      {result && result.vehicle?.fuel_type?.toUpperCase() === "ELECTRICITY" && (
-        <section className="mx-auto max-w-5xl px-4 pb-6 w-full">
-          <a href={`/ev?reg=${result.registration}`} className="block bg-gradient-to-r from-emerald-600 to-emerald-700 rounded-xl p-5 text-white hover:from-emerald-700 hover:to-emerald-800 transition-all group">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="bg-white/20 rounded-lg p-2">
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="font-bold text-lg">This is an electric vehicle!</p>
-                  <p className="text-emerald-100 text-sm">Get battery health, real-world range, and charging costs with our dedicated EV Health Check.</p>
-                </div>
-              </div>
-              <svg className="w-5 h-5 text-emerald-200 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-              </svg>
-            </div>
-          </a>
         </section>
       )}
 
