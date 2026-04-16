@@ -41,7 +41,7 @@ export default function PremiumPreview({ registration }: PremiumPreviewProps) {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
 
           {/* Market Valuation */}
-          <PeekCard title="Market Valuation" icon={icons.currency} status="neutral">
+          <PeekCard title="Market Valuation" icon={icons.currency} status="pass">
             <DetailRow label="Private Sale" value="£14,250" />
             <DetailRow label="Dealer Forecourt" value="£15,800" />
             <DetailRow label="Trade-in" value="£12,100" />
@@ -69,7 +69,7 @@ export default function PremiumPreview({ registration }: PremiumPreviewProps) {
           </PeekCard>
 
           {/* Keeper History */}
-          <PeekCard title="Keeper History" icon={icons.users} status="neutral">
+          <PeekCard title="Keeper History" icon={icons.users} status="pass">
             <div className="text-center py-2 mb-2">
               <span className="text-3xl font-bold text-slate-900">3</span>
               <p className="text-sm text-slate-500">Previous Keepers</p>
@@ -101,7 +101,7 @@ export default function PremiumPreview({ registration }: PremiumPreviewProps) {
           </PeekCard>
 
           {/* Plate Changes */}
-          <PeekCard title="Plate Changes" icon={icons.swap} status="neutral">
+          <PeekCard title="Plate Changes" icon={icons.swap} status="pass">
             <DetailRow label="Changes Found" value="1 plate change" />
             <DetailRow label="Previous Plate" value="AB12 XYZ" />
             <DetailRow label="Change Date" value="March 2022" />
@@ -117,7 +117,7 @@ export default function PremiumPreview({ registration }: PremiumPreviewProps) {
           </PeekCard>
 
           {/* Previous Searches */}
-          <PeekCard title="Previous Searches" icon={icons.search} status="neutral">
+          <PeekCard title="Previous Searches" icon={icons.search} status="pass">
             <DetailRow label="Total Searches" value="12 checks" />
             <DetailRow label="Last Searched" value="2 weeks ago" />
             <DetailRow label="Search Frequency" value="Average" />
