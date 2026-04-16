@@ -60,21 +60,21 @@ export default function EmissionsSections({ ulez_compliance, tax_calculation }: 
             <>
               {/* Zones that affect cars */}
               <p className="text-xs font-medium text-slate-500 mb-1.5">Zones affecting private cars</p>
-              <div className="space-y-1 mb-3">
+              <div className="mb-3">
                 {ulez_compliance.zone_details
                   .filter((z) => z.cars_affected)
                   .map((z) => (
-                    <div key={z.zone_id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 py-1 text-sm">
-                      <span className="text-slate-700">{z.name}</span>
-                      <span className="flex items-center gap-1.5">
-                        {!z.compliant && (
-                          <span className="text-xs text-slate-400">{z.charge}</span>
-                        )}
+                    <div key={z.zone_id} className="flex items-start justify-between py-2 border-b border-slate-50 last:border-0">
+                      <span className="text-sm text-slate-700">{z.name}</span>
+                      <div className="flex flex-col items-end flex-shrink-0 ml-3">
                         <Badge
                           variant={z.compliant ? "pass" : "fail"}
                           label={z.compliant ? "Clear" : "Charge"}
                         />
-                      </span>
+                        {!z.compliant && z.charge && (
+                          <span className="text-xs text-red-500 mt-0.5">{z.charge}</span>
+                        )}
+                      </div>
                     </div>
                   ))}
               </div>

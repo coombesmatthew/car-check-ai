@@ -84,11 +84,6 @@ export default function CheckResult({ data }: { data: FreeCheckResponse }) {
             <span className="inline-block bg-yellow-50 border border-yellow-300 font-mono font-bold px-2 py-0.5 rounded text-slate-900">
               {data.registration}
             </span>
-            {data.data_sources.length > 0 && (
-              <span className="ml-2 text-slate-400">
-                Sources: {data.data_sources.join(", ")}
-              </span>
-            )}
           </p>
         </div>
       </div>
