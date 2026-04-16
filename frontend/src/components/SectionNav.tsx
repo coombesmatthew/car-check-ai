@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef, useEffect } from "react";
 import { useActiveSection } from "@/hooks/useActiveSection";
 
 const SECTIONS = [
@@ -11,6 +12,16 @@ const SECTIONS = [
 
 export default function SectionNav({ hasPremium }: { hasPremium?: boolean }) {
   const activeId = useActiveSection(SECTIONS.map((s) => s.id));
+  const navRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll the nav bar to bring the active pill into view
+  useEffect(() => {
+    if (!navRef.current) return;
+    const activeButton = navRef.current.querySelector(`[data-section="${activeId}"]`) as HTMLElement | null;
+    if (activeButton) {
+      activeButton.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+    }
+  }, [activeId]);
 
   const scrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -18,10 +29,11 @@ export default function SectionNav({ hasPremium }: { hasPremium?: boolean }) {
 
   return (
     <div className="sticky top-0 z-30 bg-white/95 backdrop-blur-sm border-b border-slate-100 -mx-4 px-4">
-      <div className="flex gap-1 py-2 overflow-x-auto scrollbar-hide">
+      <div ref={navRef} className="flex gap-1 py-2 overflow-x-auto scrollbar-hide">
         {SECTIONS.map((section) => (
           <button
             key={section.id}
+            data-section={section.id}
             onClick={() => scrollTo(section.id)}
             className={`flex items-center px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
               activeId === section.id
