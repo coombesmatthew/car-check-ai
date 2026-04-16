@@ -81,8 +81,8 @@ export default function EmissionsSections({ ulez_compliance, tax_calculation }: 
           <DetailRow label="Annual Rate (Year 2+)" value={tax_calculation.annual_rate === 0 ? "FREE" : `£${tax_calculation.annual_rate}`} />
           <DetailRow label="6-Month Payment" value={`£${tax_calculation.six_month_rate}`} />
           {tax_calculation.is_electric && (
-            <div className="mt-2 text-xs text-emerald-600 bg-emerald-50 rounded px-2 py-1">
-              Electric vehicle — zero emissions
+            <div className="mt-2 text-xs text-amber-700 bg-amber-50 rounded px-2 py-1">
+              Electric vehicle — pays standard VED from 1 April 2025 (previously exempt)
             </div>
           )}
           {tax_calculation.is_diesel && (

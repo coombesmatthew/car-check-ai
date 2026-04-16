@@ -13,7 +13,8 @@ const EV_SECTIONS: SectionConfig[] = [
   { id: "ev-section-overview", label: "Overview" },
   { id: "ev-section-battery", label: "Battery & Range" },
   { id: "ev-section-history", label: "History" },
-  { id: "ev-section-fullcheck", label: "Full Check", locked: true },
+  { id: "ev-section-fullcheck", label: "EV Check", locked: true },
+  { id: "nav-full-check", label: "Full Check", locked: true, href: "/" },
 ];
 
 function EmailCapture({ registration }: { registration: string }) {
@@ -275,7 +276,7 @@ export default function EVCheckResult({ result }: Props) {
       </p>
 
       {/* Premium upsell bottom bar (mobile only) */}
-      <PremiumBottomBar hasPremium={false} />
+      <PremiumBottomBar hasPremium={false} variant="ev" />
     </div>
   );
 }

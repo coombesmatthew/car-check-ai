@@ -14,7 +14,7 @@ Source: https://www.gov.uk/vehicle-tax-rate-tables
 Rates as of 2025/26 tax year.
 """
 
-from typing import Optional, Dict
+from __future__ import annotations
 
 # CO2 band boundaries (g/km) and labels — POST-APRIL 2017
 CO2_BANDS_POST_2017 = [
@@ -105,14 +105,19 @@ STANDARD_SIX_MONTH_RATE_POST_2017 = 107.25  # 6-month payment
 # Monthly instalments: gov.uk doesn't specify monthly rates, so calculate proportionally
 STANDARD_MONTHLY_TOTAL_POST_2017 = 195.00  # 12 instalments of ~£16.25
 
-# Electric vehicles
-ELECTRIC_ANNUAL_RATE = 0  # Zero until 2025, then £10 rising
+# Electric vehicles — VED exemption ended 1 April 2025
+# Source: https://www.gov.uk/vehicle-tax-rate-tables
+ELECTRIC_PRE_2017_ANNUAL_RATE = 20   # Registered before 1 Apr 2017
+ELECTRIC_POST_2017_ANNUAL_RATE = 195  # Registered 1 Apr 2017 – 31 Mar 2025 (same as standard rate)
+ELECTRIC_POST_2025_FIRST_YEAR = 10    # Registered on/after 1 Apr 2025
+ELECTRIC_POST_2025_ANNUAL_RATE = 195  # Year 2+ (same as standard rate)
+EXPENSIVE_CAR_SUPPLEMENT = 425  # Additional charge years 2-6 for vehicles list price > £40,000
 
 # Alternative fuel discount
 ALT_FUEL_DISCOUNT = 10  # £10/year discount for hybrid/LPG etc.
 
 
-def get_co2_band(co2: int, year: Optional[int] = None) -> str:
+def get_co2_band(co2: int, year: int | None = None) -> str:
     """Get the VED band letter for a given CO2 emission value.
 
     Bands differ based on registration year:
@@ -133,7 +138,7 @@ def get_co2_band(co2: int, year: Optional[int] = None) -> str:
     return default
 
 
-def get_co2_band_range(band: str, year: Optional[int] = None) -> str:
+def get_co2_band_range(band: str, year: int | None = None) -> str:
     """Get the CO2 range string for a band."""
     # Pre-2017 ranges (1 March 2001 - 31 March 2017)
     ranges_pre_2017 = {
@@ -171,10 +176,10 @@ def get_co2_band_range(band: str, year: Optional[int] = None) -> str:
 
 
 def calculate_tax(
-    co2_emissions: Optional[int],
-    fuel_type: Optional[str],
-    year_of_manufacture: Optional[int] = None,
-) -> Optional[Dict]:
+    co2_emissions: int | None,
+    fuel_type: str | None,
+    year_of_manufacture: int | None = None,
+) -> dict | None:
     """Calculate UK vehicle tax band and costs.
 
     Args:
@@ -190,20 +195,34 @@ def calculate_tax(
 
     fuel_upper = (fuel_type or "").upper()
 
-    # Electric vehicles
+    # Electric vehicles — VED exemption ended 1 April 2025
     if fuel_upper in ("ELECTRIC", "ELECTRICITY"):
+        if year_of_manufacture and year_of_manufacture < 2017:
+            ev_first_year = 0
+            ev_annual = ELECTRIC_PRE_2017_ANNUAL_RATE
+            ev_regime = "Electric (Pre-April 2017)"
+        elif year_of_manufacture and year_of_manufacture >= 2025:
+            ev_first_year = ELECTRIC_POST_2025_FIRST_YEAR
+            ev_annual = ELECTRIC_POST_2025_ANNUAL_RATE
+            ev_regime = "Electric (Post-April 2025)"
+        else:
+            ev_first_year = 0
+            ev_annual = ELECTRIC_POST_2017_ANNUAL_RATE
+            ev_regime = "Electric (2017-2025)"
+
         return {
             "band": "A",
             "band_range": "0 g/km",
             "co2_emissions": 0,
             "fuel_type": fuel_upper,
-            "first_year_rate": 0,
-            "annual_rate": ELECTRIC_ANNUAL_RATE,
-            "six_month_rate": 0,
-            "monthly_total": 0,
+            "first_year_rate": ev_first_year,
+            "annual_rate": ev_annual,
+            "six_month_rate": round(ev_annual * 0.55, 2) if ev_annual else 0,
+            "monthly_total": round(ev_annual, 2) if ev_annual else 0,
             "is_electric": True,
             "is_diesel": False,
-            "tax_regime": "Electric",
+            "tax_regime": ev_regime,
+            "year_of_manufacture": year_of_manufacture,
         }
 
     # Determine if pre- or post-April 2017 registration

@@ -72,7 +72,7 @@ export default function EVOverviewSections({ vehicle, mot_summary, tax_calculati
           <DetailRow label="First Year Rate" value={<span className="font-mono font-bold text-slate-900">{tax_calculation.first_year_rate === 0 ? "FREE" : `\u00A3${tax_calculation.first_year_rate}`}</span>} />
           <DetailRow label="Annual Rate (Year 2+)" value={<span className="font-mono font-bold text-slate-900">{tax_calculation.annual_rate === 0 ? "FREE" : `\u00A3${tax_calculation.annual_rate}`}</span>} />
           <DetailRow label="6-Month Payment" value={`\u00A3${tax_calculation.six_month_rate}`} />
-          {tax_calculation.is_electric && <div className="mt-2 text-xs text-emerald-600 bg-emerald-50 rounded px-2 py-1">Electric vehicle — zero emissions</div>}
+          {tax_calculation.is_electric && <div className="mt-2 text-xs text-amber-700 bg-amber-50 rounded px-2 py-1">Electric vehicle — pays standard VED from 1 April 2025 (previously exempt)</div>}
         </Card>
       )}
 
