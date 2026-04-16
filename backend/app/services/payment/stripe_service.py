@@ -52,7 +52,7 @@ def create_checkout_session(
     Args:
         registration: Vehicle registration number
         email: Customer email for receipt + report delivery
-        tier: "basic" (£3.99), "premium" (£9.99), "ev" (£8.99), or "ev_complete" (£13.99)
+        tier: "basic" (£4.99), "premium" (£9.99), "ev" (£8.99), or "ev_complete" (£13.99)
         listing_url: Optional listing URL for the AI report
         listing_price: Optional listing price in pence
         success_url: URL to redirect on successful payment

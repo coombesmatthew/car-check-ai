@@ -100,22 +100,36 @@ export default function PremiumPreview({ registration }: PremiumPreviewProps) {
             <DetailRow label="Last Updated" value={currentMonth} />
           </PeekCard>
 
+          {/* Plate Changes */}
+          <PeekCard title="Plate Changes" icon={icons.swap} status="neutral">
+            <DetailRow label="Changes Found" value="1 plate change" />
+            <DetailRow label="Previous Plate" value="AB12 XYZ" />
+            <DetailRow label="Change Date" value="March 2022" />
+            <DetailRow label="Change Type" value="Transfer" />
+          </PeekCard>
+
+          {/* High Risk Indicators */}
+          <PeekCard title="High Risk Indicators" icon={icons.alert} status="pass">
+            <DetailRow label="Risk Flags" value="0 found" />
+            <DetailRow label="Cloning Check" value="Clear" />
+            <DetailRow label="Export Marker" value="Clear" />
+            <DetailRow label="Scrapped Marker" value="Clear" />
+          </PeekCard>
+
+          {/* Previous Searches */}
+          <PeekCard title="Previous Searches" icon={icons.search} status="neutral">
+            <DetailRow label="Total Searches" value="12 checks" />
+            <DetailRow label="Last Searched" value="2 weeks ago" />
+            <DetailRow label="Search Frequency" value="Average" />
+            <DetailRow label="Last Updated" value={currentMonth} />
+          </PeekCard>
+
         </div>
       </div>
 
-      {/* Remaining checks + CTA */}
+      {/* CTA */}
       <div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-          {["Plate Changes", "High Risk Indicators", "Previous Searches"].map((item) => (
-            <div key={item} className="flex items-center gap-2 text-sm text-slate-500">
-              <svg className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-              </svg>
-              <span>{item}</span>
-            </div>
-          ))}
-        </div>
-        <div className="mt-6 text-center">
+        <div className="mt-2 text-center">
           <a
             href="#full-report"
             className="inline-flex items-center gap-2 px-8 py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors"
