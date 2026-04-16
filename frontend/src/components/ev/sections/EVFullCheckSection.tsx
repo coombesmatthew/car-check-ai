@@ -1,14 +1,14 @@
 "use client";
 
-import { DetailRow, PeekCard, icons } from "./shared";
+import { DetailRow, PeekCard, icons } from "@/components/sections/shared";
 
-interface PremiumPreviewProps {
+interface EVFullCheckSectionProps {
   registration: string;
 }
 
 const currentMonth = new Date().toLocaleDateString("en-GB", { month: "long", year: "numeric" });
 
-export default function PremiumPreview({ registration }: PremiumPreviewProps) {
+export default function EVFullCheckSection({ registration }: EVFullCheckSectionProps) {
   return (
     <div className="space-y-5">
       {/* Header text */}
@@ -16,20 +16,20 @@ export default function PremiumPreview({ registration }: PremiumPreviewProps) {
         We haven&apos;t checked <span className="font-mono font-bold text-slate-700">{registration}</span> against UK finance, stolen, or write-off databases yet.
       </p>
 
-      {/* Peek cards grid — 6 sample cards */}
+      {/* Peek cards grid */}
       <div>
         <p className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-3">What you&apos;ll get</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
 
           {/* Market Valuation */}
           <PeekCard title="Market Valuation" icon={icons.currency} status="pass">
-            <DetailRow label="Private Sale" value="£14,250" />
-            <DetailRow label="Dealer Forecourt" value="£15,800" />
-            <DetailRow label="Trade-in" value="£12,100" />
+            <DetailRow label="Private Sale" value="\u00A314,250" />
+            <DetailRow label="Dealer Forecourt" value="\u00A315,800" />
+            <DetailRow label="Trade-in" value="\u00A312,100" />
             <div className="mt-3 pt-3 border-t border-slate-100">
               <div className="flex justify-between text-xs text-slate-400 mb-1">
-                <span>£12,100</span>
-                <span>£15,800</span>
+                <span>&pound;12,100</span>
+                <span>&pound;15,800</span>
               </div>
               <div className="h-3 bg-gradient-to-r from-amber-200 via-emerald-300 to-blue-300 rounded-full" />
               <div className="flex justify-between text-xs text-slate-400 mt-1">
@@ -74,7 +74,7 @@ export default function PremiumPreview({ registration }: PremiumPreviewProps) {
             <DetailRow label="Last Updated" value={currentMonth} />
           </PeekCard>
 
-          {/* Salvage Auction */}
+          {/* Salvage Check */}
           <PeekCard title="Salvage Check" icon={icons.alert} status="pass">
             <DetailRow label="Auction Records" value="No listings found" />
             <DetailRow label="Database" value="UK salvage auctions" />
@@ -109,19 +109,17 @@ export default function PremiumPreview({ registration }: PremiumPreviewProps) {
       </div>
 
       {/* CTA */}
-      <div>
-        <div className="mt-2 text-center">
-          <a
-            href="#full-report"
-            className="inline-flex items-center gap-2 px-8 py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors"
-          >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-            </svg>
-            Unlock Full Check for {registration} &mdash; £9.99
-          </a>
-          <p className="text-xs text-slate-400 mt-2">One-off payment · No subscription · Instant results</p>
-        </div>
+      <div className="mt-2 text-center">
+        <a
+          href="#unlock"
+          className="inline-flex items-center gap-2 px-8 py-3 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 transition-colors"
+        >
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+          </svg>
+          Unlock EV Complete for {registration} &mdash; &pound;13.99
+        </a>
+        <p className="text-xs text-slate-400 mt-2">One-off payment &middot; No subscription &middot; Instant results</p>
       </div>
     </div>
   );

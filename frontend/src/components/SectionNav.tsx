@@ -3,15 +3,22 @@
 import { useRef, useEffect } from "react";
 import { useActiveSection } from "@/hooks/useActiveSection";
 
-const SECTIONS = [
+export interface SectionConfig {
+  id: string;
+  label: string;
+  locked?: boolean;
+}
+
+const DEFAULT_SECTIONS: SectionConfig[] = [
   { id: "section-overview", label: "Overview" },
   { id: "section-history", label: "History" },
   { id: "section-emissions", label: "Emissions" },
-  { id: "section-fullcheck", label: "Full Check" },
+  { id: "section-fullcheck", label: "Full Check", locked: true },
 ];
 
-export default function SectionNav({ hasPremium }: { hasPremium?: boolean }) {
-  const activeId = useActiveSection(SECTIONS.map((s) => s.id));
+export default function SectionNav({ sections, hasPremium }: { sections?: SectionConfig[]; hasPremium?: boolean }) {
+  const items = sections || DEFAULT_SECTIONS;
+  const activeId = useActiveSection(items.map((s) => s.id));
   const navRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll the nav bar to bring the active pill into view
@@ -30,7 +37,7 @@ export default function SectionNav({ hasPremium }: { hasPremium?: boolean }) {
   return (
     <div className="sticky top-0 z-30 bg-white/95 backdrop-blur-sm border-b border-slate-100 -mx-4 px-4">
       <div ref={navRef} className="flex gap-1 py-2 overflow-x-auto scrollbar-hide">
-        {SECTIONS.map((section) => (
+        {items.map((section) => (
           <button
             key={section.id}
             data-section={section.id}
@@ -41,7 +48,7 @@ export default function SectionNav({ hasPremium }: { hasPremium?: boolean }) {
                 : "text-slate-500 hover:text-slate-700 hover:bg-slate-100"
             }`}
           >
-            {section.id === "section-fullcheck" && !hasPremium && (
+            {section.locked && !hasPremium && (
               <svg className="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
               </svg>

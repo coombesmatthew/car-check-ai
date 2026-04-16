@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { MOTTestRecord } from "@/lib/api";
 import Badge from "@/components/ui/Badge";
+import Card from "@/components/ui/Card";
 
 /* DetailRow is the ONLY component for displaying label/value data.
    Do not create custom flex layouts for numbers, prices, or stats.
@@ -279,6 +280,24 @@ export function RecurringIssueItem({ category, occurrences, concernLevel, defect
 }
 
 /* Icons for card headers */
+/* Peek card with gradient fade + sample label — used for premium previews */
+export function PeekCard({ children, title, icon, status }: {
+  children: React.ReactNode;
+  title: string;
+  icon: React.ReactNode;
+  status: "pass" | "fail" | "warn" | "neutral";
+}) {
+  return (
+    <div className="relative overflow-hidden">
+      <Card title={title} icon={icon} status={status}>
+        {children}
+      </Card>
+      <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-white via-white/95 to-transparent pointer-events-none" />
+      <span className="absolute top-3 right-3 text-[10px] font-medium text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">Sample</span>
+    </div>
+  );
+}
+
 export const icons = {
   car: (
     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>

@@ -6,7 +6,7 @@ import EVCheckResult from "./EVCheckResult";
 import EVUpsellSection from "./EVUpsellSection";
 import EVAIReport from "./EVAIReport";
 
-export default function EVSearchSection() {
+export default function EVSearchSection({ onCheckComplete }: { onCheckComplete?: (hasResult: boolean) => void }) {
   const [registration, setRegistration] = useState("");
   const [loading, setLoading] = useState(false);
   const [evCheckCount, setEvCheckCount] = useState<number | null>(null);
@@ -23,6 +23,7 @@ export default function EVSearchSection() {
     e.preventDefault();
     setError(null);
     setResult(null);
+    onCheckComplete?.(false);
 
     const cleaned = registration.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
     if (cleaned.length < 2 || cleaned.length > 8) {
@@ -34,6 +35,7 @@ export default function EVSearchSection() {
     try {
       const data = await runEVCheck(cleaned);
       setResult(data);
+      onCheckComplete?.(true);
       getEVCheckCount().then((c) => { if (c > 0) setEvCheckCount(c); });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
