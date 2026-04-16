@@ -419,7 +419,7 @@ export default function HomeContent() {
                   <div className="mb-4">
                     <span className="text-sm font-semibold text-teal-600 uppercase tracking-wide">EV Complete</span>
                     <div className="mt-1">
-                      <span className="text-3xl font-bold text-slate-900">&pound;14.99</span>
+                      <span className="text-3xl font-bold text-slate-900">&pound;13.99</span>
                     </div>
                   </div>
                   <ul className="space-y-2.5 mb-6">
@@ -433,7 +433,7 @@ export default function HomeContent() {
                     ))}
                   </ul>
                   <a href="/ev" className="block text-center py-2.5 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 transition-colors text-sm">
-                    Get EV Complete &mdash; &pound;14.99
+                    Get EV Complete &mdash; &pound;13.99
                   </a>
                 </div>
               </div>

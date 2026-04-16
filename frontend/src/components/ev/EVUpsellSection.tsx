@@ -123,7 +123,7 @@ export default function EVUpsellSection({ registration }: Props) {
             </div>
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-semibold text-teal-600 uppercase tracking-wide">EV Complete</span>
-              <span className="text-xl font-bold text-slate-900">&pound;14.99</span>
+              <span className="text-xl font-bold text-slate-900">&pound;13.99</span>
             </div>
             <ul className="space-y-1.5">
               {["Everything in EV Health", "Finance & Debt Check", "Stolen Vehicle Check", "Write-off & Salvage History", "Market Valuation", "Plate & Keeper History"].map((item, i) => (
@@ -164,7 +164,7 @@ export default function EVUpsellSection({ registration }: Props) {
               : selectedTier === "basic"
                 ? "Get Full Report — £4.99"
                 : selectedTier === "ev_complete"
-                  ? "Get EV Complete — £14.99"
+                  ? "Get EV Complete — £13.99"
                   : "Get EV Health Check — £8.99"}
           </button>
         </form>

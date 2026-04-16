@@ -57,7 +57,7 @@ const faqItems = [
       "The EV Health report adds: battery health score with degradation estimate, real-world range across different conditions, home vs rapid charging cost comparison, AI-predicted remaining lifespan, and a personalised AI verdict with buying advice. Delivered as a PDF to your email.",
   },
   {
-    question: "What's included in the £14.99 EV Complete report?",
+    question: "What's included in the £13.99 EV Complete report?",
     answer:
       "EV Complete includes everything in EV Health plus full ownership checks: finance & outstanding debt, stolen vehicle check, write-off & salvage history, market valuation, and keeper & plate history. The ultimate pre-purchase check for any used EV.",
   },
@@ -112,7 +112,7 @@ const jsonLd = {
         },
         {
           "@type": "Offer",
-          price: "14.99",
+          price: "13.99",
           priceCurrency: "GBP",
           description:
             "EV Complete Check with everything in EV Health plus finance, stolen, write-off, valuation, and keeper history.",
@@ -239,7 +239,7 @@ export default function EVPage() {
             <div className="text-center">
               <div className="w-12 h-12 rounded-full bg-emerald-600 text-white font-bold text-lg flex items-center justify-center mx-auto mb-4">3</div>
               <h3 className="font-semibold text-slate-900 mb-2">Unlock EV Health Report</h3>
-              <p className="text-sm text-slate-500">From £8.99, get battery health, range, charging costs, and AI verdict. Or go complete at £14.99 with ownership checks.</p>
+              <p className="text-sm text-slate-500">From £8.99, get battery health, range, charging costs, and AI verdict. Or go complete at £13.99 with ownership checks.</p>
             </div>
           </div>
         </div>
@@ -305,7 +305,7 @@ export default function EVPage() {
               </div>
               <span className="text-sm font-semibold text-teal-600 uppercase tracking-wide">EV Complete</span>
               <div className="mt-1 mb-4">
-                <span className="text-3xl font-bold text-slate-900">&pound;14.99</span>
+                <span className="text-3xl font-bold text-slate-900">&pound;13.99</span>
               </div>
               <ul className="space-y-2.5 mb-6">
                 {["Everything in EV Health", "Finance & Debt Check", "Stolen Vehicle Check", "Write-off & Salvage History", "Market Valuation", "Plate & Keeper History"].map((item, i) => (
@@ -318,7 +318,7 @@ export default function EVPage() {
                 ))}
               </ul>
               <a href="#search" className="block text-center py-2.5 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 transition-colors text-sm">
-                Get EV Complete &mdash; &pound;14.99
+                Get EV Complete &mdash; &pound;13.99
               </a>
             </div>
           </div>

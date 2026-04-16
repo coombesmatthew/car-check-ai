@@ -132,7 +132,7 @@ export default function RootLayout({
                 {
                   "@type": "Offer",
                   name: "EV Complete",
-                  price: "14.99",
+                  price: "13.99",
                   priceCurrency: "GBP",
                   description:
                     "Everything in EV Health Check plus finance, stolen, write-off, valuation, and keeper history",
