@@ -7,7 +7,7 @@ export default function PremiumBottomBar({ hasPremium }: { hasPremium: boolean }
     <div className="fixed bottom-0 left-0 right-0 z-40 md:hidden">
       <div className="bg-gradient-to-r from-purple-600 to-purple-700 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
         <a
-          href="#full-report"
+          href="#section-fullcheck"
           className="flex items-center justify-between"
         >
           <div>

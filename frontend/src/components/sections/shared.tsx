@@ -131,7 +131,7 @@ export function MOTPassFailBars({ passes, failures }: { passes: number; failures
   return (
     <div className="mt-2">
       <div className="flex items-center gap-2 mb-1">
-        <div className="flex-1 h-3 bg-slate-100 rounded-full overflow-hidden">
+        <div className="flex-1 h-3 bg-red-200 rounded-full overflow-hidden">
           <div
             className="h-full bg-emerald-500 rounded-full transition-all duration-500"
             style={{ width: `${passPercent}%` }}
@@ -176,20 +176,17 @@ export function MOTTestItem({ test, defaultOpen = false }: { test: MOTTestRecord
         onClick={() => setOpen(!open)}
         className="w-full flex items-center justify-between p-3 text-left hover:bg-slate-50 transition-colors"
       >
-        <div className="min-w-0">
-          <div className="flex items-center gap-2">
-            <Badge
-              variant={test.result === "PASSED" ? "pass" : "fail"}
-              label={test.result}
-            />
-            <span className="text-sm text-slate-500">{test.date}</span>
-          </div>
-          {(test.odometer !== null || hasDefects) && (
-            <div className="text-xs text-slate-400 mt-0.5 pl-[52px]">
-              {test.odometer !== null && <span>{test.odometer.toLocaleString()} mi</span>}
-              {test.odometer !== null && hasDefects && <span> &middot; </span>}
-              {hasDefects && <span>{test.total_defects} item{test.total_defects !== 1 ? "s" : ""}</span>}
-            </div>
+        <div className="flex items-center gap-2 min-w-0 flex-wrap">
+          <Badge
+            variant={test.result === "PASSED" ? "pass" : "fail"}
+            label={test.result}
+          />
+          <span className="text-sm text-slate-400">{test.date}</span>
+          {test.odometer !== null && (
+            <span className="text-xs text-slate-400">{test.odometer.toLocaleString()} mi</span>
+          )}
+          {hasDefects && (
+            <span className="text-xs text-slate-400">{test.total_defects} item{test.total_defects !== 1 ? "s" : ""}</span>
           )}
         </div>
         <svg
