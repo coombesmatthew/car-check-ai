@@ -1,9 +1,37 @@
 "use client";
 
+import { useState } from "react";
 import { MOTSummary, ClockingAnalysis, MileageReading, FailurePattern, MOTTestRecord, VehicleIdentity } from "@/lib/api";
 import Badge from "@/components/ui/Badge";
 import Card from "@/components/ui/Card";
 import { DetailRow, MileageChart, MOTPassFailBars, MOTTestItem, RecurringIssueItem, icons } from "./shared";
+
+function OlderTests({ tests }: { tests: MOTTestRecord[] }) {
+  const [showOlder, setShowOlder] = useState(false);
+  return (
+    <div className="mt-2">
+      <button
+        onClick={() => setShowOlder(!showOlder)}
+        className="w-full flex items-center justify-center gap-2 py-2 text-sm font-medium text-slate-500 hover:text-slate-700 transition-colors"
+      >
+        <span>{showOlder ? "Hide" : "Show"} {tests.length} older test{tests.length !== 1 ? "s" : ""}</span>
+        <svg
+          className={`w-4 h-4 transition-transform ${showOlder ? "rotate-180" : ""}`}
+          fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+        </svg>
+      </button>
+      {showOlder && (
+        <div className="space-y-2 mt-2">
+          {tests.map((test) => (
+            <MOTTestItem key={test.test_number} test={test} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function HistorySections({ mot_summary, clocking_analysis, mileage_timeline, failure_patterns, mot_tests, vehicle }: {
   mot_summary: MOTSummary | null;
@@ -72,27 +100,19 @@ export default function HistorySections({ mot_summary, clocking_analysis, mileag
               : "warn"
           }
         >
-          {/* Headline mileage numbers */}
+          {/* Mileage summary rows */}
           {mot_summary?.current_odometer && (
-            <div className="flex items-baseline justify-between mb-3">
-              <div>
-                <span className="text-2xl font-bold text-slate-900 font-mono">{Number(mot_summary.current_odometer).toLocaleString()}</span>
-                <span className="text-sm text-slate-400 ml-1">miles</span>
-              </div>
-              {mileage_timeline.length >= 2 && (() => {
-                const first = mileage_timeline[0];
-                const last = mileage_timeline[mileage_timeline.length - 1];
-                const years = (new Date(last.date).getTime() - new Date(first.date).getTime()) / (365.25 * 24 * 60 * 60 * 1000);
-                const annual = years > 0 ? Math.round((last.miles - first.miles) / years) : null;
-                return annual ? (
-                  <div className="text-right">
-                    <span className="text-lg font-bold text-slate-700 font-mono">{annual.toLocaleString()}</span>
-                    <span className="text-xs text-slate-400 ml-1">/yr</span>
-                  </div>
-                ) : null;
-              })()}
-            </div>
+            <DetailRow label="Current Mileage" value={`${Number(mot_summary.current_odometer).toLocaleString()} miles`} />
           )}
+          {mileage_timeline.length >= 2 && (() => {
+            const first = mileage_timeline[0];
+            const last = mileage_timeline[mileage_timeline.length - 1];
+            const years = (new Date(last.date).getTime() - new Date(first.date).getTime()) / (365.25 * 24 * 60 * 60 * 1000);
+            const annual = years > 0 ? Math.round((last.miles - first.miles) / years) : null;
+            return annual ? (
+              <DetailRow label="Annual Average" value={`${annual.toLocaleString()} miles/yr`} />
+            ) : null;
+          })()}
           <div className="mb-3">
             {clocking_analysis.clocked ? (
               <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
@@ -223,11 +243,13 @@ export default function HistorySections({ mot_summary, clocking_analysis, mileag
       {/* Full MOT Test History */}
       {mot_tests && mot_tests.length > 0 && (
         <Card title={`Full MOT History (${mot_tests.length} tests)`} icon={icons.document} status="neutral">
-          <div className="space-y-2">
-            {mot_tests.map((test) => (
-              <MOTTestItem key={test.test_number} test={test} />
-            ))}
-          </div>
+          {/* Most recent test — expanded by default */}
+          <MOTTestItem test={mot_tests[0]} defaultOpen />
+
+          {/* Older tests — collapsed by default */}
+          {mot_tests.length > 1 && (
+            <OlderTests tests={mot_tests.slice(1)} />
+          )}
         </Card>
       )}
     </>

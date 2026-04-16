@@ -41,32 +41,18 @@ export default function FullCheckSection({
       {/* Valuation */}
       {valuation && (
         <Card title="Valuation" icon={icons.currency} status="neutral">
-          <div className="space-y-2 mb-3">
-            {valuation.private_sale !== null && (
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-500">Private Sale</span>
-                <span className="text-lg font-bold text-slate-900 font-mono">&pound;{valuation.private_sale.toLocaleString()}</span>
-              </div>
-            )}
-            {valuation.dealer_forecourt !== null && (
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-500">Dealer Forecourt</span>
-                <span className="text-lg font-bold text-slate-900 font-mono">&pound;{valuation.dealer_forecourt.toLocaleString()}</span>
-              </div>
-            )}
-            {valuation.trade_in !== null && (
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-500">Trade-in</span>
-                <span className="text-lg font-bold text-slate-900 font-mono">&pound;{valuation.trade_in.toLocaleString()}</span>
-              </div>
-            )}
-            {valuation.part_exchange !== null && (
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-500">Part Exchange</span>
-                <span className="text-lg font-bold text-slate-900 font-mono">&pound;{valuation.part_exchange.toLocaleString()}</span>
-              </div>
-            )}
-          </div>
+          {valuation.private_sale !== null && (
+            <DetailRow label="Private Sale" value={`£${valuation.private_sale.toLocaleString()}`} />
+          )}
+          {valuation.dealer_forecourt !== null && (
+            <DetailRow label="Dealer Forecourt" value={`£${valuation.dealer_forecourt.toLocaleString()}`} />
+          )}
+          {valuation.trade_in !== null && (
+            <DetailRow label="Trade-in" value={`£${valuation.trade_in.toLocaleString()}`} />
+          )}
+          {valuation.part_exchange !== null && (
+            <DetailRow label="Part Exchange" value={`£${valuation.part_exchange.toLocaleString()}`} />
+          )}
           {/* Price range bar */}
           {valuation.trade_in !== null && valuation.dealer_forecourt !== null && (
             <div className="mt-3 pt-3 border-t border-slate-100">

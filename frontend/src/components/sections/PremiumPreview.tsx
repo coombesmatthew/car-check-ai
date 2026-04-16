@@ -25,17 +25,7 @@ function PeekCard({ children, title, icon, status }: {
   );
 }
 
-/* Green status banner used across safety check cards */
-function ClearBanner({ text }: { text: string }) {
-  return (
-    <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2 mb-2">
-      <svg className="w-5 h-5 text-emerald-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-      <span className="text-sm font-semibold text-emerald-800">{text}</span>
-    </div>
-  );
-}
+const currentMonth = new Date().toLocaleDateString("en-GB", { month: "long", year: "numeric" });
 
 export default function PremiumPreview({ registration }: PremiumPreviewProps) {
   return (
@@ -52,24 +42,13 @@ export default function PremiumPreview({ registration }: PremiumPreviewProps) {
 
           {/* Market Valuation */}
           <PeekCard title="Market Valuation" icon={icons.currency} status="neutral">
-            <div className="space-y-2 mb-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-500">Private Sale</span>
-                <span className="text-lg font-bold text-slate-900 font-mono">&pound;14,250</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-500">Dealer Forecourt</span>
-                <span className="text-lg font-bold text-slate-900 font-mono">&pound;15,800</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-500">Trade-in</span>
-                <span className="text-lg font-bold text-slate-900 font-mono">&pound;12,100</span>
-              </div>
-            </div>
+            <DetailRow label="Private Sale" value="£14,250" />
+            <DetailRow label="Dealer Forecourt" value="£15,800" />
+            <DetailRow label="Trade-in" value="£12,100" />
             <div className="mt-3 pt-3 border-t border-slate-100">
               <div className="flex justify-between text-xs text-slate-400 mb-1">
-                <span>&pound;12,100</span>
-                <span>&pound;15,800</span>
+                <span>£12,100</span>
+                <span>£15,800</span>
               </div>
               <div className="h-3 bg-gradient-to-r from-amber-200 via-emerald-300 to-blue-300 rounded-full" />
               <div className="flex justify-between text-xs text-slate-400 mt-1">
@@ -78,15 +57,15 @@ export default function PremiumPreview({ registration }: PremiumPreviewProps) {
               </div>
             </div>
             <DetailRow label="Condition" value="Good" />
-            <DetailRow label="Valuation Date" value="April 2026" />
+            <DetailRow label="Valuation Date" value={currentMonth} />
           </PeekCard>
 
           {/* Finance Check */}
           <PeekCard title="Finance Check" icon={icons.document} status="pass">
-            <ClearBanner text="NO FINANCE OUTSTANDING" />
             <DetailRow label="Records Checked" value="3 finance databases" />
             <DetailRow label="Agreement Type" value="None found" />
-            <DetailRow label="Last Updated" value="April 2026" />
+            <DetailRow label="Status" value="Clear" />
+            <DetailRow label="Last Updated" value={currentMonth} />
           </PeekCard>
 
           {/* Keeper History */}
@@ -102,26 +81,23 @@ export default function PremiumPreview({ registration }: PremiumPreviewProps) {
 
           {/* Stolen Check */}
           <PeekCard title="Stolen Check" icon={icons.shield} status="pass">
-            <ClearBanner text="NOT STOLEN" />
             <DetailRow label="Police Database" value="National record checked" />
             <DetailRow label="Status" value="Clear" />
-            <DetailRow label="Last Updated" value="April 2026" />
+            <DetailRow label="Last Updated" value={currentMonth} />
           </PeekCard>
 
           {/* Write-off Check */}
           <PeekCard title="Write-off Check" icon={icons.alert} status="pass">
-            <ClearBanner text="NOT WRITTEN OFF" />
             <DetailRow label="Insurance Records" value="No claims found" />
             <DetailRow label="Categories Checked" value="A, B, S, N" />
-            <DetailRow label="Last Updated" value="April 2026" />
+            <DetailRow label="Last Updated" value={currentMonth} />
           </PeekCard>
 
           {/* Salvage Auction */}
           <PeekCard title="Salvage Check" icon={icons.alert} status="pass">
-            <ClearBanner text="NO SALVAGE RECORDS" />
             <DetailRow label="Auction Records" value="No listings found" />
             <DetailRow label="Database" value="UK salvage auctions" />
-            <DetailRow label="Last Updated" value="April 2026" />
+            <DetailRow label="Last Updated" value={currentMonth} />
           </PeekCard>
 
         </div>
@@ -147,9 +123,9 @@ export default function PremiumPreview({ registration }: PremiumPreviewProps) {
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
             </svg>
-            Unlock Full Check for {registration} &mdash; &pound;9.99
+            Unlock Full Check for {registration} &mdash; £9.99
           </a>
-          <p className="text-xs text-slate-400 mt-2">One-off payment &middot; No subscription &middot; Instant results</p>
+          <p className="text-xs text-slate-400 mt-2">One-off payment · No subscription · Instant results</p>
         </div>
       </div>
     </div>

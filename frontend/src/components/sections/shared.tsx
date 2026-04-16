@@ -4,6 +4,9 @@ import { useState } from "react";
 import { MOTTestRecord } from "@/lib/api";
 import Badge from "@/components/ui/Badge";
 
+/* DetailRow is the ONLY component for displaying label/value data.
+   Do not create custom flex layouts for numbers, prices, or stats.
+   All values render as text-sm font-medium text-slate-900. */
 export function DetailRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="flex justify-between py-1.5 border-b border-slate-100 last:border-0">
@@ -162,8 +165,8 @@ export function StarRating({ stars, max = 5 }: { stars: number; max?: number }) 
 }
 
 /* Individual MOT test accordion item */
-export function MOTTestItem({ test }: { test: MOTTestRecord }) {
-  const [open, setOpen] = useState(false);
+export function MOTTestItem({ test, defaultOpen = false }: { test: MOTTestRecord; defaultOpen?: boolean }) {
+  const [open, setOpen] = useState(defaultOpen);
   const hasDefects = test.advisories.length > 0 || test.failures.length > 0 || test.dangerous.length > 0;
 
   return (

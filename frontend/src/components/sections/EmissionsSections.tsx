@@ -109,23 +109,9 @@ export default function EmissionsSections({ ulez_compliance, tax_calculation }: 
           <DetailRow label="CO2 Emissions" value={`${tax_calculation.co2_emissions} g/km`} />
           <DetailRow label="Fuel Type" value={tax_calculation.fuel_type} />
           <div className="mt-3 pt-3 border-t border-slate-100" />
-          <DetailRow
-            label="First Year Rate"
-            value={
-              <span className="font-mono font-bold text-slate-900">
-                {tax_calculation.first_year_rate === 0 ? "FREE" : `\u00A3${tax_calculation.first_year_rate}`}
-              </span>
-            }
-          />
-          <DetailRow
-            label="Annual Rate (Year 2+)"
-            value={
-              <span className="font-mono font-bold text-slate-900">
-                {tax_calculation.annual_rate === 0 ? "FREE" : `\u00A3${tax_calculation.annual_rate}`}
-              </span>
-            }
-          />
-          <DetailRow label="6-Month Payment" value={`\u00A3${tax_calculation.six_month_rate}`} />
+          <DetailRow label="First Year Rate" value={tax_calculation.first_year_rate === 0 ? "FREE" : `£${tax_calculation.first_year_rate}`} />
+          <DetailRow label="Annual Rate (Year 2+)" value={tax_calculation.annual_rate === 0 ? "FREE" : `£${tax_calculation.annual_rate}`} />
+          <DetailRow label="6-Month Payment" value={`£${tax_calculation.six_month_rate}`} />
           {tax_calculation.is_electric && (
             <div className="mt-2 text-xs text-emerald-600 bg-emerald-50 rounded px-2 py-1">
               Electric vehicle — zero emissions
