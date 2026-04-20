@@ -29,14 +29,8 @@ export default function PremiumPreview({ registration }: PremiumPreviewProps) {
 
   return (
     <div className="space-y-5">
-      {/* Header text */}
-      <p className="text-sm text-slate-500">
-        We haven&apos;t checked <span className="font-mono font-bold text-slate-700">{registration}</span> against UK finance, stolen, or write-off databases yet.
-      </p>
-
       {/* Peek cards grid — 6 sample cards */}
       <div>
-        <p className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-3">What you&apos;ll get</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
 
           {/* Market Valuation */}
