@@ -276,7 +276,14 @@ export function RecurringIssueItem({ category, occurrences, concernLevel, defect
   );
 }
 
-/* Peek card — blurred preview + centered lock icon for premium previews */
+/* Peek card — unblurred header + blurred body with centered lock chip */
+const peekBorderColors = {
+  pass: "border-l-emerald-500",
+  fail: "border-l-red-500",
+  warn: "border-l-amber-500",
+  neutral: "border-l-slate-300",
+};
+
 export function PeekCard({ children, title, icon, status, href = "#full-report" }: {
   children: React.ReactNode;
   title: string;
@@ -285,27 +292,30 @@ export function PeekCard({ children, title, icon, status, href = "#full-report" 
   href?: string;
 }) {
   return (
-    <a href={href} className="relative block overflow-hidden rounded-xl group">
-      <div className="blur-[3px] select-none pointer-events-none">
-        <Card title={title} icon={icon} status={status}>
+    <a
+      href={href}
+      className={`relative block bg-white border border-slate-200 rounded-xl p-5 overflow-hidden group border-l-4 ${peekBorderColors[status]}`}
+    >
+      {/* Unblurred header stays readable */}
+      <h3 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
+        {icon && <span className="text-slate-400">{icon}</span>}
+        {title}
+      </h3>
+      {/* Blurred body */}
+      <div className="relative">
+        <div className="blur-[3px] select-none pointer-events-none">
           {children}
-        </Card>
-      </div>
-      {/* Dim overlay so lock icon pops */}
-      <div className="absolute inset-0 bg-white/40 pointer-events-none" />
-      {/* Centered lock chip */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className="flex items-center gap-1.5 bg-slate-900/85 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-lg transition-transform group-hover:scale-105">
-          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-          </svg>
-          Locked
+        </div>
+        <div className="absolute inset-0 bg-white/40 pointer-events-none" />
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="flex items-center gap-1.5 bg-slate-900/85 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-lg transition-transform group-hover:scale-105">
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+            </svg>
+            Locked
+          </div>
         </div>
       </div>
-      {/* Small sample tag, top-right */}
-      <span className="absolute top-2 right-2 text-[10px] font-medium text-slate-500 bg-white/90 border border-slate-200 px-1.5 py-0.5 rounded pointer-events-none">
-        Sample
-      </span>
     </a>
   );
 }
