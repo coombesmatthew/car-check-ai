@@ -58,3 +58,6 @@ database/backups/*
 *.tsbuildinfo
 playwright-report/
 test-results/
+
+# Eval harness outputs (AI report scorecards)
+backend/tmp/

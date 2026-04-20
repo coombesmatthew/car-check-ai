@@ -1,0 +1,112 @@
+{
+  "registration": "EV21TST",
+  "vehicle_data": {
+    "registrationNumber": "EV21TST",
+    "make": "Tesla",
+    "model": "Model 3",
+    "yearOfManufacture": 2021,
+    "fuelType": "ELECTRICITY",
+    "colour": "Pearl White",
+    "taxStatus": "Taxed",
+    "taxDueDate": "2026-08-01",
+    "motStatus": "Valid",
+    "motExpiryDate": "2026-09-15"
+  },
+  "mot_analysis": {
+    "mot_summary": {
+      "registration": "EV21TST",
+      "make": "TESLA",
+      "model": "MODEL 3",
+      "total_tests": 3,
+      "total_passes": 3,
+      "total_failures": 0,
+      "current_odometer": "42180",
+      "first_used_date": "2021-06-10",
+      "latest_test": {
+        "date": "2025-09-15",
+        "result": "PASSED",
+        "odometer": "42180",
+        "expiry_date": "2026-09-14"
+      },
+      "has_outstanding_recall": "No"
+    },
+    "clocking_analysis": {
+      "clocked": false,
+      "risk_level": "low",
+      "reason": "Mileage progression consistent across all tests"
+    },
+    "mileage_timeline": [
+      {"date": "2024-09-10", "mileage": 31200},
+      {"date": "2023-09-12", "mileage": 20180},
+      {"date": "2022-09-14", "mileage": 9100}
+    ],
+    "failure_patterns": [],
+    "condition_score": 92,
+    "mot_tests": []
+  },
+  "ev_check_data": {
+    "battery_health": {
+      "score": 87,
+      "grade": "A",
+      "degradation_estimate_pct": 4.2,
+      "summary": "Battery retains 95.8% of original capacity; within expected range for age and mileage."
+    },
+    "range_estimate": {
+      "official_range_miles": 272,
+      "estimated_range_miles": 249,
+      "range_retention_pct": 91.5,
+      "min_range_now_miles": 172,
+      "max_range_now_miles": 268
+    },
+    "range_scenarios": [
+      {"scenario": "Summer city", "estimated_miles": 268, "temperature_c": 20, "driving_style": "eco"},
+      {"scenario": "Summer motorway", "estimated_miles": 234, "temperature_c": 20, "driving_style": "normal"},
+      {"scenario": "Winter city", "estimated_miles": 201, "temperature_c": 4, "driving_style": "normal"},
+      {"scenario": "Winter motorway", "estimated_miles": 172, "temperature_c": 4, "driving_style": "normal"}
+    ],
+    "ev_specs": {
+      "battery_capacity_kwh": 60,
+      "usable_capacity_kwh": 57.5,
+      "battery_type": "LFP",
+      "max_dc_charge_kw": 170,
+      "max_ac_charge_kw": 11,
+      "charge_time_home_mins": 492,
+      "charge_time_rapid_mins": 27,
+      "energy_consumption_wh_per_mile": 240
+    },
+    "charging_costs": {
+      "cost_per_mile_home": 5.9,
+      "cost_per_mile_rapid": 15.6,
+      "annual_cost_estimate_home": 590,
+      "annual_cost_estimate_rapid": 1560,
+      "vs_petrol_annual_saving": 880
+    },
+    "lifespan_prediction": {
+      "predicted_remaining_years": 11,
+      "prediction_range": "9-13",
+      "one_year_survival_pct": 99.3,
+      "ten_year_survival_pct": 88,
+      "model_avg_final_miles": 165000
+    },
+    "finance_check": {
+      "finance_outstanding": false,
+      "record_count": 0,
+      "records": []
+    },
+    "stolen_check": {"stolen": false},
+    "write_off_check": {"written_off": false, "records": []},
+    "salvage_check": {"salvage_found": false, "records": []},
+    "keeper_history": {
+      "total_keepers": 2,
+      "keepers": []
+    },
+    "valuation": {
+      "private_sale": 19200,
+      "dealer_forecourt": 21500,
+      "trade_in": 16900,
+      "part_exchange": 17800,
+      "valuation_date": "2026-04-20",
+      "data_source": "Brego"
+    }
+  }
+}

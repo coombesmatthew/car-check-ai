@@ -14,6 +14,7 @@ import anthropic
 
 from app.core.config import settings
 from app.core.logging import logger
+from app.services.ai.style_guide import assemble_style_block
 
 
 _UPPERCASE_MAKES = {"BMW", "MG", "TVR", "DS", "BYD", "GWM", "JAC", "MAN"}
@@ -393,9 +394,10 @@ If the car data is clean, say so — but still explain what the paid report woul
     try:
         client = anthropic.AsyncAnthropic(api_key=settings.ANTHROPIC_API_KEY)
         message = await client.messages.create(
-            model=settings.ANTHROPIC_MODEL,
+            model=settings.ANTHROPIC_REPORT_MODEL,
             max_tokens=2000,
-            system=PREVIEW_SYSTEM_PROMPT,
+            temperature=settings.ANTHROPIC_REPORT_TEMPERATURE,
+            system=f"{assemble_style_block()}\n\n{PREVIEW_SYSTEM_PROMPT}",
             messages=[{"role": "user", "content": user_prompt}],
         )
         report = message.content[0].text
@@ -630,9 +632,10 @@ Keep it 800-1200 words. Be specific with numbers and costs."""
     try:
         client = anthropic.AsyncAnthropic(api_key=settings.ANTHROPIC_API_KEY)
         message = await client.messages.create(
-            model=settings.ANTHROPIC_MODEL,
+            model=settings.ANTHROPIC_REPORT_MODEL,
             max_tokens=2500,
-            system=PAID_SYSTEM_PROMPT,
+            temperature=settings.ANTHROPIC_REPORT_TEMPERATURE,
+            system=f"{assemble_style_block()}\n\n{PAID_SYSTEM_PROMPT}",
             messages=[{"role": "user", "content": user_prompt}],
         )
         report = message.content[0].text

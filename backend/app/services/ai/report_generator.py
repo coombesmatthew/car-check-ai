@@ -12,6 +12,7 @@ import anthropic
 
 from app.core.config import settings
 from app.core.logging import logger
+from app.services.ai.style_guide import assemble_style_block
 
 
 _UPPERCASE_MAKES = {"BMW", "MG", "TVR", "DS", "BYD", "GWM", "JAC", "MAN"}
@@ -806,11 +807,14 @@ async def generate_ai_report(
     try:
         client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
 
-        # Use Sonnet 4.6 for reliable JSON generation
+        # Pinned model + low temperature keeps voice/style consistent; see style_guide.py
+        # 16384 output tokens headroom — low-temp output runs longer than the old default
+        # and a 14-MOT-test vehicle can push 8k tokens on its own.
         message = client.messages.create(
-            model="claude-sonnet-4-6",
-            max_tokens=8192,  # Increased from 4096 to handle full JSON output (6000-8000 tokens needed for vehicle with 14 MOT tests)
-            system=SYSTEM_PROMPT,
+            model=settings.ANTHROPIC_REPORT_MODEL,
+            max_tokens=16384,
+            temperature=settings.ANTHROPIC_REPORT_TEMPERATURE,
+            system=f"{assemble_style_block()}\n\n{SYSTEM_PROMPT}",
             messages=[{"role": "user", "content": user_message}],
         )
 

@@ -33,6 +33,10 @@ class Settings(BaseSettings):
     # Anthropic Claude API
     ANTHROPIC_API_KEY: str = ""
     ANTHROPIC_MODEL: str = "claude-sonnet-4-5-20250929"
+    # Pinned decoding params for buyer's report generation (both non-EV and EV).
+    # Low temperature keeps voice/style consistent across runs.
+    ANTHROPIC_REPORT_MODEL: str = "claude-sonnet-4-6"
+    ANTHROPIC_REPORT_TEMPERATURE: float = 0.2
 
     # One Auto API (Experian + Brego via single integration)
     ONEAUTO_API_KEY: str = ""
@@ -71,6 +75,7 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         case_sensitive = True
+        extra = "ignore"  # tolerate frontend NEXT_PUBLIC_* keys in shared .env
 
 
 settings = Settings()
