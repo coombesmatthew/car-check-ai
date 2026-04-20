@@ -17,7 +17,7 @@ const boltIcon = (
 function BatteryPeekCards() {
   return (
     <>
-      <PeekCard title="Battery Health Score" icon={boltIcon} status="pass">
+      <PeekCard href="#unlock" title="Battery Health Score" icon={boltIcon} status="pass">
         <div className="text-center py-2 mb-2">
           <span className="text-4xl font-bold text-emerald-600">87</span>
           <span className="text-lg text-slate-400">/100</span>
@@ -27,7 +27,7 @@ function BatteryPeekCards() {
         <DetailRow label="Test Date" value="March 2025" />
       </PeekCard>
 
-      <PeekCard title="Real-World Range" icon={icons.chart} status="pass">
+      <PeekCard href="#unlock" title="Real-World Range" icon={icons.chart} status="pass">
         <DetailRow label="Estimated Range" value="238 miles" />
         <DetailRow label="Official WLTP" value="246 miles" />
         <DetailRow label="Range Retention" value="96%" />
@@ -35,14 +35,14 @@ function BatteryPeekCards() {
         <DetailRow label="Warranty Remaining" value="36 months" />
       </PeekCard>
 
-      <PeekCard title="Charging Cost" icon={icons.currency} status="pass">
+      <PeekCard href="#unlock" title="Charging Cost" icon={icons.currency} status="pass">
         <DetailRow label="Home (7p/kWh)" value="£3.50 full charge" />
         <DetailRow label="Standard (28p)" value="£14.00 full charge" />
         <DetailRow label="Rapid (75p)" value="£37.50 full charge" />
         <DetailRow label="Cost per mile (home)" value="1.5p/mi" />
       </PeekCard>
 
-      <PeekCard title="Lifespan Prediction" icon={icons.clock} status="pass">
+      <PeekCard href="#unlock" title="Lifespan Prediction" icon={icons.clock} status="pass">
         <div className="text-center py-2 mb-2">
           <span className="text-3xl font-bold text-slate-900">12</span>
           <p className="text-sm text-slate-500">Predicted Remaining Years</p>

@@ -22,7 +22,7 @@ export default function EVFullCheckSection({ registration }: EVFullCheckSectionP
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
 
           {/* Market Valuation */}
-          <PeekCard title="Market Valuation" icon={icons.currency} status="pass">
+          <PeekCard href="#unlock" title="Market Valuation" icon={icons.currency} status="pass">
             <DetailRow label="Private Sale" value="\u00A314,250" />
             <DetailRow label="Dealer Forecourt" value="\u00A315,800" />
             <DetailRow label="Trade-in" value="\u00A312,100" />
@@ -42,7 +42,7 @@ export default function EVFullCheckSection({ registration }: EVFullCheckSectionP
           </PeekCard>
 
           {/* Finance Check */}
-          <PeekCard title="Finance Check" icon={icons.document} status="pass">
+          <PeekCard href="#unlock" title="Finance Check" icon={icons.document} status="pass">
             <DetailRow label="Records Checked" value="3 finance databases" />
             <DetailRow label="Agreement Type" value="None found" />
             <DetailRow label="Status" value="Clear" />
@@ -50,7 +50,7 @@ export default function EVFullCheckSection({ registration }: EVFullCheckSectionP
           </PeekCard>
 
           {/* Keeper History */}
-          <PeekCard title="Keeper History" icon={icons.users} status="pass">
+          <PeekCard href="#unlock" title="Keeper History" icon={icons.users} status="pass">
             <div className="text-center py-2 mb-2">
               <span className="text-3xl font-bold text-slate-900">3</span>
               <p className="text-sm text-slate-500">Previous Keepers</p>
@@ -61,28 +61,28 @@ export default function EVFullCheckSection({ registration }: EVFullCheckSectionP
           </PeekCard>
 
           {/* Stolen Check */}
-          <PeekCard title="Stolen Check" icon={icons.shield} status="pass">
+          <PeekCard href="#unlock" title="Stolen Check" icon={icons.shield} status="pass">
             <DetailRow label="Police Database" value="National record checked" />
             <DetailRow label="Status" value="Clear" />
             <DetailRow label="Last Updated" value={currentMonth} />
           </PeekCard>
 
           {/* Write-off Check */}
-          <PeekCard title="Write-off Check" icon={icons.alert} status="pass">
+          <PeekCard href="#unlock" title="Write-off Check" icon={icons.alert} status="pass">
             <DetailRow label="Insurance Records" value="No claims found" />
             <DetailRow label="Categories Checked" value="A, B, S, N" />
             <DetailRow label="Last Updated" value={currentMonth} />
           </PeekCard>
 
           {/* Salvage Check */}
-          <PeekCard title="Salvage Check" icon={icons.alert} status="pass">
+          <PeekCard href="#unlock" title="Salvage Check" icon={icons.alert} status="pass">
             <DetailRow label="Auction Records" value="No listings found" />
             <DetailRow label="Database" value="UK salvage auctions" />
             <DetailRow label="Last Updated" value={currentMonth} />
           </PeekCard>
 
           {/* Plate Changes */}
-          <PeekCard title="Plate Changes" icon={icons.swap} status="pass">
+          <PeekCard href="#unlock" title="Plate Changes" icon={icons.swap} status="pass">
             <DetailRow label="Changes Found" value="1 plate change" />
             <DetailRow label="Previous Plate" value="AB12 XYZ" />
             <DetailRow label="Change Date" value="March 2022" />
@@ -90,7 +90,7 @@ export default function EVFullCheckSection({ registration }: EVFullCheckSectionP
           </PeekCard>
 
           {/* High Risk Indicators */}
-          <PeekCard title="High Risk Indicators" icon={icons.alert} status="pass">
+          <PeekCard href="#unlock" title="High Risk Indicators" icon={icons.alert} status="pass">
             <DetailRow label="Risk Flags" value="0 found" />
             <DetailRow label="Cloning Check" value="Clear" />
             <DetailRow label="Export Marker" value="Clear" />
@@ -98,7 +98,7 @@ export default function EVFullCheckSection({ registration }: EVFullCheckSectionP
           </PeekCard>
 
           {/* Previous Searches */}
-          <PeekCard title="Previous Searches" icon={icons.search} status="pass">
+          <PeekCard href="#unlock" title="Previous Searches" icon={icons.search} status="pass">
             <DetailRow label="Total Searches" value="12 checks" />
             <DetailRow label="Last Searched" value="2 weeks ago" />
             <DetailRow label="Search Frequency" value="Average" />

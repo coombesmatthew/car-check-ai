@@ -15,7 +15,6 @@ const DEFAULT_SECTIONS: SectionConfig[] = [
   { id: "section-history", label: "History" },
   { id: "section-emissions", label: "Emissions" },
   { id: "section-fullcheck", label: "Full Check", locked: true },
-  { id: "nav-ev-check", label: "EV Check", locked: true, href: "/ev" },
 ];
 
 const LockIcon = () => (
