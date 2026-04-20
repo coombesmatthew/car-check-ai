@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { EVCheckResponse, captureEmail } from "@/lib/api";
+import { EVCheckResponse, captureEmail, createEVCheckout } from "@/lib/api";
 import EVOverviewSections from "@/components/ev/sections/EVOverviewSections";
 import EVBatterySections from "@/components/ev/sections/EVBatterySections";
 import EVHistorySections from "@/components/ev/sections/EVHistorySections";
@@ -77,6 +77,22 @@ export default function EVCheckResult({ result }: Props) {
     battery_health, range_estimate, range_scenarios,
     charging_costs, ev_specs, lifespan_prediction,
   } = result;
+
+  const [checkoutTier, setCheckoutTier] = useState<"ev" | "ev_complete" | null>(null);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+
+  const handleCheckout = async (tier: "ev" | "ev_complete") => {
+    if (checkoutTier) return;
+    setCheckoutError(null);
+    setCheckoutTier(tier);
+    try {
+      const { checkout_url } = await createEVCheckout(result.registration, null, tier);
+      window.location.href = checkout_url;
+    } catch (err) {
+      setCheckoutError(err instanceof Error ? err.message : "Checkout failed");
+      setCheckoutTier(null);
+    }
+  };
 
   return (
     <div className="space-y-4 pb-20 md:pb-0">
@@ -190,17 +206,27 @@ export default function EVCheckResult({ result }: Props) {
               </div>
             ))}
           </div>
-          <div className="mt-5 flex items-center gap-4">
-            <a
-              href="#unlock"
-              className="inline-flex items-center gap-2 px-6 py-2.5 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 transition-colors text-sm"
+          <div className="mt-5 flex items-center gap-4 flex-wrap">
+            <button
+              onClick={() => handleCheckout("ev")}
+              disabled={checkoutTier !== null}
+              className="inline-flex items-center gap-2 px-6 py-2.5 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 transition-colors text-sm disabled:opacity-75 disabled:cursor-wait"
             >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-              </svg>
-              Get EV Health Check &mdash; &pound;8.99
-            </a>
-            <span className="text-xs text-slate-400">Delivered as PDF within 60 seconds</span>
+              {checkoutTier === "ev" ? (
+                <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                </svg>
+              ) : (
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                </svg>
+              )}
+              {checkoutTier === "ev" ? "Redirecting…" : <>Get EV Health Check &mdash; &pound;8.99</>}
+            </button>
+            <span className="text-xs text-slate-400">
+              {checkoutError ? <span className="text-red-500">{checkoutError}</span> : "Delivered as PDF within 60 seconds"}
+            </span>
           </div>
         </div>
       </div>
@@ -243,16 +269,24 @@ export default function EVCheckResult({ result }: Props) {
               </div>
             ))}
           </div>
-          <div className="mt-5 flex items-center gap-4">
-            <a
-              href="#unlock"
-              className="inline-flex items-center gap-2 px-6 py-2.5 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 transition-colors text-sm"
+          <div className="mt-5 flex items-center gap-4 flex-wrap">
+            <button
+              onClick={() => handleCheckout("ev_complete")}
+              disabled={checkoutTier !== null}
+              className="inline-flex items-center gap-2 px-6 py-2.5 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 transition-colors text-sm disabled:opacity-75 disabled:cursor-wait"
             >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-              </svg>
-              Get EV Complete &mdash; &pound;13.99
-            </a>
+              {checkoutTier === "ev_complete" ? (
+                <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                </svg>
+              ) : (
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                </svg>
+              )}
+              {checkoutTier === "ev_complete" ? "Redirecting…" : <>Get EV Complete &mdash; &pound;13.99</>}
+            </button>
             <span className="text-xs text-slate-400">One-off payment &middot; No subscription</span>
           </div>
         </div>

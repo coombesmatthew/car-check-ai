@@ -40,7 +40,7 @@ class EVCheckRequest(BaseModel):
 class EVCheckoutRequest(BaseModel):
     """Request for EV Stripe checkout."""
     registration: str
-    email: str
+    email: Optional[str] = None  # optional — Stripe collects if absent
     tier: str = "ev"
 
 

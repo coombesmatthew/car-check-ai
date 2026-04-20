@@ -588,13 +588,15 @@ export async function runEVPreview(
 
 export async function createEVCheckout(
   registration: string,
-  email: string,
+  email: string | null,
   tier: "ev" | "ev_complete" = "ev"
 ): Promise<CheckoutResponse> {
+  const body: Record<string, unknown> = { registration, tier };
+  if (email) body.email = email;
   const res = await fetch(`${API_URL}/api/v1/ev/checkout`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ registration, email, tier }),
+    body: JSON.stringify(body),
   });
 
   if (!res.ok) {
