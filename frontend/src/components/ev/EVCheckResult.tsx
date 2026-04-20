@@ -275,7 +275,7 @@ export default function EVCheckResult({ result }: Props) {
       </p>
 
       {/* Premium upsell bottom bar (mobile only) */}
-      <PremiumBottomBar hasPremium={false} variant="ev" />
+      <PremiumBottomBar hasPremium={false} variant="ev" registration={result.registration} />
     </div>
   );
 }

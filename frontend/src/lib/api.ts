@@ -366,13 +366,15 @@ export interface CheckoutResponse {
 
 export async function createCheckout(
   registration: string,
-  email: string,
+  email: string | null,
   tier: string = "basic",
 ): Promise<CheckoutResponse> {
+  const body: Record<string, unknown> = { registration, tier };
+  if (email) body.email = email;
   const res = await fetch(`${API_URL}/api/v1/checks/basic/checkout`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ registration, email, tier }),
+    body: JSON.stringify(body),
   });
 
   if (!res.ok) {

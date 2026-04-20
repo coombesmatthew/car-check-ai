@@ -40,7 +40,7 @@ TIER_CONFIG = {
 
 def create_checkout_session(
     registration: str,
-    email: str,
+    email: str | None,
     tier: str = "basic",
     listing_url: str | None = None,
     listing_price: int | None = None,
@@ -82,14 +82,15 @@ def create_checkout_session(
     metadata = {
         "registration": registration,
         "tier": tier,
-        "email": email,
     }
+    if email:
+        metadata["email"] = email
     if listing_url:
         metadata["listing_url"] = listing_url
     if listing_price is not None:
         metadata["listing_price"] = str(listing_price)
 
-    session = stripe.checkout.Session.create(
+    session_kwargs = dict(
         payment_method_types=["card"],
         line_items=[
             {
@@ -105,11 +106,14 @@ def create_checkout_session(
             }
         ],
         mode="payment",
-        customer_email=email,
         success_url=success_url,
         cancel_url=cancel_url,
         metadata=metadata,
     )
+    if email:
+        session_kwargs["customer_email"] = email
+
+    session = stripe.checkout.Session.create(**session_kwargs)
 
     logger.info(f"Checkout session created for {registration} (session: {session.id})")
 
@@ -127,13 +131,23 @@ def retrieve_session(session_id: str) -> dict:
     """
     _init_stripe()
 
-    session = stripe.checkout.Session.retrieve(session_id)
+    session = stripe.checkout.Session.retrieve(session_id, expand=["customer_details"])
+
+    customer_details_email = ""
+    if getattr(session, "customer_details", None):
+        customer_details_email = session.customer_details.get("email", "") or ""
+    resolved_email = (
+        session.metadata.get("email")
+        or session.customer_email
+        or customer_details_email
+        or ""
+    )
 
     return {
         "session_id": session.id,
         "payment_status": session.payment_status,
         "registration": session.metadata.get("registration", ""),
-        "email": session.metadata.get("email", session.customer_email or ""),
+        "email": resolved_email,
         "tier": session.metadata.get("tier", "basic"),
         "listing_url": session.metadata.get("listing_url"),
         "listing_price": int(session.metadata["listing_price"]) if session.metadata.get("listing_price") else None,

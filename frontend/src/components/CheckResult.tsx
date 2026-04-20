@@ -151,7 +151,7 @@ export default function CheckResult({ data }: { data: FreeCheckResponse }) {
       </p>
 
       {/* Premium upsell bottom bar (mobile only) */}
-      <PremiumBottomBar hasPremium={!!(finance_check || stolen_check || write_off_check || valuation)} />
+      <PremiumBottomBar hasPremium={!!(finance_check || stolen_check || write_off_check || valuation)} registration={data.registration} />
     </div>
   );
 }

@@ -233,7 +233,7 @@ async def download_basic_pdf(request: BasicReportRequest):
 
 class CheckoutRequest(BaseModel):
     registration: str
-    email: str
+    email: Optional[str] = None  # optional — Stripe collects if absent
     tier: str = "basic"  # "basic" or "premium"
     listing_url: Optional[str] = None
     listing_price: Optional[int] = None
