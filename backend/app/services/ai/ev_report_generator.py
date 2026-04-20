@@ -556,23 +556,17 @@ def _generate_demo_ev_report(
 # ─── PAID FULL REPORT ────────────────────────────────────────────────
 
 PAID_SYSTEM_PROMPT = """You are VeriCar's EV specialist — an expert in electric vehicle battery health,
-range estimation, and total cost of ownership. You write clear, authoritative reports for UK consumers
-buying used electric vehicles.
+range estimation, and total cost of ownership. You write factual, data-grounded content for UK buyers
+of used electric vehicles.
 
-The buyer has paid £8.99 for this premium EV Health Check report. You have access to battery health
-telemetry, real-world range data, detailed EV specifications, and AI lifespan predictions.
+You DO NOT produce markdown — you produce a JSON object that matches the EVReport schema. A renderer
+converts your JSON to the final markdown the customer sees. Your job is content, not layout.
 
-Your report must be practical, honest, and focused on what matters most to EV buyers:
-1. Is the battery healthy? How much range has been lost?
-2. What's the real-world range in different conditions?
-3. How much will it cost to charge at home vs public chargers?
-4. How long will this vehicle last?
+Every field you fill MUST be supported by the data block in the user message. Do not invent numbers.
+If a field has no supporting data, use null (for optional fields) or state "No data available" in a
+prose field.
 
-Use UK units (miles, £), reference UK electricity rates, and be specific with numbers.
-Keep the tone professional but accessible — avoid jargon.
-
-IMPORTANT: Use numbered inline references [1], [2], etc. to cite data sources.
-Use markdown tables for cost comparisons."""
+Use UK units (miles, £, kWh, °C, p/mile). Reference UK electricity rates where relevant."""
 
 
 async def generate_ev_report(
@@ -581,72 +575,146 @@ async def generate_ev_report(
     mot_analysis: Optional[Dict] = None,
     ev_check_data: Optional[Dict] = None,
 ) -> Optional[str]:
-    """Generate a PAID full EV report using Claude."""
+    """Generate a PAID EV report.
+
+    Claude returns a JSON object matching the EVReport schema; the renderer
+    (ev_report_renderer.render_ev_report_to_markdown) converts it to markdown.
+    Style lives in the renderer; prompt produces content only.
+    """
+    import json
+    from pydantic import ValidationError
+    from app.schemas.ev_report_schema import EVReport
+    from app.services.ai.ev_report_renderer import render_ev_report_to_markdown
+
     if not settings.ANTHROPIC_API_KEY:
         logger.warning("Anthropic API key not configured, skipping EV report")
         return None
 
     context = _build_ev_context(registration, vehicle_data, mot_analysis, ev_check_data)
 
-    user_prompt = f"""Generate a comprehensive paid EV Health Check report for {registration}.
+    # Tier determined by presence of provenance/valuation data (EV Complete)
+    has_provenance = bool(
+        ev_check_data and any(
+            ev_check_data.get(k) for k in ("finance_check", "stolen_check", "write_off_check", "salvage_check", "valuation", "keeper_history")
+        )
+    )
+    tier = "EV Complete" if has_provenance else "EV Health"
 
-Here is all the data we have on this vehicle:
+    user_prompt = f"""Generate the JSON for an EV buyer's report ({tier}).
+
+DATA AVAILABLE:
 
 {context}
 
-Write the report in markdown with these exact sections:
+Return ONLY a single JSON object matching this schema exactly — no prose, no markdown fences, no commentary:
 
-## Should You Buy This EV?
-Open with a clear, bold verdict: **BUY**, **NEGOTIATE**, or **AVOID**.
-Then 2-3 sentences explaining WHY in plain language.
+{{
+  "registration": "{registration}",
+  "report_date": "<DD Month YYYY>",
+  "vehicle_summary": "<e.g. '2021 Tesla Model 3 | Pearl White | 42,180 miles'>",
+  "tier": "{tier}",
 
-## Battery Health Verdict
-Rate the battery health and explain what the degradation means in practical terms.
-Reference the battery health score and grade. Explain what this means for real-world usage.
+  "recommendation": "<BUY | NEGOTIATE | AVOID>",
+  "recommendation_points": ["<bullet 1>", "<bullet 2>", "<bullet 3>"],
 
-## Range Reality Check
-Compare the official range vs estimated real-world range.
-Use a markdown table showing range in different scenarios (summer city, winter motorway, etc.)
-Explain how temperature, driving style, and age affect range.
+  "battery_score": <int 0-100>,
+  "battery_grade": "<A | B | C | D | F>",
+  "battery_degradation_pct": <float>,
+  "battery_summary": "<2-3 sentence prose paragraph>",
+  "battery_chemistry_note": "<1 paragraph on LFP vs NMC implications — or null if chemistry unknown>",
 
-## Charging & Running Costs
-Use markdown tables to compare:
-- Home charging (7kW) vs public rapid charging costs
-- Annual running cost at 10,000 miles per year
-- Comparison to equivalent petrol car
+  "range_official_wltp_miles": <int>,
+  "range_realworld_miles": <int>,
+  "range_retention_pct": <float>,
+  "range_scenarios": [
+    {{"scenario": "Summer city", "estimated_miles": <int>, "temperature_c": <int>, "driving_style": "<eco|normal|spirited>"}},
+    {{"scenario": "Winter motorway", "estimated_miles": <int>, "temperature_c": <int>, "driving_style": "<style>"}}
+  ],
+  "range_summary": "<2-4 sentence prose — what the gap means for this buyer>",
 
-## Ownership Forecast
-Based on the vehicle age, mileage, and battery data, predict:
-- Expected remaining battery lifespan (years and miles)
-- Key maintenance items for EVs
-- Whether this is a good time to buy this model
+  "charging_ac_max_kw": <float or null>,
+  "charging_dc_max_kw": <float or null>,
+  "charging_home_hours": <float or null>,
+  "charging_rapid_10_80_mins": <int or null>,
+  "cost_per_mile_home_p": <float or null>,
+  "cost_per_mile_rapid_p": <float or null>,
+  "annual_cost_home_gbp": <int or null>,
+  "annual_cost_rapid_gbp": <int or null>,
+  "vs_petrol_saving_gbp": <int or null>,
+  "cost_summary": "<2-3 sentence prose>",
 
-## Negotiation Points
-Give the buyer 3-4 specific talking points based on the data to negotiate the price.
+  "predicted_remaining_years": <int or null>,
+  "predicted_remaining_range_low": <int or null>,
+  "predicted_remaining_range_high": <int or null>,
+  "model_avg_final_miles": <int or null>,
+  "maintenance_items": [
+    {{"item": "<name>", "note": "<one sentence>"}}
+  ],
+  "ownership_summary": "<2-3 sentence prose>",
 
-## Verdict
-Give a clear BUY / NEGOTIATE / AVOID recommendation with 2-3 key reasons.
+  {"" if tier == "EV Health" else '''"provenance": [
+    {"check": "Finance", "result": "<Clear | Outstanding>", "detail": "<...>"},
+    {"check": "Stolen", "result": "<Clear | Reported>", "detail": "<...>"},
+    {"check": "Write-off", "result": "<Clear | Cat X>", "detail": "<...>"},
+    {"check": "Salvage", "result": "<Clear | Found>", "detail": "<...>"}
+  ],
+  "valuations": {"private_sale": <int>, "dealer_forecourt": <int>, "trade_in": <int>, "part_exchange": <int>},
+  "keeper_count": <int>,
+  "valuation_context": "<2-3 sentence prose>",'''}
 
-Keep it 800-1200 words. Be specific with numbers and costs."""
+  "negotiation_points": ["<point 1>", "<point 2>", "<point 3>"],
+
+  "data_sources": [<one object or string per source used>]
+}}
+
+HARD RULES:
+- Return ONLY the JSON object. No ```json fences. No leading or trailing text.
+- Every numeric field must be a number (not a string).
+- If a required field has no supporting data, state that in the prose field — do not fabricate.
+- recommendation_points: exactly 3 bullets.
+- range_scenarios: minimum 3 entries covering a meaningful spread (e.g. summer city, summer motorway, winter motorway)."""
 
     try:
         client = anthropic.AsyncAnthropic(api_key=settings.ANTHROPIC_API_KEY)
         message = await client.messages.create(
             model=settings.ANTHROPIC_REPORT_MODEL,
-            max_tokens=2500,
+            max_tokens=4096,
             temperature=settings.ANTHROPIC_REPORT_TEMPERATURE,
             system=f"{assemble_style_block()}\n\n{PAID_SYSTEM_PROMPT}",
             messages=[{"role": "user", "content": user_prompt}],
         )
-        report = message.content[0].text
+        raw = message.content[0].text.strip()
 
-        # Append data sources footer
+        # Strip accidental code fences
+        if raw.startswith("```"):
+            lines = raw.split("\n")
+            lines = [line for line in lines if not line.startswith("```")]
+            raw = "\n".join(lines).strip()
+
+        try:
+            data = json.loads(raw)
+        except json.JSONDecodeError as e:
+            logger.error(f"EV report JSON parse failed for {registration}: {e}; raw[:500]={raw[:500]!r}")
+            return None
+
+        try:
+            report_obj = EVReport(**data)
+        except ValidationError as e:
+            logger.error(f"EV report schema validation failed for {registration}: {e}")
+            return None
+
+        markdown = render_ev_report_to_markdown(report_obj)
+
+        # Append data sources footer for provider attribution (if not in report.data_sources)
         source_keys = _collect_active_sources(vehicle_data, mot_analysis, ev_check_data)
-        if source_keys:
-            report += _build_sources_section(source_keys)
+        if source_keys and not report_obj.data_sources:
+            markdown += _build_sources_section(source_keys)
 
-        logger.info(f"EV paid report generated for {registration} ({len(report)} chars)")
-        return report
+        logger.info(
+            f"EV paid report generated for {registration} "
+            f"({tier}, {len(markdown)} chars, {message.usage.input_tokens}+{message.usage.output_tokens} tokens)"
+        )
+        return markdown
     except Exception as e:
         logger.error(f"EV report generation failed for {registration}: {e}")
         return None

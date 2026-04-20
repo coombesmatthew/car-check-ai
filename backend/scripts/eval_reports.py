@@ -127,12 +127,11 @@ async def _run_non_ev(timestamp: str) -> tuple[str, str, tuple[int, int]]:
     return ("non_ev", report, (1500, 4000))
 
 
-async def _run_ev_complete(timestamp: str) -> tuple[str, str, tuple[int, int]]:
-    """Generate the EV Complete report from the EV_TEST_VEHICLE fixture."""
-    fixture_path = FIXTURES_DIR / "EV_TEST_VEHICLE.json"
+async def _run_ev_fixture(timestamp: str, fixture_name: str, label: str) -> tuple[str, str, tuple[int, int]]:
+    fixture_path = FIXTURES_DIR / fixture_name
     data = json.loads(fixture_path.read_text())
 
-    print(f"[ev_complete] Generating report for {data['registration']}...")
+    print(f"[{label}] Generating report for {data['registration']}...")
     report = await generate_ev_report(
         registration=data["registration"],
         vehicle_data=data["vehicle_data"],
@@ -140,12 +139,20 @@ async def _run_ev_complete(timestamp: str) -> tuple[str, str, tuple[int, int]]:
         ev_check_data=data["ev_check_data"],
     )
     if not report:
-        raise RuntimeError("ev_complete generation returned None")
+        raise RuntimeError(f"{label} generation returned None")
 
-    out_path = OUT_DIR / f"ev_complete-{data['registration']}-{timestamp}.md"
+    out_path = OUT_DIR / f"{label}-{data['registration']}-{timestamp}.md"
     out_path.write_text(report)
-    print(f"[ev_complete] Saved: {out_path}")
-    return ("ev_complete", report, (800, 1400))
+    print(f"[{label}] Saved: {out_path}")
+    return (label, report, (800, 1400))
+
+
+async def _run_ev_complete(timestamp: str) -> tuple[str, str, tuple[int, int]]:
+    return await _run_ev_fixture(timestamp, "EV_TEST_VEHICLE.json", "ev_complete_tesla")
+
+
+async def _run_ev_leaf(timestamp: str) -> tuple[str, str, tuple[int, int]]:
+    return await _run_ev_fixture(timestamp, "EV_TEST_LEAF_2018.json", "ev_complete_leaf")
 
 
 def _judge(report_markdown: str, tier_label: str, word_range: tuple[int, int]) -> dict:
@@ -184,8 +191,12 @@ def _print_scorecard(label: str, scorecard: dict) -> bool:
 
 async def main() -> int:
     parser = argparse.ArgumentParser(description="AI report eval harness")
-    parser.add_argument("--tier", choices=["non_ev", "ev_complete"], help="Run a single tier")
-    parser.add_argument("--all", action="store_true", help="Run all tiers (default)")
+    parser.add_argument(
+        "--tier",
+        choices=["non_ev", "ev_complete", "ev_leaf"],
+        help="Run a single fixture",
+    )
+    parser.add_argument("--all", action="store_true", help="Run all fixtures (default)")
     args = parser.parse_args()
 
     if not settings.ANTHROPIC_API_KEY:
@@ -199,13 +210,15 @@ async def main() -> int:
     if args.tier:
         tiers = [args.tier]
     else:
-        tiers = ["non_ev", "ev_complete"]
+        tiers = ["non_ev", "ev_complete", "ev_leaf"]
 
     all_pass = True
     for tier in tiers:
         try:
             if tier == "non_ev":
                 label, report, word_range = await _run_non_ev(timestamp)
+            elif tier == "ev_leaf":
+                label, report, word_range = await _run_ev_leaf(timestamp)
             else:
                 label, report, word_range = await _run_ev_complete(timestamp)
         except Exception as exc:
