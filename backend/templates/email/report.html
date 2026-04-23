@@ -766,29 +766,20 @@
               <h2 style="margin: 0 0 12px 0; color: #1e293b; font-size: 15px; font-weight: 600; border-bottom: 2px solid #7c3aed; padding-bottom: 6px;">
                 <span style="color: #7c3aed;">&#9830;</span> Plate Changes
               </h2>
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-                <tr>
-                  <td>
-                    {% if plates.changes_found %}
-                    <span style="display: inline-block; background-color: #fef3c7; color: #92400e; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 4px;">{{ plates.record_count }} CHANGE{{ 'S' if plates.record_count != 1 else '' }} FOUND</span>
-                    {% else %}
-                    <span style="display: inline-block; background-color: #f1f5f9; color: #475569; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 4px;">NO PLATE CHANGES</span>
-                    {% endif %}
-                  </td>
-                </tr>
-              </table>
+              <p style="margin: 0 0 8px 0; font-size: 13px; color: #475569;">
+                Current plate: <strong style="color: #1e293b;">{{ registration }}</strong>.
+                {% if plates.changes_found %}Previous plates on record:{% else %}No prior plate changes recorded.{% endif %}
+              </p>
               {% if plates.records %}
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top: 8px; font-size: 12px;">
                 <tr>
                   <td style="padding: 6px 8px; background-color: #f1f5f9; font-weight: 600; color: #475569;">Previous Plate</td>
-                  <td style="padding: 6px 8px; background-color: #f1f5f9; font-weight: 600; color: #475569;">Date</td>
-                  <td style="padding: 6px 8px; background-color: #f1f5f9; font-weight: 600; color: #475569;">Type</td>
+                  <td style="padding: 6px 8px; background-color: #f1f5f9; font-weight: 600; color: #475569;">Transferred</td>
                 </tr>
                 {% for r in plates.records %}
                 <tr>
                   <td style="padding: 5px 8px; border-bottom: 1px solid #f1f5f9; color: #1e293b; font-weight: 600;">{{ r.previous_plate }}</td>
                   <td style="padding: 5px 8px; border-bottom: 1px solid #f1f5f9; color: #334155;">{{ r.change_date }}</td>
-                  <td style="padding: 5px 8px; border-bottom: 1px solid #f1f5f9; color: #334155;">{{ r.change_type }}</td>
                 </tr>
                 {% endfor %}
               </table>
@@ -806,26 +797,18 @@
               </h2>
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size: 13px; margin-bottom: 8px;">
                 <tr>
-                  <td style="padding: 5px 0; color: #64748b; width: 40%;">Total Keepers</td>
-                  <td style="padding: 5px 0; color: #1e293b; font-weight: 600; font-size: 15px;">{{ keeper_history.total_keepers }}</td>
+                  <td style="padding: 5px 0; color: #64748b; width: 40%;">Registered Keepers</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 600; font-size: 15px;">
+                    {% if keeper_history.keeper_count is not none %}{{ keeper_history.keeper_count }}{% else %}Not available{% endif %}
+                  </td>
                 </tr>
-              </table>
-              {% if keeper_history.keepers %}
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size: 12px;">
+                {% if keeper_history.last_change_date %}
                 <tr>
-                  <td style="padding: 6px 8px; background-color: #f1f5f9; font-weight: 600; color: #475569;">From</td>
-                  <td style="padding: 6px 8px; background-color: #f1f5f9; font-weight: 600; color: #475569;">To</td>
-                  <td style="padding: 6px 8px; background-color: #f1f5f9; font-weight: 600; color: #475569;">Type</td>
+                  <td style="padding: 5px 0; color: #64748b;">Last Keeper Change</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">{{ keeper_history.last_change_date }}</td>
                 </tr>
-                {% for k in keeper_history.keepers %}
-                <tr>
-                  <td style="padding: 5px 8px; border-bottom: 1px solid #f1f5f9; color: #334155;">{{ k.start_date }}</td>
-                  <td style="padding: 5px 8px; border-bottom: 1px solid #f1f5f9; color: #334155;">{{ k.end_date or 'Present' }}</td>
-                  <td style="padding: 5px 8px; border-bottom: 1px solid #f1f5f9; color: #334155;">{{ k.keeper_type }}</td>
-                </tr>
-                {% endfor %}
+                {% endif %}
               </table>
-              {% endif %}
             </td>
           </tr>
           {% endif %}

@@ -238,11 +238,13 @@ class OneAutoClient:
 # ---------------------------------------------------------------------------
 
 
-def parse_autocheck(raw: Optional[Dict]) -> Optional[Dict]:
+def parse_autocheck(raw: Optional[Dict], current_registration: str = "") -> Optional[Dict]:
     """Parse a single AutoCheck response into all provenance sub-dicts.
 
     Returns None when the upstream call failed so the email/PDF omit the
     provenance section entirely rather than asserting a false "Clear".
+    `current_registration` is used by plate-change filtering to drop
+    self-referential audit rows.
     """
     if raw is None:
         return None
@@ -250,7 +252,7 @@ def parse_autocheck(raw: Optional[Dict]) -> Optional[Dict]:
         "finance_check": _parse_finance(raw),
         "stolen_check": _parse_stolen(raw),
         "write_off_check": _parse_condition(raw),
-        "plate_changes": _parse_plate_changes(raw),
+        "plate_changes": _parse_plate_changes(raw, current_registration),
         "keeper_history": _parse_keepers(raw),
         "high_risk": _parse_high_risk(raw),
         "previous_searches": _parse_previous_searches(raw),
@@ -324,22 +326,45 @@ def _parse_condition(raw: Optional[Dict]) -> Dict:
     }
 
 
-def _parse_plate_changes(raw: Optional[Dict]) -> Dict:
-    """Extract plate change history from AutoCheck response."""
+def _parse_plate_changes(raw: Optional[Dict], current_registration: str = "") -> Dict:
+    """Extract plate change history from AutoCheck response.
+
+    Experian's `cherished_data_items` includes non-transfer audit rows
+    (type "Marker", "Data Move", etc.) that aren't real plate changes.
+    Filter those out so the customer only sees genuine transfers.
+
+    Args:
+        current_registration: the VRM this check was run for. Used to drop
+            self-referential rows (Experian sometimes lists the current
+            plate as a historical "previous plate" — not an actual change).
+    """
     if not raw:
         return _empty_plates()
+
+    IGNORED_TYPES = {"Marker", "Data Move", ""}
+    current = (current_registration or "").upper().replace(" ", "")
 
     items = raw.get("cherished_data_items") or []
     records = []
     for item in items:
-        prev = item.get("previous_vehicle_registration_mark", "")
-        curr = item.get("current_vehicle_registration_mark", "")
-        if prev and curr and prev != curr:
-            records.append({
-                "previous_plate": prev,
-                "change_date": item.get("cherished_plate_transfer_date", ""),
-                "change_type": item.get("transfer_type", "Transfer"),
-            })
+        prev = item.get("previous_vehicle_registration_mark", "") or ""
+        curr = item.get("current_vehicle_registration_mark", "") or ""
+        transfer_type = item.get("transfer_type", "Transfer") or ""
+        prev_norm = prev.upper().replace(" ", "")
+
+        if not prev or not curr or prev == curr:
+            continue
+        if current and prev_norm == current:
+            # Current plate showing up as a "previous" plate — not a transfer
+            continue
+        if transfer_type in IGNORED_TYPES:
+            continue
+
+        records.append({
+            "previous_plate": prev,
+            "change_date": item.get("cherished_plate_transfer_date", ""),
+            "change_type": transfer_type,
+        })
 
     return {
         "changes_found": len(records) > 0,
@@ -442,9 +467,15 @@ def _parse_vehicle_id(raw: Optional[Dict]) -> Dict:
 
 
 def parse_valuation(raw: Optional[Dict], mileage: int) -> Optional[Dict]:
+    """Map Brego valuation response to our Valuation schema.
+
+    Brego's /brego/currentandfuturevaluationsfromvrm/v2 nests the numeric
+    figures inside a `valuations` array. Pre-v2 endpoints returned them at
+    the top level — support both shapes defensively.
+    """
     if raw is None:
         return None
-    """Map Brego valuation response to our Valuation schema."""
+
     if not raw:
         return {
             "private_sale": None,
@@ -457,13 +488,17 @@ def parse_valuation(raw: Optional[Dict], mileage: int) -> Optional[Dict]:
             "data_source": "Brego",
         }
 
+    val_row = raw
+    if isinstance(raw.get("valuations"), list) and raw["valuations"]:
+        val_row = raw["valuations"][0]
+
     return {
-        "private_sale": raw.get("retail_average_valuation"),
-        "dealer_forecourt": raw.get("retail_high_valuation"),
-        "trade_in": raw.get("trade_average_valuation"),
-        "part_exchange": raw.get("trade_high_valuation"),
+        "private_sale": val_row.get("retail_average_valuation"),
+        "dealer_forecourt": val_row.get("retail_high_valuation"),
+        "trade_in": val_row.get("trade_average_valuation"),
+        "part_exchange": val_row.get("trade_high_valuation"),
         "valuation_date": date.today().isoformat(),
-        "mileage_used": raw.get("current_mileage", mileage),
+        "mileage_used": val_row.get("current_mileage", mileage),
         "condition": "Mileage-adjusted",
         "data_source": "Brego",
     }

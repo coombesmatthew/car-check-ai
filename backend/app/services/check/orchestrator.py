@@ -387,8 +387,9 @@ class CheckOrchestrator:
             logger.warning(f"One Auto CarGuide salvage failed: {salvage_raw}")
             salvage_raw = None
 
-        # AutoCheck returns all Experian data in one response
-        parsed = parse_autocheck(autocheck_raw)
+        # AutoCheck returns all Experian data in one response. Pass the VRM
+        # through so plate-change parsing can filter self-referential rows.
+        parsed = parse_autocheck(autocheck_raw, current_registration=registration) or {}
         parsed["valuation"] = parse_valuation(valuation_raw, current_mileage or 0)
         parsed["salvage_check"] = parse_salvage(salvage_raw)
 
