@@ -35,7 +35,7 @@ from app.services.payment.stripe_service import retrieve_session
 EV_TIERS = {"ev", "ev_health", "ev_complete"}
 FULFIL_RESULT_CACHE_PREFIX = "fulfil_result"
 FULFIL_LOCK_CACHE_PREFIX = "fulfil_lock"
-FULFIL_RESULT_TTL_SECONDS = 86400  # 24h
+FULFIL_RESULT_TTL_SECONDS = 30 * 86400  # 30 days — customers can revisit via email link
 FULFIL_LOCK_TTL_SECONDS = 600  # 10 min — enough for the longest AI + PDF run
 FULFIL_WAIT_POLL_SECONDS = 2
 FULFIL_WAIT_MAX_POLLS = 90  # 90 * 2s = 3 min max concurrent wait

@@ -69,6 +69,20 @@
             </td>
           </tr>
 
+          <!-- View online CTA -->
+          {% if report_url and report_url != "#" %}
+          <tr>
+            <td style="padding: 20px 32px; border-bottom: 1px solid #e2e8f0; text-align: center;">
+              <a href="{{ report_url }}" style="display: inline-block; background-color: #2563eb; color: #ffffff; font-size: 14px; font-weight: 600; text-decoration: none; padding: 12px 28px; border-radius: 8px;">
+                View full report online
+              </a>
+              <p style="margin: 10px 0 0 0; color: #64748b; font-size: 12px;">
+                This link is valid for 30 days. The PDF is also attached.
+              </p>
+            </td>
+          </tr>
+          {% endif %}
+
 
           <!-- At a Glance checklist -->
           {% if checks_summary %}

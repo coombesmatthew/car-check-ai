@@ -68,9 +68,12 @@ function ReportContent() {
   if (status === "pending") {
     return (
       <div className="text-center py-20">
-        <h2 className="text-2xl font-bold text-slate-900 mb-2">Report still generating</h2>
-        <p className="text-slate-500 mb-6 max-w-md mx-auto">
-          Your payment is confirmed but the report is still being built. It usually takes 30–90 seconds. Try reloading this page in a moment.
+        <h2 className="text-2xl font-bold text-slate-900 mb-2">Report unavailable</h2>
+        <p className="text-slate-500 mb-2 max-w-md mx-auto">
+          If you just paid, your report is still being built — this usually takes 30–90 seconds. Try reloading in a moment.
+        </p>
+        <p className="text-sm text-slate-400 mb-6 max-w-md mx-auto">
+          Online reports expire 30 days after purchase. If it&apos;s been longer, your PDF copy in email is still valid — run a fresh check for the latest data.
         </p>
         <button onClick={() => window.location.reload()} className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors">
           Reload
