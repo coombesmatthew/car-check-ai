@@ -81,6 +81,13 @@ async def fulfil_report(session_id: str) -> FulfilmentResult:
         check_data = await _run_car_pipeline(registration, tier)
         ref_prefix = "CV"
 
+    # 2b. Attach optional listing_price (pence) from the Stripe metadata so
+    # the paid report can show "you paid £X vs valuation". Captured from the
+    # modal before checkout; absent if user skipped.
+    listing_price = session.get("listing_price")
+    if listing_price:
+        check_data["listing_price"] = listing_price
+
     # 3. Generate report reference
     report_ref = f"{ref_prefix}-{dt.utcnow().strftime('%Y%m%d')}-{uuid.uuid4().hex[:8].upper()}"
 

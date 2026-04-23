@@ -27,13 +27,22 @@ interface FullCheckSectionProps {
   keeper_history: KeeperHistory | null;
   high_risk: HighRiskCheck | null;
   previous_searches: PreviousSearches | null;
+  listing_price?: number | null;  // pence — buyer-entered asking price
   registration: string;
+}
+
+function formatDelta(deltaPounds: number): { label: string; className: string } {
+  const absStr = `£${Math.abs(deltaPounds).toLocaleString()}`;
+  if (deltaPounds === 0) return { label: `Exactly at market`, className: "text-slate-600" };
+  if (deltaPounds < 0) return { label: `−${absStr}`, className: "text-emerald-700 font-semibold" };
+  // Over market: amber if within 10%, red if further
+  return { label: `+${absStr}`, className: "text-red-700 font-semibold" };
 }
 
 export default function FullCheckSection({
   finance_check, stolen_check, write_off_check, valuation,
   salvage_check, import_status, plate_changes, keeper_history,
-  high_risk, previous_searches, registration,
+  high_risk, previous_searches, listing_price, registration,
 }: FullCheckSectionProps) {
   const hasPremiumData = !!(
     finance_check || stolen_check || write_off_check || valuation ||
@@ -105,6 +114,39 @@ export default function FullCheckSection({
             )}
             <DetailRow label="Valuation Date" value={valuation.valuation_date} />
           </div>
+
+          {/* Asking-price comparison — only if buyer entered a price pre-payment */}
+          {listing_price && listing_price > 0 && (
+            <div className="mt-3 pt-3 border-t border-slate-100">
+              <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-2">Your Asking Price</p>
+              <DetailRow label="You entered" value={`£${Math.round(listing_price / 100).toLocaleString()}`} />
+              {valuation.private_sale !== null && (
+                <div className="flex justify-between py-1.5 border-b border-slate-100">
+                  <span className="text-sm text-slate-500">vs Private Sale</span>
+                  <span className={`text-sm ${formatDelta(Math.round(listing_price / 100) - valuation.private_sale).className}`}>
+                    {formatDelta(Math.round(listing_price / 100) - valuation.private_sale).label}
+                  </span>
+                </div>
+              )}
+              {valuation.dealer_forecourt !== null && (
+                <div className="flex justify-between py-1.5 border-b border-slate-100 last:border-0">
+                  <span className="text-sm text-slate-500">vs Dealer</span>
+                  <span className={`text-sm ${formatDelta(Math.round(listing_price / 100) - valuation.dealer_forecourt).className}`}>
+                    {formatDelta(Math.round(listing_price / 100) - valuation.dealer_forecourt).label}
+                  </span>
+                </div>
+              )}
+              {valuation.trade_in !== null && (
+                <div className="flex justify-between py-1.5 last:border-0">
+                  <span className="text-sm text-slate-500">vs Trade-in</span>
+                  <span className={`text-sm ${formatDelta(Math.round(listing_price / 100) - valuation.trade_in).className}`}>
+                    {formatDelta(Math.round(listing_price / 100) - valuation.trade_in).label}
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+
           <div className="mt-2 text-xs text-slate-400 bg-slate-50 rounded px-2 py-1">
             Source: {valuation.data_source}
           </div>

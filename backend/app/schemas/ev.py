@@ -43,6 +43,7 @@ class EVCheckoutRequest(BaseModel):
     registration: str
     email: Optional[str] = None  # optional — Stripe collects if absent
     tier: str = "ev"
+    listing_price: Optional[int] = None  # pence; optional buyer-entered asking price
 
 
 class RangeEstimate(BaseModel):

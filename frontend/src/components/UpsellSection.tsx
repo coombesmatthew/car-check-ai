@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createCheckout } from "@/lib/api";
+import ListingPriceModal from "@/components/ListingPriceModal";
 
 interface UpsellSectionProps {
   registration: string;
@@ -62,17 +63,19 @@ export default function UpsellSection({
 }: UpsellSectionProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
-  const handleCheckout = async () => {
+  const handleContinue = async (listingPricePence: number | null) => {
     if (loading) return;
     setError(null);
     setLoading(true);
     try {
-      const { checkout_url } = await createCheckout(registration, null, "premium");
+      const { checkout_url } = await createCheckout(registration, null, "premium", listingPricePence);
       window.location.href = checkout_url;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Checkout failed");
       setLoading(false);
+      setModalOpen(false);
     }
   };
 
@@ -84,7 +87,7 @@ export default function UpsellSection({
     "Keeper-history timeline",
     "Plate-change history",
     "Salvage-auction records",
-    "PDF emailed within 60 seconds",
+    "Emailed & online for 30 days",
   ];
 
   return (
@@ -110,7 +113,7 @@ export default function UpsellSection({
 
         <div className="text-center mb-4">
           <button
-            onClick={handleCheckout}
+            onClick={() => setModalOpen(true)}
             disabled={loading}
             className="inline-flex items-center gap-2 px-8 py-3.5 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-75 disabled:cursor-wait"
           >
@@ -141,6 +144,17 @@ export default function UpsellSection({
           <a href="/privacy" className="underline hover:text-slate-600">Privacy Policy</a>.
         </p>
       </div>
+
+      <ListingPriceModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onContinue={handleContinue}
+        registration={registration}
+        tierLabel="Premium Check"
+        tierPrice="£9.99"
+        accentColour="purple"
+        loading={loading}
+      />
     </div>
   );
 }

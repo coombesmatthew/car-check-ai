@@ -4,6 +4,7 @@ import { useState } from "react";
 import { DetailRow, PeekCard, icons } from "./shared";
 import Card from "@/components/ui/Card";
 import SwipeCarousel from "@/components/ui/SwipeCarousel";
+import ListingPriceModal from "@/components/ListingPriceModal";
 import { createCheckout } from "@/lib/api";
 
 interface PremiumPreviewProps {
@@ -15,19 +16,23 @@ const currentMonth = new Date().toLocaleDateString("en-GB", { month: "long", yea
 export default function PremiumPreview({ registration }: PremiumPreviewProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
-  const handleUnlock = async () => {
+  const handleContinue = async (listingPricePence: number | null) => {
     if (loading) return;
     setError(null);
     setLoading(true);
     try {
-      const { checkout_url } = await createCheckout(registration, null, "premium");
+      const { checkout_url } = await createCheckout(registration, null, "premium", listingPricePence);
       window.location.href = checkout_url;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Checkout failed");
       setLoading(false);
+      setModalOpen(false);
     }
   };
+
+  const handleUnlock = () => setModalOpen(true);
 
   return (
     <div className="space-y-5">
@@ -150,6 +155,17 @@ export default function PremiumPreview({ registration }: PremiumPreviewProps) {
           </p>
         </div>
       </div>
+
+      <ListingPriceModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onContinue={handleContinue}
+        registration={registration}
+        tierLabel="Premium Check"
+        tierPrice="£9.99"
+        accentColour="purple"
+        loading={loading}
+      />
     </div>
   );
 }

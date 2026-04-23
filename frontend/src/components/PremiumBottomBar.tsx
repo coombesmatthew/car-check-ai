@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { createCheckout } from "@/lib/api";
+import { createCheckout, createEVCheckout } from "@/lib/api";
+import ListingPriceModal from "@/components/ListingPriceModal";
 
 interface PremiumBottomBarProps {
   hasPremium: boolean;
@@ -14,38 +15,54 @@ const VARIANTS = {
     title: "Unlock Full Vehicle Check",
     subtitle: "Finance, stolen, write-off & more",
     price: "£9.99",
-    tier: "premium",
+    tier: "premium" as const,
+    label: "Premium Check",
+    isEv: false,
     gradient: "from-purple-600 to-purple-700",
     subtitleColor: "text-purple-200",
+    accent: "purple" as const,
   },
   ev: {
     title: "Unlock EV Complete",
     subtitle: "Battery, range, provenance & valuation",
     price: "£13.99",
-    tier: "ev_complete",
+    tier: "ev_complete" as const,
+    label: "EV Complete",
+    isEv: true,
     gradient: "from-teal-600 to-teal-700",
     subtitleColor: "text-teal-200",
+    accent: "teal" as const,
   },
 } as const;
 
 export default function PremiumBottomBar({ hasPremium, variant = "full", registration }: PremiumBottomBarProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
   if (hasPremium) return null;
   const v = VARIANTS[variant];
 
-  const handleClick = async (e: React.MouseEvent) => {
+  const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
+    if (!registration || loading) return;
+    setError(null);
+    setModalOpen(true);
+  };
+
+  const handleContinue = async (listingPricePence: number | null) => {
     if (!registration || loading) return;
     setError(null);
     setLoading(true);
     try {
-      const { checkout_url } = await createCheckout(registration, null, v.tier);
+      const { checkout_url } = v.isEv
+        ? await createEVCheckout(registration, null, v.tier as "ev" | "ev_complete", listingPricePence)
+        : await createCheckout(registration, null, v.tier, listingPricePence);
       window.location.href = checkout_url;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Checkout failed");
       setLoading(false);
+      setModalOpen(false);
     }
   };
 
@@ -80,6 +97,19 @@ export default function PremiumBottomBar({ hasPremium, variant = "full", registr
           </span>
         </button>
       </div>
+
+      {registration && (
+        <ListingPriceModal
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
+          onContinue={handleContinue}
+          registration={registration}
+          tierLabel={v.label}
+          tierPrice={v.price}
+          accentColour={v.accent}
+          loading={loading}
+        />
+      )}
     </div>
   );
 }

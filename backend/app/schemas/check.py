@@ -353,6 +353,7 @@ class FreeCheckResponse(BaseModel):
     salvage_check: Optional[SalvageCheck] = None
     import_status: Optional[ImportStatusCheck] = None
     vehicle_images: Optional[VehicleImages] = None
+    listing_price: Optional[int] = None  # pence; buyer-entered asking price (paid tiers only)
     checked_at: datetime = Field(default_factory=datetime.utcnow)
     data_sources: List[str] = []
 

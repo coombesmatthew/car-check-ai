@@ -4,6 +4,7 @@ import { useState } from "react";
 import { DetailRow, PeekCard, icons } from "@/components/sections/shared";
 import Card from "@/components/ui/Card";
 import SwipeCarousel from "@/components/ui/SwipeCarousel";
+import ListingPriceModal from "@/components/ListingPriceModal";
 import { createEVCheckout } from "@/lib/api";
 
 interface EVFullCheckSectionProps {
@@ -15,19 +16,23 @@ const currentMonth = new Date().toLocaleDateString("en-GB", { month: "long", yea
 export default function EVFullCheckSection({ registration }: EVFullCheckSectionProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
-  const handleUnlock = async () => {
+  const handleContinue = async (listingPricePence: number | null) => {
     if (loading) return;
     setError(null);
     setLoading(true);
     try {
-      const { checkout_url } = await createEVCheckout(registration, null, "ev_complete");
+      const { checkout_url } = await createEVCheckout(registration, null, "ev_complete", listingPricePence);
       window.location.href = checkout_url;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Checkout failed");
       setLoading(false);
+      setModalOpen(false);
     }
   };
+
+  const handleUnlock = () => setModalOpen(true);
 
   return (
     <div className="space-y-5">
@@ -148,6 +153,17 @@ export default function EVFullCheckSection({ registration }: EVFullCheckSectionP
           {error ? <span className="text-red-500">{error}</span> : "One-off payment · No subscription · Instant results"}
         </p>
       </div>
+
+      <ListingPriceModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onContinue={handleContinue}
+        registration={registration}
+        tierLabel="EV Complete"
+        tierPrice="£13.99"
+        accentColour="teal"
+        loading={loading}
+      />
     </div>
   );
 }

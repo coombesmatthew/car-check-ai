@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createEVCheckout } from "@/lib/api";
+import ListingPriceModal from "@/components/ListingPriceModal";
 
 interface Props {
   registration: string;
@@ -16,17 +17,25 @@ export default function EVUpsellSection({ registration }: Props) {
   const [selectedTier, setSelectedTier] = useState<Tier>("ev");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
-  const handleCheckout = async () => {
+  const handleCheckout = () => {
+    if (loading) return;
+    setError(null);
+    setModalOpen(true);
+  };
+
+  const handleContinue = async (listingPricePence: number | null) => {
     if (loading) return;
     setError(null);
     setLoading(true);
     try {
-      const { checkout_url } = await createEVCheckout(registration, null, selectedTier);
+      const { checkout_url } = await createEVCheckout(registration, null, selectedTier, listingPricePence);
       window.location.href = checkout_url;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Checkout failed");
       setLoading(false);
+      setModalOpen(false);
     }
   };
 
@@ -75,7 +84,7 @@ export default function EVUpsellSection({ registration }: Props) {
               <span className="text-xl font-bold text-slate-900">&pound;8.99</span>
             </div>
             <ul className="space-y-1.5">
-              {["Battery Health Score", "Real-World Range", "Charging Costs", "Lifespan Prediction", "PDF emailed in 60s"].map((item) => (
+              {["Battery Health Score", "Real-World Range", "Charging Costs", "Lifespan Prediction", "Emailed & online 30 days"].map((item) => (
                 <li key={item} className="flex items-center gap-1.5 text-xs text-slate-600">
                   <svg className="w-3 h-3 text-emerald-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
@@ -140,6 +149,17 @@ export default function EVUpsellSection({ registration }: Props) {
           <a href="/privacy" className="underline hover:text-slate-600">Privacy Policy</a>.
         </p>
       </div>
+
+      <ListingPriceModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onContinue={handleContinue}
+        registration={registration}
+        tierLabel={tierCopy[selectedTier].label}
+        tierPrice={`£${tierCopy[selectedTier].price}`}
+        accentColour={selectedTier === "ev_complete" ? "teal" : "emerald"}
+        loading={loading}
+      />
     </div>
   );
 }

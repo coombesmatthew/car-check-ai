@@ -8,6 +8,7 @@ import EVHistorySections from "@/components/ev/sections/EVHistorySections";
 import EVFullCheckSection from "@/components/ev/sections/EVFullCheckSection";
 import FullCheckSection from "@/components/sections/FullCheckSection";
 import AtAGlance from "@/components/sections/AtAGlance";
+import ListingPriceModal from "@/components/ListingPriceModal";
 import SectionNav, { SectionConfig } from "@/components/SectionNav";
 import PremiumBottomBar from "@/components/PremiumBottomBar";
 
@@ -40,7 +41,7 @@ export default function EVCheckResult({ result, reportMode = false }: Props) {
     charging_costs, ev_specs, lifespan_prediction,
     finance_check, stolen_check, write_off_check, salvage_check,
     import_status, plate_changes, keeper_history, valuation,
-    high_risk, previous_searches,
+    high_risk, previous_searches, listing_price,
   } = result;
 
   const hasProvenanceData = !!(
@@ -51,17 +52,26 @@ export default function EVCheckResult({ result, reportMode = false }: Props) {
 
   const [checkoutTier, setCheckoutTier] = useState<"ev" | "ev_complete" | null>(null);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const [modalTier, setModalTier] = useState<"ev" | "ev_complete" | null>(null);
 
-  const handleCheckout = async (tier: "ev" | "ev_complete") => {
+  const openModal = (tier: "ev" | "ev_complete") => {
     if (checkoutTier) return;
+    setCheckoutError(null);
+    setModalTier(tier);
+  };
+
+  const handleContinue = async (listingPricePence: number | null) => {
+    if (!modalTier || checkoutTier) return;
+    const tier = modalTier;
     setCheckoutError(null);
     setCheckoutTier(tier);
     try {
-      const { checkout_url } = await createEVCheckout(result.registration, null, tier);
+      const { checkout_url } = await createEVCheckout(result.registration, null, tier, listingPricePence);
       window.location.href = checkout_url;
     } catch (err) {
       setCheckoutError(err instanceof Error ? err.message : "Checkout failed");
       setCheckoutTier(null);
+      setModalTier(null);
     }
   };
 
@@ -117,6 +127,7 @@ export default function EVCheckResult({ result, reportMode = false }: Props) {
           keeper_history={keeper_history ?? null}
           high_risk={high_risk ?? null}
           previous_searches={previous_searches ?? null}
+          listing_price={listing_price ?? null}
           registration={result.registration}
         />
       ) : (
@@ -234,7 +245,7 @@ export default function EVCheckResult({ result, reportMode = false }: Props) {
               </div>
               <div className="mt-5 flex items-center gap-4 flex-wrap">
                 <button
-                  onClick={() => handleCheckout("ev")}
+                  onClick={() => openModal("ev")}
                   disabled={checkoutTier !== null}
                   className="inline-flex items-center gap-2 px-6 py-2.5 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 transition-colors text-sm disabled:opacity-75 disabled:cursor-wait"
                 >
@@ -297,7 +308,7 @@ export default function EVCheckResult({ result, reportMode = false }: Props) {
               </div>
               <div className="mt-5 flex items-center gap-4 flex-wrap">
                 <button
-                  onClick={() => handleCheckout("ev_complete")}
+                  onClick={() => openModal("ev_complete")}
                   disabled={checkoutTier !== null}
                   className="inline-flex items-center gap-2 px-6 py-2.5 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 transition-colors text-sm disabled:opacity-75 disabled:cursor-wait"
                 >
@@ -339,6 +350,17 @@ export default function EVCheckResult({ result, reportMode = false }: Props) {
       {!reportMode && (
         <PremiumBottomBar hasPremium={false} variant="ev" registration={result.registration} />
       )}
+
+      <ListingPriceModal
+        open={modalTier !== null}
+        onClose={() => setModalTier(null)}
+        onContinue={handleContinue}
+        registration={result.registration}
+        tierLabel={modalTier === "ev_complete" ? "EV Complete" : "EV Health Check"}
+        tierPrice={modalTier === "ev_complete" ? "£13.99" : "£8.99"}
+        accentColour={modalTier === "ev_complete" ? "teal" : "emerald"}
+        loading={checkoutTier !== null}
+      />
     </div>
   );
 }

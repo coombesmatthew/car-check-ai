@@ -314,6 +314,7 @@ export interface FreeCheckResponse {
   previous_searches: PreviousSearches | null;
   salvage_check: SalvageCheck | null;
   import_status: ImportStatusCheck | null;
+  listing_price?: number | null;
   checked_at: string;
   data_sources: string[];
 }
@@ -367,9 +368,11 @@ export async function createCheckout(
   registration: string,
   email: string | null,
   tier: string = "basic",
+  listingPricePence?: number | null,
 ): Promise<CheckoutResponse> {
   const body: Record<string, unknown> = { registration, tier };
   if (email) body.email = email;
+  if (listingPricePence && listingPricePence > 0) body.listing_price = listingPricePence;
   const res = await fetch(`${API_URL}/api/v1/checks/basic/checkout`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -580,6 +583,7 @@ export interface EVCheckResponse {
   valuation?: Valuation | null;
   high_risk?: HighRiskCheck | null;
   previous_searches?: PreviousSearches | null;
+  listing_price?: number | null;
   checked_at: string;
   data_sources: string[];
 }
@@ -638,10 +642,12 @@ export async function runEVPreview(
 export async function createEVCheckout(
   registration: string,
   email: string | null,
-  tier: "ev" | "ev_complete" = "ev"
+  tier: "ev" | "ev_complete" = "ev",
+  listingPricePence?: number | null,
 ): Promise<CheckoutResponse> {
   const body: Record<string, unknown> = { registration, tier };
   if (email) body.email = email;
+  if (listingPricePence && listingPricePence > 0) body.listing_price = listingPricePence;
   const res = await fetch(`${API_URL}/api/v1/ev/checkout`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

@@ -116,6 +116,7 @@ async def ev_checkout(request: EVCheckoutRequest):
             registration=request.registration,
             email=request.email,
             tier=request.tier,
+            listing_price=request.listing_price,
         )
         return EVCheckoutResponse(**result)
     except RuntimeError as e:
