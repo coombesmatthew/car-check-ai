@@ -200,20 +200,21 @@ class CheckOrchestrator:
     ) -> Optional[ImportStatusCheck]:
         """Merge AutoCheck is_imported/is_exported with DVLA marked_for_export.
 
-        Returns None if neither source has data — so the UI can hide the card
-        entirely rather than asserting a false "Not imported / Not exported".
+        Returns None on the free tier (no AutoCheck) so the UI keeps rendering
+        the paid-tier peek preview. The DVLA markedForExport flag is still
+        surfaced via Overview on the free tier.
         """
         autocheck = provenance.get("import_status") if provenance else None
-        dvla_export = bool(dvla_data.get("markedForExport")) if dvla_data else False
-
-        if not autocheck and not dvla_data:
+        if not autocheck:
             return None
 
+        dvla_export = bool(dvla_data.get("markedForExport")) if dvla_data else False
+
         return ImportStatusCheck(
-            is_imported=bool(autocheck.get("is_imported")) if autocheck else False,
-            is_exported=bool(autocheck.get("is_exported")) if autocheck else False,
+            is_imported=bool(autocheck.get("is_imported")),
+            is_exported=bool(autocheck.get("is_exported")),
             marked_for_export=dvla_export,
-            data_source="Experian + DVLA" if autocheck else "DVLA",
+            data_source="Experian + DVLA",
         )
 
     def _build_vehicle_identity(self, dvla_data: Optional[Dict]) -> Optional[VehicleIdentity]:
