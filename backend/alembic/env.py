@@ -6,6 +6,7 @@ from alembic import context
 from app.core.config import settings
 from app.models.base import Base
 from app.models.check import User, VehicleCheck, Payment  # noqa: F401 - import to register models
+from app.models.api_call import ApiCall  # noqa: F401 - register for autogenerate
 
 config = context.config
 

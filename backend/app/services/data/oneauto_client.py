@@ -29,18 +29,65 @@ class OneAutoClient:
         )
 
     async def _get(self, path: str, params: Dict) -> Optional[Dict]:
-        """Make a GET request and return the result dict, or None on failure."""
+        """Make a GET request and return the result dict, or None on failure.
+
+        Every call is logged + persisted to the api_calls table so we can
+        diagnose 403s (One Auto's body is where the actionable message lives).
+        """
+        import time
+        from app.models.api_call import record_api_call
+
+        start = time.perf_counter()
+        status_code: Optional[int] = None
+        error_msg: Optional[str] = None
+        body_snippet: Optional[str] = None
+        result: Optional[Dict] = None
+
         try:
             resp = await self._client.get(path, params=params)
-            data = resp.json()
+            status_code = resp.status_code
+            body_snippet = resp.text[:500] if resp.text else None
+
+            if resp.status_code != 200:
+                error_msg = f"HTTP {resp.status_code}: {resp.text[:200]}"
+                logger.error(f"One Auto {path} HTTP {resp.status_code}: {resp.text[:500]}")
+                return None
+
+            try:
+                data = resp.json()
+            except Exception as e:
+                error_msg = f"Invalid JSON response: {e}"
+                logger.error(f"One Auto {path} invalid JSON: {resp.text[:500]}")
+                return None
+
             if data.get("success"):
-                return data.get("result")
-            error = data.get("result", {}).get("error") or data.get("error")
-            logger.warning(f"One Auto API error on {path}: {error}")
+                result = data.get("result")
+                return result
+
+            error_msg = data.get("result", {}).get("error") or data.get("error") or "unspecified error"
+            logger.warning(f"One Auto API error on {path}: {error_msg}")
             return None
+
         except Exception as e:
+            error_msg = str(e)
             logger.error(f"One Auto API request failed on {path}: {e}")
             return None
+        finally:
+            duration_ms = int((time.perf_counter() - start) * 1000)
+            registration = params.get("vehicle_registration_mark") if params else None
+            try:
+                await record_api_call(
+                    service="oneauto",
+                    endpoint=path,
+                    status_code=status_code,
+                    duration_ms=duration_ms,
+                    registration=registration,
+                    error=error_msg,
+                    response_body=body_snippet,
+                )
+            except Exception as e:
+                # Never let tracking failure break the primary call
+                logger.warning(f"Failed to record api_call: {e}")
 
     async def get_autocheck(self, registration: str) -> Optional[Dict]:
         """Experian AutoCheck — single call covering finance, stolen, write-off,
@@ -189,8 +236,14 @@ class OneAutoClient:
 # ---------------------------------------------------------------------------
 
 
-def parse_autocheck(raw: Optional[Dict]) -> Dict:
-    """Parse a single AutoCheck response into all provenance sub-dicts."""
+def parse_autocheck(raw: Optional[Dict]) -> Optional[Dict]:
+    """Parse a single AutoCheck response into all provenance sub-dicts.
+
+    Returns None when the upstream call failed so the email/PDF omit the
+    provenance section entirely rather than asserting a false "Clear".
+    """
+    if raw is None:
+        return None
     return {
         "finance_check": _parse_finance(raw),
         "stolen_check": _parse_stolen(raw),
@@ -386,7 +439,9 @@ def _parse_vehicle_id(raw: Optional[Dict]) -> Dict:
     }
 
 
-def parse_valuation(raw: Optional[Dict], mileage: int) -> Dict:
+def parse_valuation(raw: Optional[Dict], mileage: int) -> Optional[Dict]:
+    if raw is None:
+        return None
     """Map Brego valuation response to our Valuation schema."""
     if not raw:
         return {
@@ -412,10 +467,10 @@ def parse_valuation(raw: Optional[Dict], mileage: int) -> Dict:
     }
 
 
-def parse_salvage(raw: Optional[Dict]) -> Dict:
-    """Map CarGuide salvage check response."""
-    if not raw:
-        return {"salvage_found": False, "data_source": "CarGuide"}
+def parse_salvage(raw: Optional[Dict]) -> Optional[Dict]:
+    """Map CarGuide salvage check response. None if upstream call failed."""
+    if raw is None:
+        return None
 
     # CarGuide returns salvage auction records if found
     return {
