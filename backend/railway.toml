@@ -3,9 +3,6 @@ builder = "DOCKERFILE"
 dockerfilePath = "Dockerfile"
 
 [deploy]
-# Run Alembic migrations before the app starts on every deploy.
-# Safe to re-run: Alembic no-ops when the DB is already at head.
-preDeployCommand = "alembic upgrade head"
 healthcheckPath = "/health"
 healthcheckTimeout = 120
 restartPolicyType = "ON_FAILURE"

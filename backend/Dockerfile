@@ -47,4 +47,8 @@ USER appuser
 
 EXPOSE ${PORT:-8000}
 
-CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}
+# Run Alembic migrations before starting the app. Alembic is idempotent —
+# re-running against a DB already at head is a no-op. If the migration fails
+# the container crashes on startup, which is the right behaviour (prevents
+# serving traffic against an out-of-date schema).
+CMD alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}
