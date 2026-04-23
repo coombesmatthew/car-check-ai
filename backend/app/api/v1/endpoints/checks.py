@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Request
-from fastapi.responses import Response
+from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel, EmailStr
 from typing import Optional
 
@@ -11,7 +11,13 @@ from app.services.ai.report_generator import generate_ai_report
 from app.services.report.pdf_generator import generate_pdf, _extract_verdict
 from app.services.notification.email_sender import send_report_email
 from app.services.payment.stripe_service import create_checkout_session, verify_webhook_signature
-from app.services.fulfilment import fulfil_report, handle_webhook
+from app.services.fulfilment import (
+    fulfil_report,
+    fulfil_report_idempotent,
+    get_fulfilment_status,
+    handle_webhook,
+    trigger_fulfilment_background,
+)
 from app.services.listing.scraper import scrape_listing
 
 router = APIRouter()
@@ -280,14 +286,14 @@ class FulfilmentResponse(BaseModel):
 
 @router.post("/basic/fulfil", response_model=FulfilmentResponse)
 async def fulfil_basic_report(session_id: str):
-    """Fulfil a BASIC/PREMIUM tier report after successful Stripe payment.
+    """Fulfil a BASIC/PREMIUM tier report — blocks until complete.
 
-    Verifies payment, generates the report, and sends the email.
-    Called by the frontend after the customer returns from Stripe Checkout.
-    Uses the shared fulfilment pipeline (see services/fulfilment.py).
+    Idempotent via session_id cache. Still exposed for back-compat with
+    older frontend success pages, but new flow should use /fulfil/trigger
+    + /status to avoid the 100s gateway timeout (AI can take 2+ minutes).
     """
     try:
-        result = await fulfil_report(session_id)
+        result = await fulfil_report_idempotent(session_id)
         return FulfilmentResponse(
             registration=result.registration,
             report_ref=result.report_ref,
@@ -304,6 +310,40 @@ async def fulfil_basic_report(session_id: str):
             status_code=500,
             detail="Report generation failed after payment - please contact support",
         )
+
+
+@router.post("/basic/fulfil/trigger", status_code=202)
+async def trigger_basic_fulfilment(session_id: str):
+    """Kick off fulfilment in the background and return immediately.
+
+    Idempotent — safe if Stripe webhook has already triggered it. Frontend
+    calls this on success page load, then polls /basic/status for the result.
+    """
+    trigger_fulfilment_background(session_id)
+    return {"status": "accepted", "session_id": session_id}
+
+
+@router.get("/basic/status", response_model=FulfilmentResponse)
+async def basic_fulfilment_status(session_id: str):
+    """Poll for a fulfilment result.
+
+    Returns the FulfilmentResponse if done. Returns 202 with a simple
+    payload if still in progress — frontend should keep polling.
+    """
+    result = await get_fulfilment_status(session_id)
+    if result is None:
+        return JSONResponse(
+            status_code=202,
+            content={"status": "pending", "session_id": session_id},
+        )
+    return FulfilmentResponse(
+        registration=result.registration,
+        report_ref=result.report_ref,
+        email_sent=result.email_sent,
+        pdf_size_bytes=result.pdf_size_bytes,
+        verdict=result.verdict,
+        payment_status=result.payment_status,
+    )
 
 
 # --- Stripe Webhook ---

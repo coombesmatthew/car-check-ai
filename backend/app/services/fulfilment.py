@@ -8,15 +8,24 @@ Handles the complete post-payment flow for ALL paid tiers:
   5. Send email (shared)
 
 Endpoints in checks.py and ev.py are thin wrappers around fulfil_report().
+
+Idempotency + async fulfilment:
+  fulfil_report_idempotent() caches the result per Stripe session_id in Redis
+  for 24h so webhook + frontend can both call it safely. Webhook is the
+  primary trigger (Stripe delivers it within seconds); frontend status poll
+  is the fallback. This avoids the 100s gateway timeout that used to break
+  PREMIUM fulfilment, since AI generation can take 2+ minutes.
 """
 
 from __future__ import annotations
 
+import asyncio
 import uuid
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from datetime import datetime as dt
 from typing import Optional
 
+from app.core.cache import cache
 from app.core.logging import logger
 from app.services.check.orchestrator import CheckOrchestrator
 from app.services.ev.orchestrator import EVOrchestrator
@@ -28,6 +37,12 @@ from app.services.payment.stripe_service import retrieve_session
 
 
 EV_TIERS = {"ev", "ev_health", "ev_complete"}
+FULFIL_RESULT_CACHE_PREFIX = "fulfil_result"
+FULFIL_LOCK_CACHE_PREFIX = "fulfil_lock"
+FULFIL_RESULT_TTL_SECONDS = 86400  # 24h
+FULFIL_LOCK_TTL_SECONDS = 600  # 10 min — enough for the longest AI + PDF run
+FULFIL_WAIT_POLL_SECONDS = 2
+FULFIL_WAIT_MAX_POLLS = 90  # 90 * 2s = 3 min max concurrent wait
 
 
 @dataclass
@@ -148,19 +163,90 @@ async def _run_car_pipeline(
         await orchestrator.close()
 
 
+async def fulfil_report_idempotent(session_id: str) -> FulfilmentResult:
+    """Fulfil a report, or return the cached result if already done.
+
+    Safe for both webhook-triggered and frontend-triggered calls. Uses a Redis
+    result cache (24h) + a short-lived lock so concurrent callers don't
+    double-generate the AI report or send duplicate emails.
+    """
+    # 1. Fast path — already fulfilled?
+    cached = await cache.get(FULFIL_RESULT_CACHE_PREFIX, session_id)
+    if cached:
+        logger.info(f"Fulfilment cache hit for session {session_id}")
+        return FulfilmentResult(**cached)
+
+    # 2. Try to become the fulfilment leader
+    lock_acquired = await cache.set_nx(
+        FULFIL_LOCK_CACHE_PREFIX, session_id, "1", ttl=FULFIL_LOCK_TTL_SECONDS
+    )
+
+    if not lock_acquired:
+        # Another call is fulfilling — wait for its result
+        logger.info(f"Waiting for concurrent fulfilment of session {session_id}")
+        for _ in range(FULFIL_WAIT_MAX_POLLS):
+            await asyncio.sleep(FULFIL_WAIT_POLL_SECONDS)
+            cached = await cache.get(FULFIL_RESULT_CACHE_PREFIX, session_id)
+            if cached:
+                return FulfilmentResult(**cached)
+        raise RuntimeError(
+            f"Fulfilment for {session_id} timed out waiting for concurrent process"
+        )
+
+    # 3. We hold the lock — run fulfilment
+    try:
+        result = await fulfil_report(session_id)
+        await cache.set(
+            FULFIL_RESULT_CACHE_PREFIX,
+            session_id,
+            asdict(result),
+            ttl=FULFIL_RESULT_TTL_SECONDS,
+        )
+        return result
+    finally:
+        await cache.delete(FULFIL_LOCK_CACHE_PREFIX, session_id)
+
+
+async def get_fulfilment_status(session_id: str) -> Optional[FulfilmentResult]:
+    """Return cached fulfilment result for a session, or None if not yet done."""
+    cached = await cache.get(FULFIL_RESULT_CACHE_PREFIX, session_id)
+    if cached:
+        return FulfilmentResult(**cached)
+    return None
+
+
+def trigger_fulfilment_background(session_id: str) -> None:
+    """Fire-and-forget fulfilment task. Used by webhook + frontend trigger.
+
+    Idempotent via fulfil_report_idempotent — repeated calls are no-ops.
+    """
+    async def _runner():
+        try:
+            await fulfil_report_idempotent(session_id)
+            logger.info(f"Background fulfilment completed for session {session_id}")
+        except Exception as e:
+            logger.error(f"Background fulfilment failed for session {session_id}: {e}")
+
+    asyncio.create_task(_runner())
+
+
 def handle_webhook(event: dict) -> dict:
     """Shared webhook handler for all tier payments.
 
-    Logs the checkout.session.completed event. Both checks.py and ev.py
+    On checkout.session.completed, triggers fulfilment in the background
+    (idempotent; safe if frontend also triggers). Both checks.py and ev.py
     route their webhook events here.
     """
     if event["type"] == "checkout.session.completed":
         session = event["data"]["object"]
+        session_id = session.get("id")
         tier = session.get("metadata", {}).get("tier", "unknown")
         reg = session.get("metadata", {}).get("registration", "unknown")
         logger.info(
             f"Webhook: checkout.session.completed for {reg} "
-            f"(tier: {tier}, session: {session.get('id')})"
+            f"(tier: {tier}, session: {session_id})"
         )
+        if session_id:
+            trigger_fulfilment_background(session_id)
 
     return {"received": True}

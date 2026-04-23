@@ -413,6 +413,27 @@ export async function fulfilReport(
   return res.json();
 }
 
+/** Fire-and-forget: kick off fulfilment in the background and return fast. */
+export async function triggerReportFulfilment(sessionId: string): Promise<void> {
+  await fetch(
+    `${API_URL}/api/v1/checks/basic/fulfil/trigger?session_id=${encodeURIComponent(sessionId)}`,
+    { method: "POST" }
+  );
+}
+
+/** Poll: returns {ready, result} when fulfilment is done; {ready:false} otherwise. */
+export async function getReportStatus(
+  sessionId: string
+): Promise<{ ready: true; result: FulfilmentResponse } | { ready: false }> {
+  const res = await fetch(
+    `${API_URL}/api/v1/checks/basic/status?session_id=${encodeURIComponent(sessionId)}`,
+    { method: "GET" }
+  );
+  if (res.status === 202) return { ready: false };
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return { ready: true, result: await res.json() };
+}
+
 
 // --- EV Health Check ---
 
@@ -629,4 +650,23 @@ export async function fulfilEVReport(
   }
 
   return res.json();
+}
+
+export async function triggerEVFulfilment(sessionId: string): Promise<void> {
+  await fetch(
+    `${API_URL}/api/v1/ev/fulfil/trigger?session_id=${encodeURIComponent(sessionId)}`,
+    { method: "POST" }
+  );
+}
+
+export async function getEVReportStatus(
+  sessionId: string
+): Promise<{ ready: true; result: EVFulfilmentResponse } | { ready: false }> {
+  const res = await fetch(
+    `${API_URL}/api/v1/ev/status?session_id=${encodeURIComponent(sessionId)}`,
+    { method: "GET" }
+  );
+  if (res.status === 202) return { ready: false };
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return { ready: true, result: await res.json() };
 }

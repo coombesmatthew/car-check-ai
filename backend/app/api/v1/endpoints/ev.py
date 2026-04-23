@@ -9,6 +9,7 @@ POST /api/v1/ev/webhook      - Stripe webhook for EV payments
 """
 
 from fastapi import APIRouter, HTTPException, Request
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import Optional
 
@@ -18,7 +19,13 @@ from app.schemas.ev import EVCheckRequest, EVCheckResponse, EVCheckoutRequest
 from app.services.ev.orchestrator import EVOrchestrator
 from app.services.payment.stripe_service import create_checkout_session, verify_webhook_signature
 from app.services.ai.ev_report_generator import generate_ev_preview_report
-from app.services.fulfilment import fulfil_report, handle_webhook
+from app.services.fulfilment import (
+    fulfil_report,
+    fulfil_report_idempotent,
+    get_fulfilment_status,
+    handle_webhook,
+    trigger_fulfilment_background,
+)
 
 router = APIRouter()
 
@@ -144,14 +151,13 @@ class EVFulfilmentResponse(BaseModel):
 
 @router.post("/fulfil", response_model=EVFulfilmentResponse)
 async def fulfil_ev_report(session_id: str):
-    """Fulfil a paid EV report after successful Stripe payment.
+    """Fulfil a paid EV report — blocks until complete. Idempotent.
 
-    Verifies payment, runs full EV check with paid data,
-    generates AI report + PDF, and emails to customer.
-    Uses the shared fulfilment pipeline (see services/fulfilment.py).
+    Kept for back-compat; new frontend should use /fulfil/trigger + /status
+    to avoid the 100s gateway timeout.
     """
     try:
-        result = await fulfil_report(session_id)
+        result = await fulfil_report_idempotent(session_id)
         return EVFulfilmentResponse(
             registration=result.registration,
             report_ref=result.report_ref,
@@ -170,6 +176,34 @@ async def fulfil_ev_report(session_id: str):
             status_code=500,
             detail="Report generation failed after payment - please contact support",
         )
+
+
+@router.post("/fulfil/trigger", status_code=202)
+async def trigger_ev_fulfilment(session_id: str):
+    """Kick off EV fulfilment in the background. Returns immediately."""
+    trigger_fulfilment_background(session_id)
+    return {"status": "accepted", "session_id": session_id}
+
+
+@router.get("/status", response_model=EVFulfilmentResponse)
+async def ev_fulfilment_status(session_id: str):
+    """Poll for an EV fulfilment result. 202 while pending; 200 with body when done."""
+    result = await get_fulfilment_status(session_id)
+    if result is None:
+        return JSONResponse(
+            status_code=202,
+            content={"status": "pending", "session_id": session_id},
+        )
+    return EVFulfilmentResponse(
+        registration=result.registration,
+        report_ref=result.report_ref,
+        email_sent=result.email_sent,
+        pdf_size_bytes=result.pdf_size_bytes,
+        verdict=result.verdict,
+        payment_status=result.payment_status,
+        ai_report=result.ai_report,
+        ev_check=result.check_data,
+    )
 
 
 @router.post("/webhook")

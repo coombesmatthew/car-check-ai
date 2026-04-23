@@ -63,6 +63,17 @@ class CacheService:
         except Exception as e:
             logger.warning(f"Cache delete error: {e}")
 
+    async def set_nx(self, prefix: str, identifier: str, value: str, ttl: int) -> bool:
+        """Atomic SET IF NOT EXISTS with TTL. Returns True if key was set."""
+        if not self._redis:
+            return True  # no cache == no contention
+        try:
+            result = await self._redis.set(self._key(prefix, identifier), value, ex=ttl, nx=True)
+            return bool(result)
+        except Exception as e:
+            logger.warning(f"Cache set_nx error: {e}")
+            return False
+
     async def increment(self, key: str, amount: int = 1) -> int:
         """Atomically increment a counter. Returns the new value."""
         if not self._redis:

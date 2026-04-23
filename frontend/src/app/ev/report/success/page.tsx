@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
-import { fulfilEVReport, EVFulfilmentResponse } from "@/lib/api";
+import { triggerEVFulfilment, getEVReportStatus, EVFulfilmentResponse } from "@/lib/api";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AIReport from "@/components/AIReport";
@@ -11,13 +11,17 @@ import BatteryHealthGauge from "@/components/ev/BatteryHealthGauge";
 import RangeChart from "@/components/ev/RangeChart";
 import ChargingCard from "@/components/ev/ChargingCard";
 
+const POLL_INTERVAL_MS = 5000;
+const POLL_TIMEOUT_MS = 3 * 60 * 1000;
+
 function SuccessContent() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
 
-  const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
+  const [status, setStatus] = useState<"loading" | "success" | "pending_email" | "error">("loading");
   const [result, setResult] = useState<EVFulfilmentResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (!sessionId) {
@@ -26,15 +30,40 @@ function SuccessContent() {
       return;
     }
 
-    fulfilEVReport(sessionId)
-      .then((data) => {
-        setResult(data);
-        setStatus("success");
-      })
-      .catch((err) => {
-        setError(err instanceof Error ? err.message : "Something went wrong");
-        setStatus("error");
-      });
+    let cancelled = false;
+    const startedAt = Date.now();
+
+    triggerEVFulfilment(sessionId).catch(() => {
+      /* non-fatal: webhook will also trigger it */
+    });
+
+    const poll = async () => {
+      if (cancelled) return;
+      try {
+        const res = await getEVReportStatus(sessionId);
+        if (res.ready) {
+          setResult(res.result);
+          setStatus("success");
+          return;
+        }
+      } catch {
+        // keep polling
+      }
+
+      if (Date.now() - startedAt > POLL_TIMEOUT_MS) {
+        setStatus("pending_email");
+        return;
+      }
+
+      timeoutRef.current = setTimeout(poll, POLL_INTERVAL_MS);
+    };
+
+    poll();
+
+    return () => {
+      cancelled = true;
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
   }, [sessionId]);
 
   if (status === "loading") {
@@ -47,7 +76,29 @@ function SuccessContent() {
           </svg>
         </div>
         <h2 className="text-2xl font-bold text-slate-900 mb-2">Generating your EV report...</h2>
-        <p className="text-slate-500">Payment confirmed. Analysing battery health and range data now.</p>
+        <p className="text-slate-500">Payment confirmed. Analysing battery health and range data — this usually takes 30–90 seconds.</p>
+        <p className="text-xs text-slate-400 mt-6">You can safely close this tab. We&apos;ll email your PDF when it&apos;s ready.</p>
+      </div>
+    );
+  }
+
+  if (status === "pending_email") {
+    return (
+      <div className="text-center py-20">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-100 mb-6">
+          <svg className="w-8 h-8 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          </svg>
+        </div>
+        <h2 className="text-2xl font-bold text-slate-900 mb-2">Your EV report is on its way</h2>
+        <p className="text-slate-500 mb-2">Payment received. We&apos;re finishing the PDF and will email it within a few minutes.</p>
+        <p className="text-sm text-slate-400">Check your inbox (and spam folder) shortly.</p>
+        <a
+          href="/ev"
+          className="inline-block mt-8 px-8 py-3 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 transition-colors"
+        >
+          Check Another EV
+        </a>
       </div>
     );
   }
