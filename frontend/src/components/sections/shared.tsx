@@ -165,59 +165,54 @@ export function StarRating({ stars, max = 5 }: { stars: number; max?: number }) 
   );
 }
 
-/* Individual MOT test accordion item */
-export function MOTTestItem({ test, defaultOpen = false }: { test: MOTTestRecord; defaultOpen?: boolean }) {
-  const [open, setOpen] = useState(defaultOpen);
+/* Single-test focused card used inside the MOT SwipeCarousel.
+   Coloured left edge + pass/fail pill top-right, full defect list inline. */
+export function MOTTestCard({ test }: { test: MOTTestRecord }) {
+  const passed = test.result === "PASSED";
+  const edgeColour = passed ? "bg-emerald-500" : "bg-red-500";
   const hasDefects = test.advisories.length > 0 || test.failures.length > 0 || test.dangerous.length > 0;
 
   return (
-    <div className="border border-slate-100 rounded-lg overflow-hidden">
-      <button
-        onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between p-3 text-left hover:bg-slate-50 transition-colors"
-      >
-        <div className="flex items-center gap-2 min-w-0 flex-wrap">
-          <Badge
-            variant={test.result === "PASSED" ? "pass" : "fail"}
-            label={test.result}
-          />
-          <span className="text-sm text-slate-400">{test.date}</span>
-          {test.odometer !== null && (
-            <span className="text-xs text-slate-400">{test.odometer.toLocaleString()} mi</span>
-          )}
-          {hasDefects && (
-            <span className="text-xs text-slate-400">{test.total_defects} item{test.total_defects !== 1 ? "s" : ""}</span>
-          )}
+    <div className="relative h-full bg-white border border-slate-200 rounded-lg overflow-hidden flex flex-col">
+      <div className={`absolute inset-y-0 left-0 w-1 ${edgeColour}`} aria-hidden="true" />
+      <div className="flex items-start justify-between gap-2 p-3 pl-4 border-b border-slate-100">
+        <div className="min-w-0">
+          <p className="text-sm font-semibold text-slate-900">{test.date}</p>
+          <div className="flex items-center gap-2 mt-0.5 text-xs text-slate-500">
+            {test.odometer !== null && <span>{test.odometer.toLocaleString()} mi</span>}
+            {hasDefects && (
+              <>
+                {test.odometer !== null && <span aria-hidden="true">·</span>}
+                <span>{test.total_defects} item{test.total_defects !== 1 ? "s" : ""}</span>
+              </>
+            )}
+          </div>
         </div>
-        <svg
-          className={`w-4 h-4 text-slate-400 transition-transform flex-shrink-0 ${open ? "rotate-180" : ""}`}
-          fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-        </svg>
-      </button>
-      {open && hasDefects && (
-        <div className="px-3 pb-3 space-y-1">
-          {test.dangerous.map((d, i) => (
-            <div key={`d-${i}`} className="text-sm bg-red-50 text-red-800 px-2 py-1 rounded flex items-start gap-1.5">
-              <span className="text-xs font-bold text-red-600 mt-0.5 flex-shrink-0">DANGEROUS</span>
-              <span>{d.text}</span>
-            </div>
-          ))}
-          {test.failures.map((f, i) => (
-            <div key={`f-${i}`} className="text-sm bg-amber-50 text-amber-800 px-2 py-1 rounded flex items-start gap-1.5">
-              <span className="text-xs font-bold text-amber-600 mt-0.5 flex-shrink-0">{f.type}</span>
-              <span>{f.text}</span>
-            </div>
-          ))}
-          {test.advisories.map((a, i) => (
-            <div key={`a-${i}`} className="text-sm bg-blue-50 text-blue-800 px-2 py-1 rounded flex items-start gap-1.5">
-              <span className="text-xs font-bold text-blue-600 mt-0.5 flex-shrink-0">ADVISORY</span>
-              <span>{a.text}</span>
-            </div>
-          ))}
-        </div>
-      )}
+        <Badge variant={passed ? "pass" : "fail"} label={passed ? "Pass" : "Fail"} />
+      </div>
+      <div className="p-3 pl-4 space-y-1.5 flex-1 overflow-y-auto">
+        {!hasDefects && (
+          <p className="text-sm text-slate-500 italic">No defects or advisories recorded.</p>
+        )}
+        {test.dangerous.map((d, i) => (
+          <div key={`d-${i}`} className="text-sm bg-red-50 text-red-800 px-2 py-1.5 rounded flex items-start gap-2">
+            <span className="text-[10px] font-bold text-red-600 mt-0.5 flex-shrink-0 uppercase">Dangerous</span>
+            <span>{d.text}</span>
+          </div>
+        ))}
+        {test.failures.map((f, i) => (
+          <div key={`f-${i}`} className="text-sm bg-amber-50 text-amber-800 px-2 py-1.5 rounded flex items-start gap-2">
+            <span className="text-[10px] font-bold text-amber-600 mt-0.5 flex-shrink-0 uppercase">{f.type}</span>
+            <span>{f.text}</span>
+          </div>
+        ))}
+        {test.advisories.map((a, i) => (
+          <div key={`a-${i}`} className="text-sm bg-blue-50 text-blue-800 px-2 py-1.5 rounded flex items-start gap-2">
+            <span className="text-[10px] font-bold text-blue-600 mt-0.5 flex-shrink-0 uppercase">Advisory</span>
+            <span>{a.text}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

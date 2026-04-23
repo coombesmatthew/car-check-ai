@@ -6,6 +6,7 @@ import EVOverviewSections from "@/components/ev/sections/EVOverviewSections";
 import EVBatterySections from "@/components/ev/sections/EVBatterySections";
 import EVHistorySections from "@/components/ev/sections/EVHistorySections";
 import EVFullCheckSection from "@/components/ev/sections/EVFullCheckSection";
+import FullCheckSection from "@/components/sections/FullCheckSection";
 import SectionNav, { SectionConfig } from "@/components/SectionNav";
 import PremiumBottomBar from "@/components/PremiumBottomBar";
 
@@ -76,7 +77,16 @@ export default function EVCheckResult({ result }: Props) {
     safety_rating, vehicle_stats,
     battery_health, range_estimate, range_scenarios,
     charging_costs, ev_specs, lifespan_prediction,
+    finance_check, stolen_check, write_off_check, salvage_check,
+    import_status, plate_changes, keeper_history, valuation,
+    high_risk, previous_searches,
   } = result;
+
+  const hasProvenanceData = !!(
+    finance_check || stolen_check || write_off_check || salvage_check ||
+    import_status || plate_changes || keeper_history || valuation ||
+    high_risk || previous_searches
+  );
 
   const [checkoutTier, setCheckoutTier] = useState<"ev" | "ev_complete" | null>(null);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
@@ -174,7 +184,23 @@ export default function EVCheckResult({ result }: Props) {
 
       {/* Full Check (finance, stolen, write-off, etc.) */}
       <div id="ev-section-fullcheck">
-        <EVFullCheckSection registration={result.registration} />
+        {hasProvenanceData ? (
+          <FullCheckSection
+            finance_check={finance_check ?? null}
+            stolen_check={stolen_check ?? null}
+            write_off_check={write_off_check ?? null}
+            valuation={valuation ?? null}
+            salvage_check={salvage_check ?? null}
+            import_status={import_status ?? null}
+            plate_changes={plate_changes ?? null}
+            keeper_history={keeper_history ?? null}
+            high_risk={high_risk ?? null}
+            previous_searches={previous_searches ?? null}
+            registration={result.registration}
+          />
+        ) : (
+          <EVFullCheckSection registration={result.registration} />
+        )}
       </div>
 
       {/* EV Health Check upsell */}

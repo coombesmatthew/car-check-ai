@@ -258,6 +258,30 @@ def parse_autocheck(raw: Optional[Dict], current_registration: str = "") -> Opti
         "previous_searches": _parse_previous_searches(raw),
         "v5c_history": _parse_v5c(raw),
         "vehicle_id": _parse_vehicle_id(raw),
+        "import_status": _parse_import_status(raw),
+    }
+
+
+def _parse_import_status(raw: Optional[Dict]) -> Dict:
+    """Extract import/export flags from AutoCheck response.
+
+    AutoCheck returns `is_imported` (true if the vehicle was first registered
+    outside the UK and later imported) and `is_exported` (true if DVLA has a
+    permanent export record). DVLA's `marked_for_export` is added later by
+    the orchestrator — AutoCheck alone can't see that flag.
+    """
+    if not raw:
+        return {
+            "is_imported": False,
+            "is_exported": False,
+            "marked_for_export": False,
+            "data_source": "Experian",
+        }
+    return {
+        "is_imported": bool(raw.get("is_imported")),
+        "is_exported": bool(raw.get("is_exported")),
+        "marked_for_export": False,  # DVLA overrides downstream
+        "data_source": "Experian + DVLA",
     }
 
 

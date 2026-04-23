@@ -237,6 +237,13 @@ export interface SalvageCheck {
   data_source: string;
 }
 
+export interface ImportStatusCheck {
+  is_imported: boolean;
+  is_exported: boolean;
+  marked_for_export: boolean;
+  data_source: string;
+}
+
 export interface KeeperRecord {
   keeper_number: number;
   start_date: string | null;
@@ -303,6 +310,7 @@ export interface FreeCheckResponse {
   high_risk: HighRiskCheck | null;
   previous_searches: PreviousSearches | null;
   salvage_check: SalvageCheck | null;
+  import_status: ImportStatusCheck | null;
   checked_at: string;
   data_sources: string[];
 }
@@ -560,6 +568,16 @@ export interface EVCheckResponse {
   lifespan_prediction: LifespanPrediction | null;
   battery_health: BatteryHealth | null;
   charging_costs: ChargingCosts | null;
+  finance_check?: FinanceCheck | null;
+  stolen_check?: StolenCheck | null;
+  write_off_check?: WriteOffCheck | null;
+  salvage_check?: SalvageCheck | null;
+  import_status?: ImportStatusCheck | null;
+  plate_changes?: PlateChangeHistory | null;
+  keeper_history?: KeeperHistory | null;
+  valuation?: Valuation | null;
+  high_risk?: HighRiskCheck | null;
+  previous_searches?: PreviousSearches | null;
   checked_at: string;
   data_sources: string[];
 }

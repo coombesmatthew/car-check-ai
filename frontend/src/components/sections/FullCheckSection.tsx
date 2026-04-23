@@ -2,13 +2,13 @@
 
 import {
   FinanceCheck, StolenCheck, WriteOffCheck, Valuation,
-  SalvageCheck, PlateChangeHistory, KeeperHistory,
+  SalvageCheck, ImportStatusCheck, PlateChangeHistory, KeeperHistory,
   HighRiskCheck, PreviousSearches,
 } from "@/lib/api";
-import Badge from "@/components/ui/Badge";
 import Card from "@/components/ui/Card";
 import { DetailRow, icons } from "./shared";
 import PremiumPreview from "./PremiumPreview";
+import TheftAlertsCarousel from "./TheftAlertsCarousel";
 
 function toSentenceCase(s: string | null | undefined): string {
   if (!s) return "";
@@ -22,6 +22,7 @@ interface FullCheckSectionProps {
   write_off_check: WriteOffCheck | null;
   valuation: Valuation | null;
   salvage_check: SalvageCheck | null;
+  import_status: ImportStatusCheck | null;
   plate_changes: PlateChangeHistory | null;
   keeper_history: KeeperHistory | null;
   high_risk: HighRiskCheck | null;
@@ -31,10 +32,14 @@ interface FullCheckSectionProps {
 
 export default function FullCheckSection({
   finance_check, stolen_check, write_off_check, valuation,
-  salvage_check, plate_changes, keeper_history,
+  salvage_check, import_status, plate_changes, keeper_history,
   high_risk, previous_searches, registration,
 }: FullCheckSectionProps) {
-  const hasPremiumData = !!(finance_check || stolen_check || write_off_check || valuation || salvage_check || plate_changes || keeper_history || high_risk || previous_searches);
+  const hasPremiumData = !!(
+    finance_check || stolen_check || write_off_check || valuation ||
+    salvage_check || import_status || plate_changes || keeper_history ||
+    high_risk || previous_searches
+  );
 
   /* Free tier: prominent upsell card */
   if (!hasPremiumData) {
@@ -43,7 +48,20 @@ export default function FullCheckSection({
 
   /* Paid tier: render actual premium data cards */
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+    <div className="space-y-3">
+      {/* Theft & Alerts swipe carousel — groups Stolen, Finance, Write-off,
+          Salvage, Import, Export into a single consolidated card. Spans
+          full width. */}
+      <TheftAlertsCarousel
+        finance_check={finance_check}
+        stolen_check={stolen_check}
+        write_off_check={write_off_check}
+        salvage_check={salvage_check}
+        import_status={import_status}
+      />
+
+      {/* Remaining cards in a two-column grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
       {/* Valuation */}
       {valuation && (
         <Card title="Valuation" icon={icons.currency} status="neutral">
@@ -93,181 +111,19 @@ export default function FullCheckSection({
         </Card>
       )}
 
-      {/* Finance Check */}
-      {finance_check && (
-        <Card
-          title="Finance Check"
-          icon={icons.document}
-          status={finance_check.finance_outstanding ? "fail" : "pass"}
-        >
-          <div className="mb-3">
-            {finance_check.finance_outstanding ? (
-              <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
-                <svg className="w-5 h-5 text-red-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                </svg>
-                <span className="text-sm font-semibold text-red-800">Finance outstanding</span>
+      {/* Salvage auction records (when flagged, show details here — the swipe
+          card only shows the headline pill). */}
+      {salvage_check && salvage_check.salvage_found && salvage_check.records.length > 0 && (
+        <Card title="Salvage Records" icon={icons.alert} status="fail">
+          <div className="space-y-2">
+            {salvage_check.records.map((r, i) => (
+              <div key={i} className="bg-slate-50 rounded-lg p-3">
+                {r.auction_date && <DetailRow label="Auction Date" value={r.auction_date} />}
+                {r.damage_description && <DetailRow label="Damage" value={r.damage_description} />}
+                {r.category && <DetailRow label="Category" value={r.category} />}
+                {r.lot_number && <DetailRow label="Lot Number" value={r.lot_number} />}
               </div>
-            ) : (
-              <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
-                <svg className="w-5 h-5 text-emerald-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span className="text-sm font-semibold text-emerald-800">No finance</span>
-              </div>
-            )}
-          </div>
-          <p className="text-xs text-slate-500 mb-2">
-            Checks whether the vehicle has any outstanding finance agreements registered against it.
-          </p>
-          {finance_check.records.map((r, i) => (
-            <div key={i} className="bg-slate-50 rounded-lg p-3 mb-2">
-              <DetailRow label="Agreement Type" value={r.agreement_type} />
-              <DetailRow label="Finance Company" value={r.finance_company} />
-              {r.agreement_date && <DetailRow label="Agreement Date" value={r.agreement_date} />}
-              {r.agreement_term && <DetailRow label="Term" value={r.agreement_term} />}
-              {r.contact_number && <DetailRow label="Contact" value={r.contact_number} />}
-            </div>
-          ))}
-          <div className="mt-2 text-xs text-slate-400 bg-slate-50 rounded px-2 py-1">
-            Source: {finance_check.data_source}
-          </div>
-        </Card>
-      )}
-
-      {/* Stolen Check */}
-      {stolen_check && (
-        <Card
-          title="Stolen Check"
-          icon={icons.shield}
-          status={stolen_check.stolen ? "fail" : "pass"}
-        >
-          <div className="mb-3">
-            {stolen_check.stolen ? (
-              <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
-                <svg className="w-5 h-5 text-red-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                </svg>
-                <span className="text-sm font-semibold text-red-800">Reported stolen</span>
-              </div>
-            ) : (
-              <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
-                <svg className="w-5 h-5 text-emerald-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span className="text-sm font-semibold text-emerald-800">Not stolen</span>
-              </div>
-            )}
-          </div>
-          <p className="text-xs text-slate-500 mb-2">
-            Checks national police databases to confirm the vehicle has not been reported stolen.
-          </p>
-          {stolen_check.stolen && (
-            <div className="bg-slate-50 rounded-lg p-3">
-              {stolen_check.reported_date && <DetailRow label="Reported Date" value={stolen_check.reported_date} />}
-              {stolen_check.police_force && <DetailRow label="Police Force" value={stolen_check.police_force} />}
-              {stolen_check.reference && <DetailRow label="Reference" value={stolen_check.reference} />}
-            </div>
-          )}
-          <div className="mt-2 text-xs text-slate-400 bg-slate-50 rounded px-2 py-1">
-            Source: {stolen_check.data_source}
-          </div>
-        </Card>
-      )}
-
-      {/* Write-off Check */}
-      {write_off_check && (
-        <Card
-          title="Write-off Check"
-          icon={icons.alert}
-          status={write_off_check.written_off ? "fail" : "pass"}
-        >
-          <div className="mb-3">
-            {write_off_check.written_off ? (
-              <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
-                <svg className="w-5 h-5 text-red-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                </svg>
-                <span className="text-sm font-semibold text-red-800">Insurance write-off</span>
-              </div>
-            ) : (
-              <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
-                <svg className="w-5 h-5 text-emerald-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span className="text-sm font-semibold text-emerald-800">Not written off</span>
-              </div>
-            )}
-          </div>
-          <p className="text-xs text-slate-500 mb-2">
-            Checks insurance industry records for any history of the vehicle being written off.
-          </p>
-          {write_off_check.records.map((r, i) => (
-            <div key={i} className="bg-slate-50 rounded-lg p-3 mb-2">
-              <div className="flex items-center gap-2 mb-2">
-                <Badge
-                  variant="fail"
-                  label={`Cat ${r.category}`}
-                  size="md"
-                />
-                <span className="text-xs text-slate-500">
-                  {r.category === "A" && "Scrap only"}
-                  {r.category === "B" && "Break for parts"}
-                  {r.category === "S" && "Structural damage"}
-                  {r.category === "N" && "Non-structural damage"}
-                </span>
-              </div>
-              <DetailRow label="Date" value={r.date} />
-              {r.loss_type && <DetailRow label="Loss Type" value={r.loss_type} />}
-            </div>
-          ))}
-          <div className="mt-2 text-xs text-slate-400 bg-slate-50 rounded px-2 py-1">
-            Source: {write_off_check.data_source}
-          </div>
-        </Card>
-      )}
-
-      {/* Salvage Auction Check */}
-      {salvage_check && (
-        <Card
-          title="Salvage Auction Check"
-          icon={icons.alert}
-          status={salvage_check.salvage_found ? "fail" : "pass"}
-        >
-          <div className="mb-3">
-            {salvage_check.salvage_found ? (
-              <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
-                <svg className="w-5 h-5 text-red-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                </svg>
-                <span className="text-sm font-semibold text-red-800">Salvage records found</span>
-              </div>
-            ) : (
-              <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
-                <svg className="w-5 h-5 text-emerald-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span className="text-sm font-semibold text-emerald-800">No salvage records</span>
-              </div>
-            )}
-          </div>
-          <p className="text-xs text-slate-500 mb-2">
-            Checked against UK salvage auction databases for any history of this vehicle being sold as salvage.
-          </p>
-          {salvage_check.records.length > 0 && (
-            <div className="space-y-2">
-              {salvage_check.records.map((r, i) => (
-                <div key={i} className="bg-slate-50 rounded-lg p-3">
-                  {r.auction_date && <DetailRow label="Auction Date" value={r.auction_date} />}
-                  {r.damage_description && <DetailRow label="Damage" value={r.damage_description} />}
-                  {r.category && <DetailRow label="Category" value={r.category} />}
-                  {r.lot_number && <DetailRow label="Lot Number" value={r.lot_number} />}
-                </div>
-              ))}
-            </div>
-          )}
-          <div className="mt-2 text-xs text-slate-400 bg-slate-50 rounded px-2 py-1">
-            Source: {salvage_check.data_source}
+            ))}
           </div>
         </Card>
       )}
@@ -476,6 +332,7 @@ export default function FullCheckSection({
           </div>
         </Card>
       )}
+      </div>
     </div>
   );
 }

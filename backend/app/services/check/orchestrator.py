@@ -48,6 +48,7 @@ from app.schemas.check import (
     PreviousSearches,
     PreviousSearchRecord,
     SalvageCheck,
+    ImportStatusCheck,
     VehicleImages,
 )
 
@@ -183,6 +184,7 @@ class CheckOrchestrator:
             high_risk=provenance.get("high_risk") if provenance else None,
             previous_searches=provenance.get("previous_searches") if provenance else None,
             salvage_check=provenance.get("salvage_check") if provenance else None,
+            import_status=self._build_import_status(provenance, dvla_data),
             vehicle_images=vehicle_images,
             checked_at=datetime.utcnow(),
             data_sources=data_sources,
@@ -190,6 +192,29 @@ class CheckOrchestrator:
 
         logger.info(f"Free check completed for {clean_reg}")
         return response
+
+    def _build_import_status(
+        self,
+        provenance: Optional[Dict],
+        dvla_data: Optional[Dict],
+    ) -> Optional[ImportStatusCheck]:
+        """Merge AutoCheck is_imported/is_exported with DVLA marked_for_export.
+
+        Returns None if neither source has data — so the UI can hide the card
+        entirely rather than asserting a false "Not imported / Not exported".
+        """
+        autocheck = provenance.get("import_status") if provenance else None
+        dvla_export = bool(dvla_data.get("markedForExport")) if dvla_data else False
+
+        if not autocheck and not dvla_data:
+            return None
+
+        return ImportStatusCheck(
+            is_imported=bool(autocheck.get("is_imported")) if autocheck else False,
+            is_exported=bool(autocheck.get("is_exported")) if autocheck else False,
+            marked_for_export=dvla_export,
+            data_source="Experian + DVLA" if autocheck else "DVLA",
+        )
 
     def _build_vehicle_identity(self, dvla_data: Optional[Dict]) -> Optional[VehicleIdentity]:
         if not dvla_data:

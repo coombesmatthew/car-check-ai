@@ -1,37 +1,10 @@
 "use client";
 
-import { useState } from "react";
 import { MOTSummary, ClockingAnalysis, MileageReading, FailurePattern, MOTTestRecord, VehicleIdentity } from "@/lib/api";
 import Badge from "@/components/ui/Badge";
 import Card from "@/components/ui/Card";
-import { DetailRow, MileageChart, MOTPassFailBars, MOTTestItem, RecurringIssueItem, icons } from "./shared";
-
-function OlderTests({ tests }: { tests: MOTTestRecord[] }) {
-  const [showOlder, setShowOlder] = useState(false);
-  return (
-    <div className="mt-2">
-      <button
-        onClick={() => setShowOlder(!showOlder)}
-        className="w-full flex items-center justify-center gap-2 py-2 text-sm font-medium text-slate-500 hover:text-slate-700 transition-colors"
-      >
-        <span>{showOlder ? "Hide" : "Show"} {tests.length} older test{tests.length !== 1 ? "s" : ""}</span>
-        <svg
-          className={`w-4 h-4 transition-transform ${showOlder ? "rotate-180" : ""}`}
-          fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-        </svg>
-      </button>
-      {showOlder && (
-        <div className="space-y-2 mt-2">
-          {tests.map((test) => (
-            <MOTTestItem key={test.test_number} test={test} />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
+import SwipeCarousel from "@/components/ui/SwipeCarousel";
+import { DetailRow, MileageChart, MOTPassFailBars, MOTTestCard, RecurringIssueItem, icons } from "./shared";
 
 export default function HistorySections({ mot_summary, clocking_analysis, mileage_timeline, failure_patterns, mot_tests, vehicle }: {
   mot_summary: MOTSummary | null;
@@ -119,7 +92,7 @@ export default function HistorySections({ mot_summary, clocking_analysis, mileag
                 <svg className="w-5 h-5 text-red-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
                 </svg>
-                <span className="text-sm font-semibold text-red-800">MILEAGE DISCREPANCY FOUND</span>
+                <span className="text-sm font-semibold text-red-800">Mileage discrepancy found</span>
               </div>
             ) : clocking_analysis.risk_level === "none" ? (
               <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
@@ -240,16 +213,17 @@ export default function HistorySections({ mot_summary, clocking_analysis, mileag
         </Card>
       )}
 
-      {/* Full MOT Test History */}
+      {/* Full MOT Test History — horizontal swipe carousel */}
       {mot_tests && mot_tests.length > 0 && (
         <Card title={`Full MOT History (${mot_tests.length} tests)`} icon={icons.document} status="neutral">
-          {/* Most recent test — expanded by default */}
-          <MOTTestItem test={mot_tests[0]} defaultOpen />
-
-          {/* Older tests — collapsed by default */}
-          {mot_tests.length > 1 && (
-            <OlderTests tests={mot_tests.slice(1)} />
-          )}
+          <p className="text-xs text-slate-500 mb-3">
+            Swipe through each MOT test to see pass/fail outcome, defects, and advisories.
+          </p>
+          <SwipeCarousel ariaLabel="MOT test history" itemNoun="MOT test">
+            {mot_tests.map((test) => (
+              <MOTTestCard key={test.test_number} test={test} />
+            ))}
+          </SwipeCarousel>
         </Card>
       )}
     </>

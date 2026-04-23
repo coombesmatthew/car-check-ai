@@ -284,6 +284,19 @@ class SalvageCheck(BaseModel):
     data_source: str = "CarGuide"
 
 
+class ImportStatusCheck(BaseModel):
+    """Combined UK import / export / DVLA-export-marker flags.
+
+    - `is_imported`: first registered outside the UK, later imported (AutoCheck).
+    - `is_exported`: permanently exported according to DVLA records (AutoCheck mirror).
+    - `marked_for_export`: DVLA has an outstanding export marker (live DVLA VES).
+    """
+    is_imported: bool = False
+    is_exported: bool = False
+    marked_for_export: bool = False
+    data_source: str = "Experian + DVLA"
+
+
 class VehicleImages(BaseModel):
     """Vehicle images by angle from One Auto Global Image Search."""
     images: Dict[str, Optional[str]] = {}  # angle -> image_id (front, right, rear, left, etc.)
@@ -335,6 +348,7 @@ class FreeCheckResponse(BaseModel):
     high_risk: Optional[HighRiskCheck] = None
     previous_searches: Optional[PreviousSearches] = None
     salvage_check: Optional[SalvageCheck] = None
+    import_status: Optional[ImportStatusCheck] = None
     vehicle_images: Optional[VehicleImages] = None
     checked_at: datetime = Field(default_factory=datetime.utcnow)
     data_sources: List[str] = []

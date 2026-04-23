@@ -64,7 +64,7 @@ export default function CheckResult({ data }: { data: FreeCheckResponse }) {
     ulez_compliance, mileage_timeline, failure_patterns,
     tax_calculation, safety_rating, vehicle_stats,
     finance_check, stolen_check, write_off_check, plate_changes, valuation,
-    salvage_check, keeper_history, high_risk, previous_searches,
+    salvage_check, import_status, keeper_history, high_risk, previous_searches,
   } = data;
 
   const hasPremium = !!(finance_check || stolen_check || write_off_check || valuation);
@@ -128,7 +128,8 @@ export default function CheckResult({ data }: { data: FreeCheckResponse }) {
         <FullCheckSection
           finance_check={finance_check} stolen_check={stolen_check}
           write_off_check={write_off_check} valuation={valuation}
-          salvage_check={salvage_check} plate_changes={plate_changes}
+          salvage_check={salvage_check} import_status={import_status}
+          plate_changes={plate_changes}
           keeper_history={keeper_history} high_risk={high_risk}
           previous_searches={previous_searches} registration={data.registration}
         />

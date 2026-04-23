@@ -14,6 +14,7 @@ from app.schemas.check import (
     HighRiskCheck,
     PreviousSearches,
     SalvageCheck,
+    ImportStatusCheck,
     Valuation,
 )
 
@@ -195,6 +196,7 @@ class EVCheckResponse(BaseModel):
     high_risk: Optional[HighRiskCheck] = None
     previous_searches: Optional[PreviousSearches] = None
     salvage_check: Optional[SalvageCheck] = None
+    import_status: Optional[ImportStatusCheck] = None
     valuation: Optional[Valuation] = None
     # Meta
     checked_at: datetime = Field(default_factory=datetime.utcnow)
