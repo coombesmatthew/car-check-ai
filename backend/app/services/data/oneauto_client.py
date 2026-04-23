@@ -11,7 +11,7 @@ Live: api.oneautoapi.com (requires credit card, returns real data)
 
 import httpx
 from datetime import date, datetime
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 from app.core.config import settings
 from app.core.logging import logger
@@ -379,21 +379,111 @@ def _parse_plate_changes(raw: Optional[Dict], current_registration: str = "") ->
     }
 
 
-def _parse_keepers(raw: Optional[Dict]) -> Dict:
-    """Extract keeper change history from AutoCheck response."""
-    if not raw:
-        return {"keeper_count": None, "last_change_date": None, "data_source": "Experian"}
+_MONTHS_SHORT = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+_KEEPER_ORDINAL = {1: "First Owner", 2: "Second Owner", 3: "Third Owner",
+                   4: "Fourth Owner", 5: "Fifth Owner", 6: "Sixth Owner",
+                   7: "Seventh Owner", 8: "Eighth Owner", 9: "Ninth Owner"}
 
-    items = raw.get("keeper_data_items") or []
-    if items:
-        item = items[0]
+
+def _keeper_label(n: int) -> str:
+    return _KEEPER_ORDINAL.get(n, f"Keeper {n}")
+
+
+def _date_display(iso: Optional[str]) -> Optional[str]:
+    """ISO '2020-12-09' → '9 Dec 2020'. Passes through None."""
+    if not iso:
+        return None
+    try:
+        d = date.fromisoformat(iso)
+    except (ValueError, TypeError):
+        return iso
+    return f"{d.day} {_MONTHS_SHORT[d.month - 1]} {d.year}"
+
+
+def _tenure_display(start_iso: Optional[str], end_iso: Optional[str]) -> str:
+    """Return '5 years · 4 months' / '9 months' / '12 days' between two ISO dates.
+    If end is None, use today (current keeper's tenure).
+    """
+    if not start_iso:
+        return ""
+    try:
+        start = date.fromisoformat(start_iso)
+    except (ValueError, TypeError):
+        return ""
+    end = date.fromisoformat(end_iso) if end_iso else date.today()
+    if end < start:
+        return ""
+
+    years = end.year - start.year
+    months = end.month - start.month
+    days = end.day - start.day
+    if days < 0:
+        months -= 1
+    if months < 0:
+        years -= 1
+        months += 12
+
+    parts: List[str] = []
+    if years:
+        parts.append(f"{years} year{'s' if years != 1 else ''}")
+    if months:
+        parts.append(f"{months} month{'s' if months != 1 else ''}")
+    if not parts:
+        total_days = (end - start).days
+        parts.append(f"{total_days} day{'s' if total_days != 1 else ''}")
+    return " · ".join(parts)
+
+
+def _parse_keepers(raw: Optional[Dict]) -> Dict:
+    """Extract keeper change history from AutoCheck response.
+
+    AutoCheck returns a list of keeper-change events (one per change). Each
+    row carries the date the keeper changed. Combined with the vehicle's
+    first_registration_date (top-level), we can reconstruct each keeper's
+    tenure: keeper 1 = first registration → change 1, keeper 2 = change 1
+    → change 2, etc. Current keeper's end is None (tenure runs to today).
+    """
+    if not raw:
         return {
-            "keeper_count": item.get("number_previous_keepers"),
-            "last_change_date": item.get("date_of_last_keeper_change"),
+            "keeper_count": None,
+            "last_change_date": None,
+            "keepers": [],
             "data_source": "Experian",
         }
 
-    return {"keeper_count": None, "last_change_date": None, "data_source": "Experian"}
+    items = raw.get("keeper_data_items") or []
+    first_reg = raw.get("first_registration_date") or raw.get("registration_date")
+
+    # Sort change events oldest → newest
+    change_dates = sorted(
+        [it.get("date_of_last_keeper_change") for it in items if it.get("date_of_last_keeper_change")]
+    )
+
+    keepers: List[Dict] = []
+    total_keepers = len(change_dates) + 1 if change_dates else 1
+    for i in range(total_keepers):
+        start = first_reg if i == 0 else change_dates[i - 1]
+        end = change_dates[i] if i < len(change_dates) else None
+        keepers.append({
+            "keeper_number": i + 1,
+            "start_date": start,
+            "end_date": end,
+            "is_current": end is None,
+            "start_display": _date_display(start),
+            "end_display": _date_display(end),
+            "tenure_display": _tenure_display(start, end),
+            "label": _keeper_label(i + 1),
+        })
+
+    # Reverse: current keeper first — matches how the email renders.
+    keepers.reverse()
+
+    return {
+        "keeper_count": total_keepers,
+        "last_change_date": change_dates[-1] if change_dates else None,
+        "keepers": keepers,
+        "data_source": "Experian",
+    }
 
 
 def _parse_high_risk(raw: Optional[Dict]) -> Dict:

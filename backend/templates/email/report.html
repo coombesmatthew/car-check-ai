@@ -795,20 +795,41 @@
               <h2 style="margin: 0 0 12px 0; color: #1e293b; font-size: 15px; font-weight: 600; border-bottom: 2px solid #7c3aed; padding-bottom: 6px;">
                 <span style="color: #7c3aed;">&#9830;</span> Keeper History
               </h2>
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size: 13px; margin-bottom: 8px;">
+              <p style="margin: 0 0 12px 0; font-size: 13px; color: #475569;">
+                Total Keepers: <strong style="color: #1e293b; font-size: 15px;">{% if keeper_history.keeper_count is not none %}{{ keeper_history.keeper_count }}{% else %}Not available{% endif %}</strong>
+              </p>
+
+              {% if keeper_history.keepers %}
+              {% for k in keeper_history.keepers %}
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 6px; border: 1px solid {% if k.is_current %}#c7d2fe{% else %}#e2e8f0{% endif %}; background-color: {% if k.is_current %}#eef2ff{% else %}#ffffff{% endif %}; border-radius: 6px;">
                 <tr>
-                  <td style="padding: 5px 0; color: #64748b; width: 40%;">Registered Keepers</td>
-                  <td style="padding: 5px 0; color: #1e293b; font-weight: 600; font-size: 15px;">
-                    {% if keeper_history.keeper_count is not none %}{{ keeper_history.keeper_count }}{% else %}Not available{% endif %}
+                  <td style="padding: 10px 12px; width: 42px; vertical-align: middle;">
+                    <span style="display: inline-block; width: 28px; height: 28px; line-height: 28px; text-align: center; border-radius: 999px; background-color: {% if k.is_current %}#2563eb{% else %}#64748b{% endif %}; color: #ffffff; font-weight: 700; font-size: 12px;">{{ k.keeper_number }}</span>
+                  </td>
+                  <td style="padding: 10px 8px; vertical-align: middle;">
+                    <div style="color: #1e293b; font-weight: 600; font-size: 13px;">{{ k.label or ('Keeper ' ~ k.keeper_number) }}</div>
+                    <div style="color: #64748b; font-size: 12px; margin-top: 2px;">
+                      {% if k.is_current %}
+                        Since {{ k.start_display or k.start_date or 'unknown' }}
+                      {% else %}
+                        {{ k.start_display or k.start_date or '?' }} &rarr; {{ k.end_display or k.end_date or '?' }}
+                      {% endif %}
+                    </div>
+                  </td>
+                  <td style="padding: 10px 12px; vertical-align: middle; text-align: right; white-space: nowrap;">
+                    {% if k.is_current %}
+                    <div><span style="display: inline-block; background-color: #dbeafe; color: #1e40af; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px; letter-spacing: 0.5px;">CURRENT</span></div>
+                    {% endif %}
+                    {% if k.tenure_display %}
+                    <div style="margin-top: 4px; color: {% if k.is_current %}#1e40af{% else %}#475569{% endif %}; font-size: 12px; font-weight: 600;">{{ k.tenure_display }}</div>
+                    {% endif %}
                   </td>
                 </tr>
-                {% if keeper_history.last_change_date %}
-                <tr>
-                  <td style="padding: 5px 0; color: #64748b;">Last Keeper Change</td>
-                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">{{ keeper_history.last_change_date }}</td>
-                </tr>
-                {% endif %}
               </table>
+              {% endfor %}
+              {% elif keeper_history.last_change_date %}
+              <p style="margin: 8px 0 0 0; font-size: 12px; color: #64748b;">Last keeper change: {{ keeper_history.last_change_date }}</p>
+              {% endif %}
             </td>
           </tr>
           {% endif %}

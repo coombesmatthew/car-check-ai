@@ -242,9 +242,22 @@ class Valuation(BaseModel):
     data_source: str = "Demo"
 
 
+class KeeperRecord(BaseModel):
+    keeper_number: int
+    start_date: Optional[str] = None      # ISO (e.g. "2020-12-09")
+    end_date: Optional[str] = None        # ISO or None for current keeper
+    is_current: bool = False
+    # Pre-formatted display strings (built by the parser — Jinja can't do this easily)
+    start_display: Optional[str] = None   # e.g. "9 Dec 2020"
+    end_display: Optional[str] = None     # e.g. "9 Dec 2024" or None
+    tenure_display: Optional[str] = None  # e.g. "5 years · 4 months"
+    label: Optional[str] = None           # e.g. "First Owner" / "Keeper 7"
+
+
 class KeeperHistory(BaseModel):
     keeper_count: Optional[int] = None
     last_change_date: Optional[str] = None
+    keepers: List[KeeperRecord] = []   # reverse-chronological (current first)
     data_source: str = "Experian"
 
 
