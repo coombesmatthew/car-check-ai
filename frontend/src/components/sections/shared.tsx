@@ -289,15 +289,16 @@ export function PeekCard({ children, title, icon, status, href = "#full-report" 
   return (
     <a
       href={href}
-      className={`relative block bg-white border border-slate-200 rounded-xl p-5 overflow-hidden group border-l-4 ${peekBorderColors[status]}`}
+      className={`relative h-full flex flex-col bg-white border border-slate-200 rounded-xl p-5 overflow-hidden group border-l-4 ${peekBorderColors[status]}`}
     >
       {/* Unblurred header stays readable */}
       <h3 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
         {icon && <span className="text-slate-400">{icon}</span>}
         {title}
       </h3>
-      {/* Blurred body */}
-      <div className="relative">
+      {/* Blurred body — flex-1 so short-content cards still fill the carousel
+          slide height when siblings are tall (keeps all cards equal height). */}
+      <div className="relative flex-1 min-h-[220px]">
         <div className="blur-[3px] select-none pointer-events-none">
           {children}
         </div>
