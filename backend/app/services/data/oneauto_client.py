@@ -341,7 +341,12 @@ def _parse_plate_changes(raw: Optional[Dict], current_registration: str = "") ->
     if not raw:
         return _empty_plates()
 
-    IGNORED_TYPES = {"Marker", "Data Move", ""}
+    # "Marker" rows are Experian's retrospective flag on the OTHER side of a
+    # transfer — e.g. when M8OOF is put on the car, a "Marker" row is also
+    # added pointing back at the original plate. Dropping these avoids
+    # duplicate rows. "Data Move" entries DO represent genuine transfers
+    # (confirmed against real KM55OVR data — M8OOF → KM55OVR in 2015).
+    IGNORED_TYPES = {"Marker", ""}
     current = (current_registration or "").upper().replace(" ", "")
 
     items = raw.get("cherished_data_items") or []
