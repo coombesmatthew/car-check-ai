@@ -24,14 +24,6 @@ class FreeCheckRequest(BaseModel):
         return cleaned
 
 
-class BasicCheckRequest(FreeCheckRequest):
-    """Request schema for a basic (paid) vehicle check."""
-
-    email: str = Field(..., description="Email for report delivery")
-    listing_url: Optional[str] = Field(None, description="URL of the vehicle listing")
-    listing_price: Optional[int] = Field(None, ge=0, description="Listed price in pence")
-
-
 class MileageReading(BaseModel):
     date: str
     miles: int

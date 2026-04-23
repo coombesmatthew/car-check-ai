@@ -106,11 +106,20 @@ function ReportContent() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-start justify-between gap-4 mb-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Full Vehicle Report</h1>
           <p className="text-xs text-slate-400 mt-1">Ref: {data.report_ref}</p>
         </div>
+      </div>
+
+      <div className="mb-4 flex items-start gap-3 bg-emerald-50 border border-emerald-200 rounded-lg px-4 py-3">
+        <svg className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        </svg>
+        <p className="text-sm text-emerald-800">
+          We&apos;ve also emailed a copy of this report. Can&apos;t find it? Check your spam or junk folder.
+        </p>
       </div>
 
       {data.is_ev ? (

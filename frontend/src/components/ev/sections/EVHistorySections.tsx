@@ -137,7 +137,7 @@ export default function EVHistorySections({ mot_summary, clocking_analysis, mile
                 <span className="text-sm font-semibold text-slate-600">Not Enough MOT History Yet</span>
               </div>
               ) : (
-              <Badge variant="warn" label={`${clocking_analysis.risk_level.toUpperCase()} RISK`} size="md" />
+              <Badge variant="warn" label={`${clocking_analysis.risk_level.charAt(0).toUpperCase()}${clocking_analysis.risk_level.slice(1).toLowerCase()} risk`} size="md" />
               )
             )}
           </div>

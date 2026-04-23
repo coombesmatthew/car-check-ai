@@ -2,7 +2,7 @@
 
 import pytest
 from pydantic import ValidationError
-from app.schemas.check import FreeCheckRequest, BasicCheckRequest
+from app.schemas.check import FreeCheckRequest
 
 
 class TestFreeCheckRequest:
@@ -38,36 +38,3 @@ class TestFreeCheckRequest:
     def test_missing_raises(self):
         with pytest.raises(ValidationError):
             FreeCheckRequest()
-
-
-class TestBasicCheckRequest:
-    def test_valid_basic_request(self):
-        req = BasicCheckRequest(
-            registration="AB12CDE",
-            email="test@example.com",
-            listing_url="https://autotrader.co.uk/listing/123",
-            listing_price=899900,
-        )
-        assert req.registration == "AB12CDE"
-        assert req.email == "test@example.com"
-        assert req.listing_price == 899900
-
-    def test_email_required(self):
-        with pytest.raises(ValidationError):
-            BasicCheckRequest(registration="AB12CDE")
-
-    def test_optional_fields(self):
-        req = BasicCheckRequest(
-            registration="AB12CDE",
-            email="test@example.com",
-        )
-        assert req.listing_url is None
-        assert req.listing_price is None
-
-    def test_negative_price_rejected(self):
-        with pytest.raises(ValidationError):
-            BasicCheckRequest(
-                registration="AB12CDE",
-                email="test@example.com",
-                listing_price=-100,
-            )

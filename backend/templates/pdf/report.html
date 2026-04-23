@@ -60,29 +60,6 @@
       margin-bottom: 10mm;
     }
 
-    .cover-verdict {
-      display: inline-block;
-      color: #ffffff;
-      font-size: 22pt;
-      font-weight: 700;
-      padding: 10px 48px;
-      border-radius: 8px;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      margin-bottom: 4mm;
-    }
-
-    .cover-verdict-label {
-      font-size: 9pt;
-      color: #64748b;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      margin-bottom: 12mm;
-    }
-
-    .verdict-buy { background-color: #059669; }
-    .verdict-negotiate { background-color: #f59e0b; }
-    .verdict-avoid { background-color: #dc2626; }
     .score-green { color: #059669; }
     .score-amber { color: #f59e0b; }
     .score-red { color: #dc2626; }
@@ -411,18 +388,6 @@
   {% endif %}
 
   </div><!-- end page-2-content -->
-
-  <!-- AI Report Sections (page breaks handled by section-content h2/h3) -->
-  {% if ai_report_sections %}
-  {% for section in ai_report_sections %}
-  <div class="section">
-    <div class="section-title">{{ section.title }}</div>
-    <div class="section-content">
-      {{ section.content | safe }}
-    </div>
-  </div>
-  {% endfor %}
-  {% endif %}
 
   <!-- MOT History (positioned after Overall Condition Assessment) -->
   {% if mot_tests %}

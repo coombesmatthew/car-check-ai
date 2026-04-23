@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title:
     "Free Car Check UK | Finance, Stolen, MOT & Valuation | VeriCar",
   description:
-    "Free instant MOT history, mileage clocking detection, and ULEZ check using official DVLA & DVSA data. Upgrade for AI verdicts, finance, stolen, write-off, and valuation checks. No signup required.",
+    "Free instant MOT history, mileage clocking detection, and ULEZ check using official DVLA & DVSA data. Upgrade for finance, stolen, write-off, and valuation checks. No signup required.",
   keywords: [
     "car check",
     "free car check",
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Free Car Check UK | MOT, Mileage & ULEZ | VeriCar",
     description:
-      "Free MOT history, mileage clocking detection, and ULEZ check. Upgrade for AI verdicts, finance, stolen, write-off, and valuation checks. No signup required.",
+      "Free MOT history, mileage clocking detection, and ULEZ check. Upgrade for finance, stolen, write-off, and valuation checks. No signup required.",
     type: "website",
     locale: "en_GB",
   },
@@ -51,9 +51,9 @@ const faqItems = [
   },
   {
     question:
-      "What's the difference between the free check and the full report?",
+      "What's the difference between the free check and the Premium check?",
     answer:
-      "The free check gives you MOT history, mileage analysis, clocking detection, condition score, and ULEZ compliance. The \u00A34.99 full report adds an AI-powered buyer's verdict, estimated repair costs, negotiation points, and questions to ask the seller.",
+      "The free check gives you MOT history, mileage analysis, clocking detection, condition score, and ULEZ compliance. The \u00A39.99 Premium check adds finance / outstanding-debt check, stolen-vehicle register, insurance write-off history, salvage auction records, market valuation, plate-change history, and a full keeper-history timeline.",
   },
   {
     question: "How accurate is the condition score?",
@@ -97,17 +97,10 @@ const jsonLd = {
         },
         {
           "@type": "Offer",
-          price: "4.99",
-          priceCurrency: "GBP",
-          description:
-            "Full AI-powered buyer's report with risk assessment, verdict, and negotiation points.",
-        },
-        {
-          "@type": "Offer",
           price: "9.99",
           priceCurrency: "GBP",
           description:
-            "Premium check with finance, stolen, write-off, salvage, market valuation, keeper history, plus AI buyer's report.",
+            "Premium vehicle check: finance, stolen, write-off, salvage, market valuation, keeper history, plate changes.",
         },
       ],
       description:

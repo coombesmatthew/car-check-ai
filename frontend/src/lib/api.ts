@@ -307,13 +307,6 @@ export interface FreeCheckResponse {
   data_sources: string[];
 }
 
-export interface BasicCheckPreviewResponse {
-  registration: string;
-  ai_report: string | null;
-  free_check: FreeCheckResponse | null;
-  price: string;
-}
-
 export async function captureEmail(email: string, registration: string): Promise<void> {
   try {
     await fetch(`${API_URL}/api/v1/checks/leads`, {
@@ -348,23 +341,6 @@ export async function runFreeCheck(
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({ detail: "Check failed" }));
-    throw new Error(err.detail || `HTTP ${res.status}`);
-  }
-
-  return res.json();
-}
-
-export async function runBasicCheckPreview(
-  registration: string,
-): Promise<BasicCheckPreviewResponse> {
-  const res = await fetch(`${API_URL}/api/v1/checks/basic/preview`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ registration }),
-  });
-
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({ detail: "Report generation failed" }));
     throw new Error(err.detail || `HTTP ${res.status}`);
   }
 
@@ -618,7 +594,6 @@ export async function runEVCheck(
 
 export interface EVPreviewResponse {
   registration: string;
-  ai_report: string | null;
   ev_check: EVCheckResponse | null;
   price: string;
 }
@@ -662,7 +637,6 @@ export async function createEVCheckout(
 }
 
 export interface EVFulfilmentResponse extends FulfilmentResponse {
-  ai_report: string | null;
   ev_check: EVCheckResponse | null;
 }
 

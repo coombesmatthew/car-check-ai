@@ -308,24 +308,18 @@ class TestBatteryHealth:
 
 
 class TestEVPreviewEndpoint:
-    @patch("app.api.v1.endpoints.ev.generate_ev_preview_report", new_callable=AsyncMock)
     @patch("app.api.v1.endpoints.ev.EVOrchestrator")
-    def test_preview_returns_report_for_ev(
-        self, MockOrchestrator, mock_generate, client, mock_ev_check_response_electric
+    def test_preview_returns_data_for_ev(
+        self, MockOrchestrator, client, mock_ev_check_response_electric
     ):
         mock_instance = MockOrchestrator.return_value
         mock_instance.run_ev_check = AsyncMock(return_value=mock_ev_check_response_electric)
         mock_instance.close = AsyncMock()
-        mock_instance._raw_dvla_data = {"make": "TESLA", "fuelType": "ELECTRICITY"}
-        mock_instance._raw_mot_analysis = {}
-        mock_generate.return_value = "## Should You Buy This EV?\n**BUY** — Great car."
 
         response = client.post("/api/v1/ev/preview", json={"registration": "AB12CDE"})
         assert response.status_code == 200
         data = response.json()
         assert data["registration"] == "AB12CDE"
-        assert data["ai_report"] is not None
-        assert "BUY" in data["ai_report"]
         assert data["price"] == "£8.99"
         assert data["ev_check"] is not None
 
@@ -353,85 +347,6 @@ class TestEVPreviewEndpoint:
     def test_preview_empty_reg_returns_422(self, client):
         response = client.post("/api/v1/ev/preview", json={"registration": ""})
         assert response.status_code == 422
-
-
-class TestEVReportGenerator:
-    def test_demo_report_has_key_sections(self):
-        from app.services.ai.ev_report_generator import _generate_demo_ev_report
-        report = _generate_demo_ev_report(
-            registration="AB12CDE",
-            vehicle_data={"make": "TESLA", "fuelType": "ELECTRICITY", "yearOfManufacture": 2021},
-            mot_analysis={
-                "mot_summary": {"total_tests": 3, "total_passes": 3, "total_failures": 0, "current_odometer": "25000", "model": "MODEL 3"},
-                "condition_score": 85,
-                "clocking_analysis": {"clocked": False, "risk_level": "low"},
-            },
-        )
-        assert "## Should You Buy This EV?" in report
-        assert "## The Full Picture" in report
-        assert "## Charging & Running Costs" in report
-        assert "## What You'd Learn in the Full Report" in report
-
-    def test_demo_report_uses_known_specs(self):
-        from app.services.ai.ev_report_generator import _generate_demo_ev_report
-        report = _generate_demo_ev_report(
-            registration="AB12CDE",
-            vehicle_data={"make": "TESLA", "fuelType": "ELECTRICITY", "yearOfManufacture": 2021},
-            mot_analysis={
-                "mot_summary": {"total_tests": 1, "total_passes": 1, "total_failures": 0, "current_odometer": "10000", "model": "MODEL 3"},
-                "condition_score": 90,
-                "clocking_analysis": {"clocked": False, "risk_level": "low"},
-            },
-        )
-        # Should include Tesla Model 3 specs
-        assert "60" in report  # 60 kWh battery
-        assert "272" in report  # 272 mile range
-
-    def test_demo_report_verdict_avoid_when_clocked(self):
-        from app.services.ai.ev_report_generator import _generate_demo_ev_report
-        report = _generate_demo_ev_report(
-            registration="AB12CDE",
-            vehicle_data={"make": "NISSAN", "fuelType": "ELECTRICITY", "yearOfManufacture": 2019},
-            mot_analysis={
-                "mot_summary": {"total_tests": 2, "total_passes": 1, "total_failures": 1, "current_odometer": "30000"},
-                "condition_score": 60,
-                "clocking_analysis": {"clocked": True, "risk_level": "high", "flags": [{"severity": "high", "detail": "Mileage dropped"}]},
-            },
-        )
-        assert "**AVOID**" in report
-
-    def test_lookup_known_specs_tesla(self):
-        from app.services.ai.ev_report_generator import _lookup_known_specs
-        specs = _lookup_known_specs("TESLA", "MODEL 3")
-        assert specs is not None
-        assert specs["battery_kwh"] == 60
-        assert specs["official_range_miles"] == 272
-
-    def test_lookup_known_specs_unknown(self):
-        from app.services.ai.ev_report_generator import _lookup_known_specs
-        specs = _lookup_known_specs("NONEXISTENT", "CAR")
-        assert specs is None
-
-    def test_lookup_known_specs_partial_match(self):
-        from app.services.ai.ev_report_generator import _lookup_known_specs
-        specs = _lookup_known_specs("HYUNDAI", "IONIQ 5")
-        assert specs is not None
-        assert specs["battery_kwh"] == 77
-
-    def test_demo_report_data_sources(self):
-        from app.services.ai.ev_report_generator import _generate_demo_ev_report
-        report = _generate_demo_ev_report(
-            registration="AB12CDE",
-            vehicle_data={"make": "TESLA", "fuelType": "ELECTRICITY", "yearOfManufacture": 2021},
-            mot_analysis={
-                "mot_summary": {"total_tests": 1, "total_passes": 1, "total_failures": 0},
-                "condition_score": 90,
-                "clocking_analysis": {"clocked": False, "risk_level": "low"},
-            },
-        )
-        assert "## Data Sources" in report
-        assert "DVLA" in report
-        assert "DVSA" in report
 
 
 class TestEVDBSearch:

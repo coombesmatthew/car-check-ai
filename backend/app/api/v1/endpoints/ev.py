@@ -2,7 +2,7 @@
 
 GET  /api/v1/ev/count        - Total EV checks performed
 POST /api/v1/ev/check        - Free EV check (validates EV, returns basic data)
-POST /api/v1/ev/preview      - Free AI preview report (DVLA + MOT data only)
+POST /api/v1/ev/preview      - Free preview (DVLA + MOT data only)
 POST /api/v1/ev/checkout     - Create Stripe checkout for paid EV report
 POST /api/v1/ev/fulfil       - Fulfil paid EV report after Stripe payment
 POST /api/v1/ev/webhook      - Stripe webhook for EV payments
@@ -19,7 +19,6 @@ from app.schemas.ev import EVCheckRequest, EVCheckResponse, EVCheckoutRequest
 from app.services.ev.orchestrator import EVOrchestrator
 from app.services.payment.stripe_service import create_checkout_session, verify_webhook_signature
 from app.services.fulfilment import (
-    fulfil_report,
     fulfil_report_idempotent,
     get_fulfilment_status,
     handle_webhook,
@@ -68,7 +67,6 @@ async def ev_check(request: EVCheckRequest):
 
 class EVPreviewResponse(BaseModel):
     registration: str
-    ai_report: Optional[str] = None
     ev_check: Optional[EVCheckResponse] = None
     price: str = "£8.99"
 
@@ -77,9 +75,8 @@ class EVPreviewResponse(BaseModel):
 async def ev_preview(request: EVCheckRequest):
     """Run a FREE EV data check (DVLA + MOT only).
 
-    AI narrative preview removed — the free page now shows the raw EV
-    data cards (battery health preview, charging estimates, etc.)
-    instead of LLM prose. Non-EVs get rejected with a 400 error.
+    The free page shows the raw EV data cards (battery health preview,
+    charging estimates, etc.). Non-EVs get rejected with a 400 error.
     """
     orchestrator = EVOrchestrator()
     try:
@@ -93,7 +90,6 @@ async def ev_preview(request: EVCheckRequest):
 
         return EVPreviewResponse(
             registration=request.registration,
-            ai_report=None,
             ev_check=result,
         )
     except HTTPException:
@@ -137,7 +133,6 @@ class EVFulfilmentResponse(BaseModel):
     pdf_size_bytes: int
     verdict: Optional[str] = None
     payment_status: str
-    ai_report: Optional[str] = None
     ev_check: Optional[dict] = None
 
 
@@ -157,7 +152,6 @@ async def fulfil_ev_report(session_id: str):
             pdf_size_bytes=result.pdf_size_bytes,
             verdict=result.verdict,
             payment_status=result.payment_status,
-            ai_report=result.ai_report,
             ev_check=result.check_data,
         )
     except HTTPException:
@@ -193,7 +187,6 @@ async def ev_fulfilment_status(session_id: str):
         pdf_size_bytes=result.pdf_size_bytes,
         verdict=result.verdict,
         payment_status=result.payment_status,
-        ai_report=result.ai_report,
         ev_check=result.check_data,
     )
 

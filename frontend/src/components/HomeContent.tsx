@@ -21,9 +21,9 @@ const faqItems = [
   },
   {
     question:
-      "What's the difference between the free check and the full report?",
+      "What's the difference between the free check and the Premium check?",
     answer:
-      "The free check gives you MOT history, mileage analysis, clocking detection, condition score, and ULEZ compliance. The \u00A34.99 full report adds an AI-powered buyer's verdict, estimated repair costs, negotiation points, and questions to ask the seller.",
+      "The free check gives you MOT history, mileage analysis, clocking detection, condition score, and ULEZ compliance. The \u00A39.99 Premium check adds finance / outstanding-debt check, stolen-vehicle register, insurance write-off history, salvage auction records, market valuation, plate-change history, and a full keeper-history timeline.",
   },
   {
     question: "How accurate is the condition score?",
@@ -54,7 +54,7 @@ export default function HomeContent() {
                   Everything you need to buy with confidence
                 </h2>
                 <p className="text-slate-500 mt-2">
-                  Free MOT &amp; mileage checks, plus paid tiers for AI verdicts and full history
+                  Free MOT &amp; mileage checks, plus paid tiers for full history &amp; valuation
                 </p>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -208,8 +208,8 @@ export default function HomeContent() {
             <div className="mx-auto max-w-5xl px-4">
               <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16 text-center">
                 <div>
-                  <p className="text-3xl font-bold text-slate-900">5 Reports</p>
-                  <p className="text-sm text-slate-500 mt-1">Free, Basic, Premium &amp; EV</p>
+                  <p className="text-3xl font-bold text-slate-900">4 Reports</p>
+                  <p className="text-sm text-slate-500 mt-1">Free, Premium &amp; EV (Health / Complete)</p>
                 </div>
                 <div className="hidden md:block w-px h-12 bg-slate-200" />
                 <div>
@@ -275,11 +275,10 @@ export default function HomeContent() {
                     3
                   </div>
                   <h3 className="font-semibold text-slate-900 mb-2">
-                    Upgrade for AI Verdict
+                    Unlock the Full Check
                   </h3>
                   <p className="text-sm text-slate-500">
-                    Get a personalised buy/negotiate/avoid recommendation with
-                    negotiation points.
+                    Finance, stolen, write-off, valuation, keeper history — the full provenance picture, delivered in under a minute.
                   </p>
                 </div>
               </div>
@@ -302,7 +301,7 @@ export default function HomeContent() {
               </div>
               {/* Car checks row */}
               <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">Car Checks</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Free tier */}
                 <div className="border border-slate-200 rounded-xl p-6">
                   <div className="mb-4">
@@ -326,34 +325,11 @@ export default function HomeContent() {
                   </a>
                 </div>
 
-                {/* Basic tier */}
-                <div className="border-2 border-blue-600 rounded-xl p-6 pt-8 relative">
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <span className="bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap">Most Popular</span>
-                  </div>
-                  <div className="mb-4">
-                    <span className="text-sm font-semibold text-blue-600 uppercase tracking-wide">Full Report</span>
-                    <div className="mt-1">
-                      <span className="text-3xl font-bold text-slate-900">&pound;4.99</span>
-                    </div>
-                  </div>
-                  <ul className="space-y-2.5 mb-6">
-                    {["Everything in Free", "AI Risk Assessment", "Buy/Avoid Verdict", "Negotiation Points", "PDF Report & Email"].map((item, i) => (
-                      <li key={item} className="flex items-center gap-2 text-sm text-slate-700">
-                        <svg className={`w-4 h-4 flex-shrink-0 ${i === 0 ? "text-emerald-500" : "text-blue-600"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                        </svg>
-                        <span className={i > 0 ? "font-medium" : ""}>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <a href="#search" className="block text-center py-2.5 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors text-sm">
-                    Get Full Report &mdash; &pound;4.99
-                  </a>
-                </div>
-
                 {/* Premium tier */}
-                <div className="border border-slate-200 rounded-xl p-6">
+                <div className="border-2 border-purple-600 rounded-xl p-6 pt-8 relative">
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                    <span className="bg-purple-600 text-white text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap">Full Provenance</span>
+                  </div>
                   <div className="mb-4">
                     <span className="text-sm font-semibold text-purple-600 uppercase tracking-wide">Premium</span>
                     <div className="mt-1">
@@ -361,7 +337,7 @@ export default function HomeContent() {
                     </div>
                   </div>
                   <ul className="space-y-2.5 mb-6">
-                    {["Everything in Full Report", "Finance & Debt Check", "Stolen Vehicle Check", "Write-off & Salvage History", "Market Valuation", "Plate & Keeper History"].map((item, i) => (
+                    {["Everything in Free", "Finance & Outstanding Debt", "Stolen Vehicle Check", "Write-off & Salvage History", "Market Valuation", "Keeper-History Timeline", "Plate-Change History"].map((item, i) => (
                       <li key={item} className="flex items-center gap-2 text-sm text-slate-700">
                         <svg className={`w-4 h-4 flex-shrink-0 ${i === 0 ? "text-emerald-500" : "text-purple-600"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
@@ -397,7 +373,7 @@ export default function HomeContent() {
                     </div>
                   </div>
                   <ul className="space-y-2.5 mb-6">
-                    {["Free car check included", "Battery Health Score", "Real-World Range", "Charging Cost Comparison", "Lifespan Prediction", "AI Expert Verdict"].map((item, i) => (
+                    {["Free car check included", "Battery Health Score", "Real-World Range", "Charging Cost Comparison", "Lifespan Prediction", "PDF emailed in 60 seconds"].map((item, i) => (
                       <li key={item} className="flex items-center gap-2 text-sm text-slate-700">
                         <svg className={`w-4 h-4 flex-shrink-0 ${i === 0 ? "text-emerald-500" : "text-emerald-600"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />

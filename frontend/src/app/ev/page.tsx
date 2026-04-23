@@ -49,12 +49,12 @@ const faqItems = [
   {
     question: "What's included in the free check?",
     answer:
-      "The free EV check confirms the vehicle is electric, shows MOT history, mileage verification, condition score, and tax status. Battery health, range estimates, charging costs, and the AI report require the paid check (£8.99).",
+      "The free EV check confirms the vehicle is electric, shows MOT history, mileage verification, condition score, and tax status. Battery health, range estimates, and charging costs require the paid check (£8.99).",
   },
   {
     question: "What's included in the £8.99 EV Health report?",
     answer:
-      "The EV Health report adds: battery health score with degradation estimate, real-world range across different conditions, home vs rapid charging cost comparison, AI-predicted remaining lifespan, and a personalised AI verdict with buying advice. Delivered as a PDF to your email.",
+      "The EV Health report adds: battery health score with degradation estimate, real-world range across different conditions, home vs rapid charging cost comparison, and predicted remaining lifespan. Delivered as a PDF to your email and viewable online.",
   },
   {
     question: "What's included in the £13.99 EV Complete report?",
@@ -98,17 +98,10 @@ const jsonLd = {
         },
         {
           "@type": "Offer",
-          price: "4.99",
-          priceCurrency: "GBP",
-          description:
-            "Full Report with AI risk assessment, buy/avoid verdict, negotiation points, and PDF emailed.",
-        },
-        {
-          "@type": "Offer",
           price: "8.99",
           priceCurrency: "GBP",
           description:
-            "EV Health Check with battery health score, real-world range, charging costs, lifespan prediction, and AI verdict.",
+            "EV Health Check with battery health score, real-world range, charging costs, and lifespan prediction.",
         },
         {
           "@type": "Offer",

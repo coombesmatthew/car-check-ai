@@ -1,4 +1,4 @@
-"""Stripe payment integration for BASIC tier reports."""
+"""Stripe payment integration for paid tier reports."""
 from __future__ import annotations
 
 import stripe
@@ -15,11 +15,6 @@ def _init_stripe():
 
 
 TIER_CONFIG = {
-    "basic": {
-        "amount": 499,
-        "name": "VeriCar Report",
-        "description": "Full vehicle history with PDF emailed within 60 seconds.",
-    },
     "premium": {
         "amount": 999,
         "name": "VeriCar Premium Check",
@@ -41,7 +36,7 @@ TIER_CONFIG = {
 def create_checkout_session(
     registration: str,
     email: str | None,
-    tier: str = "basic",
+    tier: str = "premium",
     listing_url: str | None = None,
     listing_price: int | None = None,
     success_url: str | None = None,
@@ -52,8 +47,8 @@ def create_checkout_session(
     Args:
         registration: Vehicle registration number
         email: Customer email for receipt + report delivery
-        tier: "basic" (£4.99), "premium" (£9.99), "ev" (£8.99), or "ev_complete" (£13.99)
-        listing_url: Optional listing URL for the AI report
+        tier: "premium" (£9.99), "ev" (£8.99), or "ev_complete" (£13.99)
+        listing_url: Optional listing URL
         listing_price: Optional listing price in pence
         success_url: URL to redirect on successful payment
         cancel_url: URL to redirect on cancelled payment
@@ -160,7 +155,7 @@ def retrieve_session(session_id: str) -> dict:
         "payment_status": session.payment_status,
         "registration": session.metadata.get("registration", ""),
         "email": resolved_email,
-        "tier": session.metadata.get("tier", "basic"),
+        "tier": session.metadata.get("tier", "premium"),
         "listing_url": session.metadata.get("listing_url"),
         "listing_price": int(session.metadata["listing_price"]) if session.metadata.get("listing_price") else None,
         "amount_total": session.amount_total,

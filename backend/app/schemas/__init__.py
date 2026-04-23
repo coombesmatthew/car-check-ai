@@ -1,6 +1,5 @@
 from app.schemas.check import (
     FreeCheckRequest,
-    BasicCheckRequest,
     FreeCheckResponse,
     VehicleIdentity,
     MOTSummary,
@@ -10,7 +9,6 @@ from app.schemas.check import (
 
 __all__ = [
     "FreeCheckRequest",
-    "BasicCheckRequest",
     "FreeCheckResponse",
     "VehicleIdentity",
     "MOTSummary",

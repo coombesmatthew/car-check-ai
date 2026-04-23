@@ -10,6 +10,12 @@ import Card from "@/components/ui/Card";
 import { DetailRow, icons } from "./shared";
 import PremiumPreview from "./PremiumPreview";
 
+function toSentenceCase(s: string | null | undefined): string {
+  if (!s) return "";
+  const lower = s.toLowerCase();
+  return lower.charAt(0).toUpperCase() + lower.slice(1);
+}
+
 interface FullCheckSectionProps {
   finance_check: FinanceCheck | null;
   stolen_check: StolenCheck | null;
@@ -68,7 +74,14 @@ export default function FullCheckSection({
             </div>
           )}
           <div className="mt-3 pt-3 border-t border-slate-100">
-            <DetailRow label="Condition" value={valuation.condition} />
+            <DetailRow
+              label="Condition"
+              value={
+                valuation.condition === "Mileage-adjusted"
+                  ? "Average (adjusted for mileage)"
+                  : valuation.condition
+              }
+            />
             {valuation.mileage_used !== null && (
               <DetailRow label="Mileage Used" value={`${valuation.mileage_used.toLocaleString()} miles`} />
             )}
@@ -93,17 +106,20 @@ export default function FullCheckSection({
                 <svg className="w-5 h-5 text-red-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
                 </svg>
-                <span className="text-sm font-semibold text-red-800">FINANCE OUTSTANDING</span>
+                <span className="text-sm font-semibold text-red-800">Finance outstanding</span>
               </div>
             ) : (
               <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
                 <svg className="w-5 h-5 text-emerald-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <span className="text-sm font-semibold text-emerald-800">NO FINANCE</span>
+                <span className="text-sm font-semibold text-emerald-800">No finance</span>
               </div>
             )}
           </div>
+          <p className="text-xs text-slate-500 mb-2">
+            Checks whether the vehicle has any outstanding finance agreements registered against it.
+          </p>
           {finance_check.records.map((r, i) => (
             <div key={i} className="bg-slate-50 rounded-lg p-3 mb-2">
               <DetailRow label="Agreement Type" value={r.agreement_type} />
@@ -132,17 +148,20 @@ export default function FullCheckSection({
                 <svg className="w-5 h-5 text-red-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
                 </svg>
-                <span className="text-sm font-semibold text-red-800">REPORTED STOLEN</span>
+                <span className="text-sm font-semibold text-red-800">Reported stolen</span>
               </div>
             ) : (
               <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
                 <svg className="w-5 h-5 text-emerald-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <span className="text-sm font-semibold text-emerald-800">NOT STOLEN</span>
+                <span className="text-sm font-semibold text-emerald-800">Not stolen</span>
               </div>
             )}
           </div>
+          <p className="text-xs text-slate-500 mb-2">
+            Checks national police databases to confirm the vehicle has not been reported stolen.
+          </p>
           {stolen_check.stolen && (
             <div className="bg-slate-50 rounded-lg p-3">
               {stolen_check.reported_date && <DetailRow label="Reported Date" value={stolen_check.reported_date} />}
@@ -169,17 +188,20 @@ export default function FullCheckSection({
                 <svg className="w-5 h-5 text-red-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
                 </svg>
-                <span className="text-sm font-semibold text-red-800">INSURANCE WRITE-OFF</span>
+                <span className="text-sm font-semibold text-red-800">Insurance write-off</span>
               </div>
             ) : (
               <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
                 <svg className="w-5 h-5 text-emerald-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <span className="text-sm font-semibold text-emerald-800">NOT WRITTEN OFF</span>
+                <span className="text-sm font-semibold text-emerald-800">Not written off</span>
               </div>
             )}
           </div>
+          <p className="text-xs text-slate-500 mb-2">
+            Checks insurance industry records for any history of the vehicle being written off.
+          </p>
           {write_off_check.records.map((r, i) => (
             <div key={i} className="bg-slate-50 rounded-lg p-3 mb-2">
               <div className="flex items-center gap-2 mb-2">
@@ -218,14 +240,14 @@ export default function FullCheckSection({
                 <svg className="w-5 h-5 text-red-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
                 </svg>
-                <span className="text-sm font-semibold text-red-800">SALVAGE RECORDS FOUND</span>
+                <span className="text-sm font-semibold text-red-800">Salvage records found</span>
               </div>
             ) : (
               <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
                 <svg className="w-5 h-5 text-emerald-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <span className="text-sm font-semibold text-emerald-800">NO SALVAGE RECORDS</span>
+                <span className="text-sm font-semibold text-emerald-800">No salvage records</span>
               </div>
             )}
           </div>
@@ -284,13 +306,13 @@ export default function FullCheckSection({
                     <p className="text-xs text-slate-500 truncate">
                       {k.is_current
                         ? `Since ${k.start_display || k.start_date || "unknown"}`
-                        : `${k.start_display || k.start_date || "?"} → ${k.end_display || k.end_date || "?"}`}
+                        : `From ${k.start_display || k.start_date || "unknown"}`}
                     </p>
                   </div>
                   <div className="text-right flex-shrink-0">
                     {k.is_current && (
-                      <span className="block bg-blue-100 text-blue-800 text-[10px] font-bold tracking-wider px-2 py-0.5 rounded mb-1">
-                        CURRENT
+                      <span className="block bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded mb-1">
+                        Current
                       </span>
                     )}
                     {k.tenure_display && (
@@ -333,7 +355,7 @@ export default function FullCheckSection({
                 <svg className="w-5 h-5 text-amber-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
                 </svg>
-                <span className="text-sm font-semibold text-amber-800">{plate_changes.record_count} PLATE CHANGE{plate_changes.record_count !== 1 ? "S" : ""} FOUND</span>
+                <span className="text-sm font-semibold text-amber-800">{plate_changes.record_count} plate change{plate_changes.record_count !== 1 ? "s" : ""} found</span>
               </div>
             ) : (
               <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2">
@@ -357,7 +379,6 @@ export default function FullCheckSection({
                     }
                   />
                   <DetailRow label="Change Date" value={r.change_date} />
-                  <DetailRow label="Change Type" value={r.change_type} />
                 </div>
               ))}
             </div>
@@ -381,17 +402,20 @@ export default function FullCheckSection({
                 <svg className="w-5 h-5 text-red-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
                 </svg>
-                <span className="text-sm font-semibold text-red-800">HIGH RISK FLAGS FOUND</span>
+                <span className="text-sm font-semibold text-red-800">High risk flags found</span>
               </div>
             ) : (
               <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
                 <svg className="w-5 h-5 text-emerald-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <span className="text-sm font-semibold text-emerald-800">NO HIGH RISK FLAGS</span>
+                <span className="text-sm font-semibold text-emerald-800">No high risk flags</span>
               </div>
             )}
           </div>
+          <p className="text-xs text-slate-500 mb-2">
+            Aggregates any high-risk markers from Experian — including finance defaults, write-off records, scrappage, and police alerts — into a single flag.
+          </p>
           {high_risk.records.length > 0 && (
             <div className="space-y-2">
               {high_risk.records.map((r, i) => (
@@ -437,7 +461,7 @@ export default function FullCheckSection({
               {previous_searches.records.slice(0, 5).map((r, i) => (
                 <div key={i} className="flex justify-between py-1.5 border-b border-slate-100 last:border-0">
                   <span className="text-sm text-slate-500">{r.date || "Unknown date"}</span>
-                  <span className="text-sm text-slate-700">{r.business_type || "Check"}</span>
+                  <span className="text-sm text-slate-700">{toSentenceCase(r.business_type) || "Check"}</span>
                 </div>
               ))}
               {previous_searches.records.length > 5 && (

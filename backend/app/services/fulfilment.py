@@ -3,9 +3,8 @@
 Handles the complete post-payment flow for ALL paid tiers:
   1. Verify Stripe payment
   2. Run the appropriate check (car or EV orchestrator)
-  3. Generate AI report (car or EV generator)
-  4. Generate PDF (shared)
-  5. Send email (shared)
+  3. Generate PDF (shared)
+  4. Send email (shared)
 
 Endpoints in checks.py and ev.py are thin wrappers around fulfil_report().
 
@@ -13,8 +12,7 @@ Idempotency + async fulfilment:
   fulfil_report_idempotent() caches the result per Stripe session_id in Redis
   for 24h so webhook + frontend can both call it safely. Webhook is the
   primary trigger (Stripe delivers it within seconds); frontend status poll
-  is the fallback. This avoids the 100s gateway timeout that used to break
-  PREMIUM fulfilment, since AI generation can take 2+ minutes.
+  is the fallback.
 """
 
 from __future__ import annotations
@@ -29,7 +27,7 @@ from app.core.cache import cache
 from app.core.logging import logger
 from app.services.check.orchestrator import CheckOrchestrator
 from app.services.ev.orchestrator import EVOrchestrator
-from app.services.report.pdf_generator import generate_pdf, _extract_verdict
+from app.services.report.pdf_generator import generate_pdf
 from app.services.notification.email_sender import send_report_email
 from app.services.payment.stripe_service import retrieve_session
 
@@ -53,7 +51,6 @@ class FulfilmentResult:
     pdf_size_bytes: int
     verdict: Optional[str]
     payment_status: str
-    ai_report: Optional[str]
     check_data: dict
 
 
@@ -76,19 +73,18 @@ async def fulfil_report(session_id: str) -> FulfilmentResult:
 
     registration = session["registration"]
     email = session["email"]
-    tier = session.get("tier", "basic")
+    tier = session.get("tier", "premium")
 
-    # 2. Run the appropriate check + AI report
+    # 2. Run the appropriate check
     if tier in EV_TIERS:
-        check_data, ai_report = await _run_ev_pipeline(registration, tier)
+        check_data = await _run_ev_pipeline(registration, tier)
         ref_prefix = "EV"
     else:
-        check_data, ai_report = await _run_car_pipeline(registration, tier, session)
+        check_data = await _run_car_pipeline(registration, tier)
         ref_prefix = "CV"
 
     # 3. Generate PDF (shared for all tiers)
-    pdf_bytes = generate_pdf(check_data, ai_report)
-    verdict = _extract_verdict(ai_report) if ai_report else None
+    pdf_bytes = generate_pdf(check_data)
 
     # 4. Generate report reference
     report_ref = f"{ref_prefix}-{dt.utcnow().strftime('%Y%m%d')}-{uuid.uuid4().hex[:8].upper()}"
@@ -98,7 +94,7 @@ async def fulfil_report(session_id: str) -> FulfilmentResult:
         to_email=email,
         check_data=check_data,
         pdf_bytes=pdf_bytes,
-        verdict=verdict,
+        verdict=None,
         report_ref=report_ref,
         session_id=session_id,
     )
@@ -113,41 +109,29 @@ async def fulfil_report(session_id: str) -> FulfilmentResult:
         report_ref=report_ref,
         email_sent=email_sent,
         pdf_size_bytes=len(pdf_bytes),
-        verdict=verdict,
+        verdict=None,
         payment_status="paid",
-        ai_report=ai_report,
         check_data=check_data,
     )
 
 
-async def _run_ev_pipeline(registration: str, tier: str) -> tuple[dict, str | None]:
-    """Run EV orchestrator. AI narrative report was removed — the email
-    (and new browser view) present the data directly. Reports now ship
-    faster, have zero LLM cost, and don't risk AI hallucinations.
-    """
+async def _run_ev_pipeline(registration: str, tier: str) -> dict:
+    """Run EV orchestrator and return the check data dict."""
     orch_tier = "ev_complete" if tier == "ev_complete" else "ev_health"
     orchestrator = EVOrchestrator()
     try:
         result = await orchestrator.run_ev_check(registration, tier=orch_tier)
-        check_data = result.model_dump()
-        return check_data, None
+        return result.model_dump()
     finally:
         await orchestrator.close()
 
 
-async def _run_car_pipeline(
-    registration: str, tier: str, session: dict
-) -> tuple[dict, str | None]:
-    """Run car check orchestrator. AI narrative report was removed — see
-    _run_ev_pipeline for rationale. The orchestrator still fetches DVLA,
-    MOT, Experian AutoCheck, Brego valuation and CarGuide salvage; the
-    email and browser view render those directly.
-    """
+async def _run_car_pipeline(registration: str, tier: str) -> dict:
+    """Run car check orchestrator and return the check data dict."""
     orchestrator = CheckOrchestrator()
     try:
         result = await orchestrator.run_free_check(registration, tier=tier)
-        check_data = result.model_dump()
-        return check_data, None
+        return result.model_dump()
     finally:
         await orchestrator.close()
 
@@ -157,7 +141,7 @@ async def fulfil_report_idempotent(session_id: str) -> FulfilmentResult:
 
     Safe for both webhook-triggered and frontend-triggered calls. Uses a Redis
     result cache (24h) + a short-lived lock so concurrent callers don't
-    double-generate the AI report or send duplicate emails.
+    double-run the check or send duplicate emails.
     """
     # 1. Fast path — already fulfilled?
     cached = await cache.get(FULFIL_RESULT_CACHE_PREFIX, session_id)

@@ -107,19 +107,11 @@ export default function RootLayout({
                 },
                 {
                   "@type": "Offer",
-                  name: "Full Report",
-                  price: "4.99",
-                  priceCurrency: "GBP",
-                  description:
-                    "AI-powered buyer's report with valuation and risk assessment",
-                },
-                {
-                  "@type": "Offer",
                   name: "Premium Check",
                   price: "9.99",
                   priceCurrency: "GBP",
                   description:
-                    "Full provenance check including finance, stolen, write-off, and plate history",
+                    "Full provenance check including finance, stolen, write-off, salvage, valuation, keeper history and plate-change history",
                 },
                 {
                   "@type": "Offer",
@@ -127,7 +119,7 @@ export default function RootLayout({
                   price: "8.99",
                   priceCurrency: "GBP",
                   description:
-                    "Battery health score, real-world range, charging costs, lifespan prediction, and AI verdict for electric vehicles",
+                    "Battery health score, real-world range, charging costs, and lifespan prediction for electric vehicles",
                 },
                 {
                   "@type": "Offer",

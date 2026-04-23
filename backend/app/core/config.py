@@ -30,13 +30,9 @@ class Settings(BaseSettings):
     DVLA_VES_API_KEY: str = ""
     DVLA_VES_URL: str = "https://driver-vehicle-licensing.api.gov.uk/vehicle-enquiry/v1/vehicles"
 
-    # Anthropic Claude API
+    # Anthropic Claude API (retained for the TikTok marketing script generator)
     ANTHROPIC_API_KEY: str = ""
     ANTHROPIC_MODEL: str = "claude-sonnet-4-5-20250929"
-    # Pinned decoding params for buyer's report generation (both non-EV and EV).
-    # Low temperature keeps voice/style consistent across runs.
-    ANTHROPIC_REPORT_MODEL: str = "claude-sonnet-4-6"
-    ANTHROPIC_REPORT_TEMPERATURE: float = 0.2
 
     # GDPR retention — strip api_calls.response_body + error after this many days.
     # Keeps the row itself (service, endpoint, status, duration, cost) so cost

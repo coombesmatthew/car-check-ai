@@ -1,25 +1,21 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
-import { triggerReportFulfilment, getReportStatus, FulfilmentResponse } from "@/lib/api";
+import { triggerReportFulfilment, getReportStatus } from "@/lib/api";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
-// Poll status every 5s for up to 3 minutes, then fall through to the
-// "check your email" success state regardless. The webhook finishes the job
-// even if the browser leaves. AI generation takes up to 2 minutes so we
-// can't block synchronously without hitting the Cloudflare 100s timeout.
 const POLL_INTERVAL_MS = 5000;
 const POLL_TIMEOUT_MS = 3 * 60 * 1000;
 
 function SuccessContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
 
-  const [status, setStatus] = useState<"loading" | "success" | "pending_email" | "error">("loading");
-  const [result, setResult] = useState<FulfilmentResponse | null>(null);
+  const [status, setStatus] = useState<"loading" | "pending_email" | "error">("loading");
   const [error, setError] = useState<string | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -33,9 +29,8 @@ function SuccessContent() {
     let cancelled = false;
     const startedAt = Date.now();
 
-    // Fire-and-forget: ensures fulfilment runs even if the Stripe webhook is delayed or not configured.
     triggerReportFulfilment(sessionId).catch(() => {
-      /* non-fatal: webhook will also trigger it */
+      /* non-fatal: webhook also triggers it */
     });
 
     const poll = async () => {
@@ -43,17 +38,16 @@ function SuccessContent() {
       try {
         const res = await getReportStatus(sessionId);
         if (res.ready) {
-          setResult(res.result);
-          setStatus("success");
+          // Skip the intermediate confirmation screen — go straight to the
+          // full report view. The /report page reads session_id from the URL.
+          router.replace(`/report?session_id=${encodeURIComponent(sessionId)}`);
           return;
         }
       } catch {
-        // Transient network hiccup — keep polling within the window.
+        /* transient — keep polling */
       }
 
       if (Date.now() - startedAt > POLL_TIMEOUT_MS) {
-        // Fulfilment taking longer than usual — show the email fallback.
-        // The backend job continues; user will receive the PDF by email.
         setStatus("pending_email");
         return;
       }
@@ -67,7 +61,7 @@ function SuccessContent() {
       cancelled = true;
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
-  }, [sessionId]);
+  }, [sessionId, router]);
 
   if (status === "loading") {
     return (
@@ -79,7 +73,7 @@ function SuccessContent() {
           </svg>
         </div>
         <h2 className="text-2xl font-bold text-slate-900 mb-2">Generating your report...</h2>
-        <p className="text-slate-500">Payment confirmed. Building your AI buyer&apos;s report — this usually takes 30–90 seconds.</p>
+        <p className="text-slate-500">Payment confirmed. Building your full vehicle report — this usually takes 30–90 seconds.</p>
         <p className="text-xs text-slate-400 mt-6">You can safely close this tab. We&apos;ll email your PDF when it&apos;s ready.</p>
       </div>
     );
@@ -106,111 +100,24 @@ function SuccessContent() {
     );
   }
 
-  if (status === "error") {
-    return (
-      <div className="text-center py-20">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-6">
-          <svg className="w-8 h-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-          </svg>
-        </div>
-        <h2 className="text-2xl font-bold text-slate-900 mb-2">Something went wrong</h2>
-        <p className="text-slate-500 mb-4">{error}</p>
-        <p className="text-sm text-slate-400">
-          If you were charged, please contact us and we&apos;ll sort this out immediately.
-        </p>
-        <a
-          href="/"
-          className="inline-block mt-6 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          Back to Home
-        </a>
-      </div>
-    );
-  }
-
-  // Success!
   return (
-    <div className="text-center py-16">
-      <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-100 mb-6">
-        <svg className="w-8 h-8 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+    <div className="text-center py-20">
+      <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-6">
+        <svg className="w-8 h-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
         </svg>
       </div>
-
-      <h2 className="text-2xl font-bold text-slate-900 mb-2">Your report is ready!</h2>
-      <p className="text-slate-500 mb-8">
-        {result?.email_sent
-          ? "Check your email — your PDF report has been sent."
-          : "Your report has been generated successfully."}
+      <h2 className="text-2xl font-bold text-slate-900 mb-2">Something went wrong</h2>
+      <p className="text-slate-500 mb-4">{error}</p>
+      <p className="text-sm text-slate-400">
+        If you were charged, please contact us and we&apos;ll sort this out immediately.
       </p>
-      {result?.email_sent && (
-        <p className="text-sm text-slate-400">
-          Can&apos;t find it? Check your spam or junk folder.
-        </p>
-      )}
-
-      {/* Report summary card */}
-      <div className="max-w-md mx-auto bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm text-left mb-8">
-        <div className="bg-slate-50 px-6 py-4 border-b border-slate-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-slate-500">Vehicle</p>
-              <p className="text-lg font-bold font-mono tracking-wider text-slate-900">
-                {result?.registration}
-              </p>
-            </div>
-          </div>
-        </div>
-        <div className="px-6 py-4 space-y-3">
-          <div className="flex justify-between text-sm">
-            <span className="text-slate-500">Report Reference</span>
-            <span className="font-mono text-slate-700">{result?.report_ref}</span>
-          </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-slate-500">PDF Size</span>
-            <span className="text-slate-700">{result ? Math.round(result.pdf_size_bytes / 1024) : 0} KB</span>
-          </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-slate-500">Email Delivered</span>
-            <span className={result?.email_sent ? "text-emerald-600 font-medium" : "text-amber-600"}>
-              {result?.email_sent ? "Sent" : "Pending setup"}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
-        {sessionId && (
-          <a
-            href={`/report?session_id=${encodeURIComponent(sessionId)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-            </svg>
-            Open Full Report
-          </a>
-        )}
-        <a
-          href="/"
-          className="inline-block px-6 py-3 border border-slate-300 text-slate-700 font-semibold rounded-lg hover:bg-slate-50 transition-colors"
-        >
-          Check Another Vehicle
-        </a>
-      </div>
-      <p className="text-xs text-slate-400 mt-3">
-        Report ref: {result?.report_ref}
-      </p>
-
-      {/* Legal disclaimer */}
-      <p className="text-xs text-slate-400 text-center mt-8 max-w-2xl mx-auto">
-        This report is for informational purposes only and should not be the sole basis for a purchasing decision. Data sourced from DVLA, DVSA, and third-party providers &mdash; accuracy not guaranteed. We recommend an independent mechanical inspection before purchase. See our{" "}
-        <a href="/terms" className="underline hover:text-slate-600">Terms of Service</a>.
-      </p>
+      <a
+        href="/"
+        className="inline-block mt-6 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+      >
+        Back to Home
+      </a>
     </div>
   );
 }

@@ -5,7 +5,6 @@ import { useSearchParams } from "next/navigation";
 import { runEVCheck, getEVCheckCount, EVCheckResponse } from "@/lib/api";
 import EVCheckResult from "./EVCheckResult";
 import EVUpsellSection from "./EVUpsellSection";
-import EVAIReport from "./EVAIReport";
 
 export default function EVSearchSection({ onCheckComplete }: { onCheckComplete?: (hasResult: boolean) => void }) {
   const searchParams = useSearchParams();
@@ -225,12 +224,7 @@ export default function EVSearchSection({ onCheckComplete }: { onCheckComplete?:
               <>
                 <EVCheckResult result={result} />
 
-                {/* Static sample report showing what each tier includes */}
-                <div className="mt-6">
-                  <EVAIReport />
-                </div>
-
-                {/* Upsell — always shown after results, below report if generated */}
+                {/* Upsell — always shown after results */}
                 <EVUpsellSection registration={result.registration} />
 
                 {/* Cross-sell: full vehicle history */}

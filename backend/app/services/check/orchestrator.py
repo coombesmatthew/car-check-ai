@@ -102,7 +102,7 @@ class CheckOrchestrator:
         mot_analysis = self.mot_analyzer.analyze(mot_data)
         ulez_result = calculate_ulez_compliance(dvla_data)
 
-        # Store raw data for use by AI report generator
+        # Store raw data for downstream parsers
         self._raw_dvla_data = dvla_data
         self._raw_mot_analysis = mot_analysis
         self._raw_ulez_data = ulez_result
