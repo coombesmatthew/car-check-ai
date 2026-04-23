@@ -11,12 +11,13 @@ Wired in from `oneauto_client._get()`; extend to Anthropic / Resend later.
 from __future__ import annotations
 
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional
 
-from sqlalchemy import Column, DateTime, Index, Integer, Numeric, String, Text
+from sqlalchemy import Column, DateTime, Index, Integer, Numeric, String, Text, update
 from sqlalchemy.dialects.postgresql import UUID
 
+from app.core.config import settings
 from app.core.logging import logger
 from app.models.base import Base
 
@@ -92,3 +93,33 @@ async def record_api_call(
             session.add(row)
     except Exception as e:
         logger.warning(f"record_api_call failed ({service} {endpoint}): {e}")
+
+
+async def purge_expired_response_bodies() -> int:
+    """Null out response_body + error on api_calls rows older than the
+    retention window. Keeps the row itself so cost rollups remain intact.
+
+    AutoCheck responses include keeper names + contact numbers; dropping the
+    response body after N days keeps GDPR risk low while still giving us a
+    workable diagnostic window. Returns the number of rows updated.
+    """
+    from app.core.db import get_session
+
+    cutoff = datetime.utcnow() - timedelta(days=settings.API_CALL_RESPONSE_RETENTION_DAYS)
+
+    try:
+        async with get_session() as session:
+            stmt = (
+                update(ApiCall)
+                .where(ApiCall.created_at < cutoff)
+                .where(ApiCall.response_body.isnot(None))
+                .values(response_body=None, error=None)
+            )
+            result = await session.execute(stmt)
+            rowcount = result.rowcount or 0
+            if rowcount:
+                logger.info(f"PII purge: nulled response_body + error on {rowcount} api_calls rows (older than {settings.API_CALL_RESPONSE_RETENTION_DAYS}d)")
+            return rowcount
+    except Exception as e:
+        logger.warning(f"purge_expired_response_bodies failed: {e}")
+        return 0

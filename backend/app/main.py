@@ -1,3 +1,4 @@
+import asyncio
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -12,6 +13,11 @@ from app.core.logging import setup_logging
 from app.core.cache import cache
 from app.core.middleware import SecurityHeadersMiddleware, RateLimitMiddleware
 from app.api.v1.router import api_router
+from app.models.api_call import purge_expired_response_bodies
+
+# How often to run the PII purge. Hourly is comfortable — the actual work
+# is a single UPDATE targeting an indexed column.
+_PII_PURGE_INTERVAL_SECONDS = 3600
 
 # Initialize Sentry (optional)
 if settings.SENTRY_DSN:
@@ -25,6 +31,23 @@ if settings.SENTRY_DSN:
 setup_logging()
 
 
+async def _pii_purge_loop():
+    """Background task: purge expired PII from api_calls every hour.
+
+    First run is delayed so it doesn't compete with startup. Exceptions are
+    swallowed inside purge_expired_response_bodies so the loop never dies.
+    """
+    while True:
+        try:
+            await asyncio.sleep(_PII_PURGE_INTERVAL_SECONDS)
+            await purge_expired_response_bodies()
+        except asyncio.CancelledError:
+            raise
+        except Exception as e:
+            import logging
+            logging.getLogger("carcheck").warning(f"PII purge loop iteration failed: {e}")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup — Redis is optional, don't crash if unavailable
@@ -33,8 +56,25 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         import logging
         logging.getLogger("carcheck").warning(f"Redis connection failed (non-fatal): {e}")
+
+    # One-off PII sweep at startup (catches anything we slept through).
+    try:
+        await purge_expired_response_bodies()
+    except Exception as e:
+        import logging
+        logging.getLogger("carcheck").warning(f"Startup PII purge failed (non-fatal): {e}")
+
+    # Hourly sweep thereafter.
+    purge_task = asyncio.create_task(_pii_purge_loop())
+
     yield
+
     # Shutdown
+    purge_task.cancel()
+    try:
+        await purge_task
+    except asyncio.CancelledError:
+        pass
     try:
         await cache.close()
     except Exception:

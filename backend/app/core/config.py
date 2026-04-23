@@ -38,6 +38,11 @@ class Settings(BaseSettings):
     ANTHROPIC_REPORT_MODEL: str = "claude-sonnet-4-6"
     ANTHROPIC_REPORT_TEMPERATURE: float = 0.2
 
+    # GDPR retention — strip api_calls.response_body + error after this many days.
+    # Keeps the row itself (service, endpoint, status, duration, cost) so cost
+    # rollups stay intact.
+    API_CALL_RESPONSE_RETENTION_DAYS: int = 30
+
     # One Auto API (Experian + Brego via single integration)
     ONEAUTO_API_KEY: str = ""
     ONEAUTO_API_URL: str = "https://sandbox.oneautoapi.com"
