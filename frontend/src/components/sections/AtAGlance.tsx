@@ -4,6 +4,7 @@ import { buildChecksSummary, ChecksSummaryItem, ChecksSummaryStatus } from "@/li
 import type {
   FinanceCheck, StolenCheck, WriteOffCheck, SalvageCheck,
   ClockingAnalysis, ULEZCompliance, VehicleIdentity, VehicleStats,
+  MOTSummary, BatteryHealth,
 } from "@/lib/api";
 
 const ROW_STYLES: Record<ChecksSummaryStatus, { edge: string; bg: string; iconBg: string; iconColour: string }> = {
@@ -74,6 +75,8 @@ interface AtAGlanceProps {
   vehicle?: VehicleIdentity | null;
   vehicle_stats?: VehicleStats | null;
   ulez_compliance?: ULEZCompliance | null;
+  mot_summary?: MOTSummary | null;
+  battery_health?: BatteryHealth | null;
 }
 
 export default function AtAGlance(props: AtAGlanceProps) {

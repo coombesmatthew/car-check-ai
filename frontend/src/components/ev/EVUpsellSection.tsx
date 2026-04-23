@@ -19,13 +19,7 @@ export default function EVUpsellSection({ registration }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
 
-  const handleCheckout = () => {
-    if (loading) return;
-    setError(null);
-    setModalOpen(true);
-  };
-
-  const handleContinue = async (listingPricePence: number | null) => {
+  const goToCheckout = async (listingPricePence: number | null) => {
     if (loading) return;
     setError(null);
     setLoading(true);
@@ -38,6 +32,20 @@ export default function EVUpsellSection({ registration }: Props) {
       setModalOpen(false);
     }
   };
+
+  const handleCheckout = () => {
+    if (loading) return;
+    setError(null);
+    // EV Health skips the listing-price modal — that tier has no Brego
+    // valuation so there's nothing to compare the price against.
+    if (selectedTier === "ev") {
+      goToCheckout(null);
+      return;
+    }
+    setModalOpen(true);
+  };
+
+  const handleContinue = (listingPricePence: number | null) => goToCheckout(listingPricePence);
 
   const tierCopy: Record<Tier, { price: string; label: string; button: string; bg: string; hover: string }> = {
     ev: {

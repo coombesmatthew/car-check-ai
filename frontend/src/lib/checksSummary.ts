@@ -11,6 +11,8 @@ import type {
   ULEZCompliance,
   VehicleIdentity,
   VehicleStats,
+  MOTSummary,
+  BatteryHealth,
 } from "./api";
 
 export type ChecksSummaryStatus = "pass" | "fail" | "warn";
@@ -30,6 +32,8 @@ interface SourceData {
   vehicle?: VehicleIdentity | null;
   vehicle_stats?: VehicleStats | null;
   ulez_compliance?: ULEZCompliance | null;
+  mot_summary?: MOTSummary | null;
+  battery_health?: BatteryHealth | null;
 }
 
 /* Items are ordered by severity — most critical (stolen, finance, write-off) first.
@@ -153,9 +157,49 @@ export function buildChecksSummary(data: SourceData): ChecksSummaryItem[] {
     });
   }
 
-  // CAZ/ULEZ compliance intentionally omitted from At a Glance — it's a
-  // running-cost signal (shown in the Emissions section) rather than a
-  // buy/don't-buy risk factor alongside stolen, finance, write-off, clocking.
+  // CAZ/ULEZ compliance intentionally omitted — it's a running-cost signal
+  // (shown in the Emissions section) not a buy/don't-buy risk factor.
+
+  // Outstanding safety recall — surface for any tier where we have MOT data.
+  // "Yes" is a fail because it's an open manufacturer recall, not a trivia row.
+  const recall = data.mot_summary?.has_outstanding_recall;
+  if (recall === "Yes") {
+    items.push({
+      status: "fail",
+      label: "Outstanding Safety Recall",
+      detail: "Contact manufacturer for a free repair before purchase",
+    });
+  } else if (recall === "No") {
+    items.push({
+      status: "pass",
+      label: "No Outstanding Recalls",
+      detail: "Manufacturer has no open safety recalls on this vehicle",
+    });
+  }
+
+  // Battery health — EV tiers only. Shown when present regardless of tier.
+  const bh = data.battery_health;
+  if (bh?.score != null) {
+    if (bh.score >= 80) {
+      items.push({
+        status: "pass",
+        label: `Battery Health ${bh.score}/100`,
+        detail: bh.grade ? `Grade ${bh.grade} — healthy range retention` : "Healthy range retention",
+      });
+    } else if (bh.score >= 60) {
+      items.push({
+        status: "warn",
+        label: `Battery Health ${bh.score}/100`,
+        detail: bh.grade ? `Grade ${bh.grade} — moderate degradation` : "Moderate degradation for age",
+      });
+    } else {
+      items.push({
+        status: "fail",
+        label: `Battery Health ${bh.score}/100`,
+        detail: bh.grade ? `Grade ${bh.grade} — significant degradation` : "Significant degradation, expect reduced range",
+      });
+    }
+  }
 
   return items;
 }

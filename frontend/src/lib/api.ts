@@ -1,3 +1,5 @@
+import { track } from "./analytics";
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8001";
 
 export interface VehicleIdentity {
@@ -373,6 +375,7 @@ export async function createCheckout(
   const body: Record<string, unknown> = { registration, tier };
   if (email) body.email = email;
   if (listingPricePence && listingPricePence > 0) body.listing_price = listingPricePence;
+  track("checkout_started", { tier, product: "standard", registration });
   const res = await fetch(`${API_URL}/api/v1/checks/basic/checkout`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -648,6 +651,7 @@ export async function createEVCheckout(
   const body: Record<string, unknown> = { registration, tier };
   if (email) body.email = email;
   if (listingPricePence && listingPricePence > 0) body.listing_price = listingPricePence;
+  track("checkout_started", { tier, product: "ev", registration });
   const res = await fetch(`${API_URL}/api/v1/ev/checkout`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

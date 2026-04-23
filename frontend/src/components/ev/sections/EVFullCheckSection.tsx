@@ -9,11 +9,14 @@ import { createEVCheckout } from "@/lib/api";
 
 interface EVFullCheckSectionProps {
   registration: string;
+  /** When rendered inside an EV Health paid report, this becomes a softer
+      cross-sell rather than the aggressive free-tier upsell. */
+  crossSell?: boolean;
 }
 
 const currentMonth = new Date().toLocaleDateString("en-GB", { month: "long", year: "numeric" });
 
-export default function EVFullCheckSection({ registration }: EVFullCheckSectionProps) {
+export default function EVFullCheckSection({ registration, crossSell = false }: EVFullCheckSectionProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -37,9 +40,15 @@ export default function EVFullCheckSection({ registration }: EVFullCheckSectionP
   return (
     <div className="space-y-5">
       {/* Peek cards carousel — swipe through locked previews */}
-      <Card title="What's in the EV Complete Check" icon={icons.shield} status="neutral">
+      <Card
+        title={crossSell ? "Want the full history too?" : "What's in the EV Complete Check"}
+        icon={icons.shield}
+        status="neutral"
+      >
         <p className="text-xs text-slate-500 mb-3">
-          Swipe through each check to see what you&apos;ll get. Everything unlocks instantly on payment.
+          {crossSell
+            ? "EV Complete adds these vehicle history checks on top of your battery report — for just £5 more."
+            : "Swipe through each check to see what you\u2019ll get. Everything unlocks instantly on payment."}
         </p>
         <SwipeCarousel ariaLabel="EV Complete check previews" itemNoun="Check">
 
@@ -130,29 +139,42 @@ export default function EVFullCheckSection({ registration }: EVFullCheckSectionP
         </SwipeCarousel>
       </Card>
 
-      {/* CTA */}
-      <div className="mt-2 text-center">
-        <button
-          onClick={handleUnlock}
-          disabled={loading}
-          className="inline-flex items-center gap-2 px-8 py-3 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 transition-colors disabled:opacity-75 disabled:cursor-wait"
-        >
-          {loading ? (
-            <svg className="animate-spin w-5 h-5" viewBox="0 0 24 24" fill="none">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
-            </svg>
-          ) : (
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-            </svg>
-          )}
-          {loading ? "Redirecting…" : <>Unlock EV Complete for {registration} &mdash; &pound;13.99</>}
-        </button>
-        <p className="text-xs text-slate-400 mt-2">
-          {error ? <span className="text-red-500">{error}</span> : "One-off payment · No subscription · Instant results"}
-        </p>
-      </div>
+      {/* CTA — smaller and linkier in cross-sell mode since customer already paid */}
+      {crossSell ? (
+        <div className="mt-2 text-center">
+          <button
+            onClick={handleUnlock}
+            disabled={loading}
+            className="inline-flex items-center gap-2 px-5 py-2 border border-teal-600 text-teal-700 font-semibold rounded-lg hover:bg-teal-50 transition-colors text-sm disabled:opacity-75 disabled:cursor-wait"
+          >
+            {loading ? "Redirecting…" : <>Add full history for &pound;5 more</>}
+          </button>
+          {error && <p className="text-xs text-red-500 mt-2">{error}</p>}
+        </div>
+      ) : (
+        <div className="mt-2 text-center">
+          <button
+            onClick={handleUnlock}
+            disabled={loading}
+            className="inline-flex items-center gap-2 px-8 py-3 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 transition-colors disabled:opacity-75 disabled:cursor-wait"
+          >
+            {loading ? (
+              <svg className="animate-spin w-5 h-5" viewBox="0 0 24 24" fill="none">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+              </svg>
+            ) : (
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+              </svg>
+            )}
+            {loading ? "Redirecting…" : <>Unlock EV Complete for {registration} &mdash; &pound;13.99</>}
+          </button>
+          <p className="text-xs text-slate-400 mt-2">
+            {error ? <span className="text-red-500">{error}</span> : "One-off payment · No subscription · Instant results"}
+          </p>
+        </div>
+      )}
 
       <ListingPriceModal
         open={modalOpen}

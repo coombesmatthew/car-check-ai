@@ -54,15 +54,8 @@ export default function EVCheckResult({ result, reportMode = false }: Props) {
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [modalTier, setModalTier] = useState<"ev" | "ev_complete" | null>(null);
 
-  const openModal = (tier: "ev" | "ev_complete") => {
+  const goToCheckout = async (tier: "ev" | "ev_complete", listingPricePence: number | null) => {
     if (checkoutTier) return;
-    setCheckoutError(null);
-    setModalTier(tier);
-  };
-
-  const handleContinue = async (listingPricePence: number | null) => {
-    if (!modalTier || checkoutTier) return;
-    const tier = modalTier;
     setCheckoutError(null);
     setCheckoutTier(tier);
     try {
@@ -73,6 +66,23 @@ export default function EVCheckResult({ result, reportMode = false }: Props) {
       setCheckoutTier(null);
       setModalTier(null);
     }
+  };
+
+  const openModal = (tier: "ev" | "ev_complete") => {
+    if (checkoutTier) return;
+    setCheckoutError(null);
+    // EV Health doesn't include Brego valuation, so a listing-price comparison
+    // isn't possible. Skip the modal and go straight to checkout.
+    if (tier === "ev") {
+      goToCheckout("ev", null);
+      return;
+    }
+    setModalTier(tier);
+  };
+
+  const handleContinue = (listingPricePence: number | null) => {
+    if (!modalTier) return;
+    goToCheckout(modalTier, listingPricePence);
   };
 
   const overview = (
@@ -131,7 +141,7 @@ export default function EVCheckResult({ result, reportMode = false }: Props) {
           registration={result.registration}
         />
       ) : (
-        <EVFullCheckSection registration={result.registration} />
+        <EVFullCheckSection registration={result.registration} crossSell={reportMode} />
       )}
     </div>
   );
@@ -195,6 +205,8 @@ export default function EVCheckResult({ result, reportMode = false }: Props) {
               vehicle={vehicle}
               vehicle_stats={vehicle_stats}
               ulez_compliance={ulez_compliance}
+              mot_summary={mot_summary}
+              battery_health={battery_health}
             />
           </div>
           {battery}

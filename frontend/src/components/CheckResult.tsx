@@ -130,6 +130,7 @@ export default function CheckResult({
               vehicle={vehicle}
               vehicle_stats={vehicle_stats}
               ulez_compliance={ulez_compliance}
+              mot_summary={mot_summary}
             />
           </div>
           {fullCheck}

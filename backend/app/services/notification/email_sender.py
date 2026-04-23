@@ -99,9 +99,38 @@ def _build_checks_summary(check_data: Dict) -> List[Dict[str, str]]:
         items.append({"status": "fail", "icon": "❌", "colour": "#dc2626", "bg": "#fee2e2",
                       "label": "MOT Not Valid", "detail": f"Status: {mot_status}"})
 
-    # CAZ/ULEZ compliance intentionally omitted from At a Glance — running-
-    # cost signal belongs in the dedicated Emissions section, not alongside
-    # buy/don't-buy risk factors like stolen or finance.
+    # CAZ/ULEZ intentionally omitted — running-cost signal belongs in the
+    # dedicated Emissions section, not alongside buy/don't-buy risk factors.
+
+    # Outstanding safety recall — any tier, as long as we have MOT data.
+    recall = (check_data.get("mot_summary") or {}).get("has_outstanding_recall")
+    if recall == "Yes":
+        items.append({"status": "fail", "icon": "❌", "colour": "#dc2626", "bg": "#fee2e2",
+                      "label": "Outstanding Safety Recall",
+                      "detail": "Contact manufacturer for a free repair before purchase"})
+    elif recall == "No":
+        items.append({"status": "pass", "icon": "✅", "colour": "#059669", "bg": "#f0fdf4",
+                      "label": "No Outstanding Recalls",
+                      "detail": "Manufacturer has no open safety recalls on this vehicle"})
+
+    # Battery health — EV tiers only, when present.
+    bh = check_data.get("battery_health") or {}
+    score = bh.get("score")
+    grade = bh.get("grade")
+    if score is not None:
+        grade_str = f"Grade {grade} — " if grade else ""
+        if score >= 80:
+            items.append({"status": "pass", "icon": "✅", "colour": "#059669", "bg": "#f0fdf4",
+                          "label": f"Battery Health {score}/100",
+                          "detail": f"{grade_str}healthy range retention"})
+        elif score >= 60:
+            items.append({"status": "warn", "icon": "⚠️", "colour": "#d97706", "bg": "#fffbeb",
+                          "label": f"Battery Health {score}/100",
+                          "detail": f"{grade_str}moderate degradation for age"})
+        else:
+            items.append({"status": "fail", "icon": "❌", "colour": "#dc2626", "bg": "#fee2e2",
+                          "label": f"Battery Health {score}/100",
+                          "detail": f"{grade_str}significant degradation, expect reduced range"})
 
     return items
 
