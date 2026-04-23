@@ -250,30 +250,62 @@ export default function FullCheckSection({
         </Card>
       )}
 
-      {/* Keeper History */}
+      {/* Keeper History — per-owner timeline */}
       {keeper_history && (
         <Card title="Keeper History" icon={icons.users} status="neutral">
-          <div className="mb-3">
-            {keeper_history.keeper_count !== null ? (
-              <div className="flex items-center gap-3">
-                <div className="text-3xl font-bold text-slate-900">{keeper_history.keeper_count}</div>
-                <div>
-                  <p className="text-sm font-medium text-slate-700">
-                    Registered keeper{keeper_history.keeper_count !== 1 ? "s" : ""}
-                  </p>
-                  {keeper_history.last_change_date && (
-                    <p className="text-xs text-slate-500">
-                      Last change: {keeper_history.last_change_date}
+          {keeper_history.keeper_count !== null ? (
+            <p className="text-sm text-slate-500 mb-3">
+              Total Keepers: <span className="text-slate-900 font-bold text-base">{keeper_history.keeper_count}</span>
+            </p>
+          ) : (
+            <p className="text-sm text-slate-500 mb-3">Keeper information not available</p>
+          )}
+
+          {keeper_history.keepers && keeper_history.keepers.length > 0 && (
+            <div className="space-y-2">
+              {keeper_history.keepers.map((k) => (
+                <div
+                  key={k.keeper_number}
+                  className={`flex items-center gap-3 rounded-lg border px-3 py-2.5 ${
+                    k.is_current
+                      ? "bg-indigo-50 border-indigo-200"
+                      : "bg-white border-slate-200"
+                  }`}
+                >
+                  <span
+                    className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-white font-bold text-xs flex-shrink-0 ${
+                      k.is_current ? "bg-blue-600" : "bg-slate-500"
+                    }`}
+                  >
+                    {k.keeper_number}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-slate-900 truncate">{k.label || `Keeper ${k.keeper_number}`}</p>
+                    <p className="text-xs text-slate-500 truncate">
+                      {k.is_current
+                        ? `Since ${k.start_display || k.start_date || "unknown"}`
+                        : `${k.start_display || k.start_date || "?"} → ${k.end_display || k.end_date || "?"}`}
                     </p>
-                  )}
+                  </div>
+                  <div className="text-right flex-shrink-0">
+                    {k.is_current && (
+                      <span className="block bg-blue-100 text-blue-800 text-[10px] font-bold tracking-wider px-2 py-0.5 rounded mb-1">
+                        CURRENT
+                      </span>
+                    )}
+                    {k.tenure_display && (
+                      <span className={`text-xs font-semibold ${k.is_current ? "text-blue-800" : "text-slate-600"}`}>
+                        {k.tenure_display}
+                      </span>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <p className="text-sm text-slate-500">Keeper information not available</p>
-            )}
-          </div>
+              ))}
+            </div>
+          )}
+
           {keeper_history.keeper_count !== null && keeper_history.keeper_count > 5 && (
-            <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+            <div className="mt-3 flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
               <svg className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
               </svg>
@@ -282,7 +314,7 @@ export default function FullCheckSection({
               </p>
             </div>
           )}
-          <div className="mt-2 text-xs text-slate-400 bg-slate-50 rounded px-2 py-1">
+          <div className="mt-3 text-xs text-slate-400 bg-slate-50 rounded px-2 py-1">
             Source: {keeper_history.data_source}
           </div>
         </Card>

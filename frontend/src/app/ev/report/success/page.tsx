@@ -225,7 +225,7 @@ function SuccessContent() {
         <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
           {sessionId && (
             <a
-              href={`${process.env.NEXT_PUBLIC_API_URL || ""}/api/v1/checks/report/view?session_id=${encodeURIComponent(sessionId)}`}
+              href={`/report?session_id=${encodeURIComponent(sessionId)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-8 py-3 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 transition-colors"

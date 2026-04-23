@@ -100,6 +100,7 @@ async def fulfil_report(session_id: str) -> FulfilmentResult:
         pdf_bytes=pdf_bytes,
         verdict=verdict,
         report_ref=report_ref,
+        session_id=session_id,
     )
 
     logger.info(

@@ -136,6 +136,7 @@ def render_report_email(
     check_data: Dict,
     verdict: Optional[str] = None,
     report_ref: str = "",
+    session_id: Optional[str] = None,
 ) -> str:
     """Render the report email HTML from template.
 
@@ -164,7 +165,10 @@ def render_report_email(
         "verdict_bg_colour": _verdict_bg(verdict),
         "checks_summary": _build_checks_summary(check_data),
         "report_ref": report_ref,
-        "report_url": "#",  # Placeholder — no web view yet
+        "report_url": (
+            f"{settings.SITE_URL.rstrip('/')}/report?session_id={session_id}"
+            if session_id else "#"
+        ),
         "unsubscribe_url": "#",
         "year_now": datetime.utcnow().year,
         # Full data sections
@@ -204,6 +208,7 @@ async def send_report_email(
     pdf_bytes: bytes,
     verdict: Optional[str] = None,
     report_ref: str = "",
+    session_id: Optional[str] = None,
 ) -> bool:
     """Send the vehicle report via Resend with PDF attachment.
 
@@ -227,7 +232,7 @@ async def send_report_email(
         resend.api_key = settings.RESEND_API_KEY
 
         registration = check_data.get("registration", "UNKNOWN")
-        html_content = render_report_email(check_data, verdict, report_ref)
+        html_content = render_report_email(check_data, verdict, report_ref, session_id=session_id)
 
         filename = f"VeriCar-{registration}-{report_ref}.pdf"
 

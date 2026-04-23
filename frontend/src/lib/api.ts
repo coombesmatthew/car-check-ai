@@ -237,9 +237,21 @@ export interface SalvageCheck {
   data_source: string;
 }
 
+export interface KeeperRecord {
+  keeper_number: number;
+  start_date: string | null;
+  end_date: string | null;
+  is_current: boolean;
+  start_display: string | null;
+  end_display: string | null;
+  tenure_display: string | null;
+  label: string | null; // "First Owner" / "Seventh Owner" / "Keeper 8"
+}
+
 export interface KeeperHistory {
   keeper_count: number | null;
   last_change_date: string | null;
+  keepers: KeeperRecord[];
   data_source: string;
 }
 
@@ -419,6 +431,27 @@ export async function triggerReportFulfilment(sessionId: string): Promise<void> 
     `${API_URL}/api/v1/checks/basic/fulfil/trigger?session_id=${encodeURIComponent(sessionId)}`,
     { method: "POST" }
   );
+}
+
+/** Fetch the full report data (paid) by Stripe session_id. Used by /report page. */
+export interface ReportDataResponse {
+  registration: string;
+  report_ref: string;
+  tier: "car" | "ev";
+  is_ev: boolean;
+  check_data: FreeCheckResponse & EVCheckResponse; // superset — both live in check_data
+}
+
+export async function getReportData(sessionId: string): Promise<ReportDataResponse> {
+  const res = await fetch(
+    `${API_URL}/api/v1/checks/report/data?session_id=${encodeURIComponent(sessionId)}`,
+    { method: "GET" }
+  );
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: `HTTP ${res.status}` }));
+    throw new Error(err.detail || `HTTP ${res.status}`);
+  }
+  return res.json();
 }
 
 /** Poll: returns {ready, result} when fulfilment is done; {ready:false} otherwise. */

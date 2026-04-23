@@ -323,6 +323,34 @@ async def trigger_basic_fulfilment(session_id: str):
     return {"status": "accepted", "session_id": session_id}
 
 
+@router.get("/report/data")
+async def report_data(session_id: str):
+    """Return the full fulfilment payload as JSON so the Next.js /report
+    page can render the report natively (with site header/footer/styling).
+
+    Gated by session_id + payment_status; the data lives in the Redis
+    fulfil cache (24h TTL).
+    """
+    result = await get_fulfilment_status(session_id)
+    if result is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Report not found. If you just paid, wait a minute and reload.",
+        )
+    if result.payment_status != "paid":
+        raise HTTPException(status_code=402, detail="Payment not completed")
+
+    check = result.check_data or {}
+    is_ev = any(check.get(k) for k in ("battery_health", "range_estimate", "ev_specs"))
+    return {
+        "registration": result.registration,
+        "report_ref": result.report_ref,
+        "tier": "ev" if is_ev else "car",
+        "is_ev": is_ev,
+        "check_data": check,
+    }
+
+
 @router.get("/report/view", response_class=HTMLResponse)
 async def view_report(session_id: str):
     """Render the customer's report as a browser page.
