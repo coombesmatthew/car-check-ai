@@ -18,22 +18,22 @@ TIER_CONFIG = {
     "basic": {
         "amount": 499,
         "name": "VeriCar Report",
-        "description": "AI-powered buyer's report with condition score, risk assessment, and negotiation points. PDF delivered to your email.",
+        "description": "Full vehicle history with PDF emailed within 60 seconds.",
     },
     "premium": {
         "amount": 999,
         "name": "VeriCar Premium Check",
-        "description": "Full vehicle history: finance, stolen, write-off, valuation, keeper history, plus AI buyer's report. PDF delivered to your email.",
+        "description": "Finance, stolen, write-off, valuation, keeper history. PDF emailed within 60 seconds.",
     },
     "ev": {
         "amount": 899,
         "name": "VeriCar EV Health Check",
-        "description": "Battery health score, real-world range estimate, charging costs, lifespan prediction, plus AI report. PDF delivered to your email.",
+        "description": "Battery health, real-world range, charging costs, lifespan. PDF emailed within 60 seconds.",
     },
     "ev_complete": {
         "amount": 1399,
         "name": "VeriCar EV Complete Check",
-        "description": "Full EV health check plus finance, stolen, write-off, valuation, keeper history. PDF delivered to your email.",
+        "description": "EV health plus finance, stolen, write-off, valuation, keeper history. PDF emailed within 60 seconds.",
     },
 }
 
@@ -91,14 +91,21 @@ def create_checkout_session(
         metadata["listing_price"] = str(listing_price)
 
     session_kwargs = dict(
-        payment_method_types=["card"],
+        # No payment_method_types — Stripe serves every method enabled in the
+        # dashboard (Link, Apple Pay via card, Google Pay via card, etc.).
+        # Letting the dashboard drive the list means new methods light up
+        # without a deploy.
         line_items=[
             {
                 "price_data": {
                     "currency": "gbp",
                     "product_data": {
-                        "name": f"{config['name']} — {registration}",
-                        "description": config["description"],
+                        # Name kept consistent across checkouts so the bank
+                        # statement descriptor reads "VERICAR PREMIUM CHECK",
+                        # not a per-plate SKU. Registration moves to the
+                        # description line directly below.
+                        "name": config["name"],
+                        "description": f"Registration: {registration}. {config['description']}",
                     },
                     "unit_amount": config["amount"],
                 },
