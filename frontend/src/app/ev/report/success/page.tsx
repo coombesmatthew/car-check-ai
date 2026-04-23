@@ -6,7 +6,6 @@ import { Suspense } from "react";
 import { triggerEVFulfilment, getEVReportStatus, EVFulfilmentResponse } from "@/lib/api";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import AIReport from "@/components/AIReport";
 import BatteryHealthGauge from "@/components/ev/BatteryHealthGauge";
 import RangeChart from "@/components/ev/RangeChart";
 import ChargingCard from "@/components/ev/ChargingCard";
@@ -221,22 +220,31 @@ function SuccessContent() {
         </div>
       )}
 
-      {/* Full AI Report */}
-      {result?.ai_report && (
-        <div className="mb-8">
-          <AIReport report={result.ai_report} registration={result.registration} />
-        </div>
-      )}
-
       {/* Actions */}
-      <div className="text-center space-y-3">
-        <a
-          href="/ev"
-          className="inline-block px-8 py-3 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 transition-colors"
-        >
-          Check Another EV
-        </a>
-        <p className="text-xs text-slate-400">
+      <div className="text-center">
+        <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+          {sessionId && (
+            <a
+              href={`${process.env.NEXT_PUBLIC_API_URL || ""}/api/v1/checks/report/view?session_id=${encodeURIComponent(sessionId)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-8 py-3 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+              Open Full Report
+            </a>
+          )}
+          <a
+            href="/ev"
+            className="inline-block px-6 py-3 border border-slate-300 text-slate-700 font-semibold rounded-lg hover:bg-slate-50 transition-colors"
+          >
+            Check Another EV
+          </a>
+        </div>
+        <p className="text-xs text-slate-400 mt-3">
           Report ref: {result?.report_ref}
         </p>
       </div>

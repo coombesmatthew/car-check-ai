@@ -18,7 +18,6 @@ from app.core.cache import cache
 from app.schemas.ev import EVCheckRequest, EVCheckResponse, EVCheckoutRequest
 from app.services.ev.orchestrator import EVOrchestrator
 from app.services.payment.stripe_service import create_checkout_session, verify_webhook_signature
-from app.services.ai.ev_report_generator import generate_ev_preview_report
 from app.services.fulfilment import (
     fulfil_report,
     fulfil_report_idempotent,
@@ -76,11 +75,11 @@ class EVPreviewResponse(BaseModel):
 
 @router.post("/preview", response_model=EVPreviewResponse)
 async def ev_preview(request: EVCheckRequest):
-    """Generate a FREE AI preview report for an EV.
+    """Run a FREE EV data check (DVLA + MOT only).
 
-    Uses only DVLA + MOT data (no paid API calls). The report teases
-    what the full paid report would include.
-    Non-EVs get rejected with a 400 error.
+    AI narrative preview removed — the free page now shows the raw EV
+    data cards (battery health preview, charging estimates, etc.)
+    instead of LLM prose. Non-EVs get rejected with a 400 error.
     """
     orchestrator = EVOrchestrator()
     try:
@@ -92,16 +91,9 @@ async def ev_preview(request: EVCheckRequest):
                 detail="This vehicle is not an electric vehicle. EV reports are only available for electric and plug-in hybrid vehicles.",
             )
 
-        ai_report = await generate_ev_preview_report(
-            registration=request.registration,
-            vehicle_data=getattr(orchestrator, '_raw_dvla_data', None),
-            mot_analysis=getattr(orchestrator, '_raw_mot_analysis', {}),
-            ev_check_data=result.model_dump(),
-        )
-
         return EVPreviewResponse(
             registration=request.registration,
-            ai_report=ai_report,
+            ai_report=None,
             ev_check=result,
         )
     except HTTPException:

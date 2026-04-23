@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Request
-from fastapi.responses import JSONResponse, Response
+from fastapi.responses import HTMLResponse, JSONResponse, Response
 from pydantic import BaseModel, EmailStr
 from typing import Optional
 
@@ -321,6 +321,33 @@ async def trigger_basic_fulfilment(session_id: str):
     """
     trigger_fulfilment_background(session_id)
     return {"status": "accepted", "session_id": session_id}
+
+
+@router.get("/report/view", response_class=HTMLResponse)
+async def view_report(session_id: str):
+    """Render the customer's report as a browser page.
+
+    Gated by session_id (cached fulfilment result lives in Redis for 24h
+    alongside the session). Returns the same HTML we email — reusing the
+    Jinja template keeps a single source of truth for the report layout.
+    """
+    from app.services.notification.email_sender import render_report_email
+
+    result = await get_fulfilment_status(session_id)
+    if result is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Report not found. If you just paid, wait a minute and reload.",
+        )
+    if result.payment_status != "paid":
+        raise HTTPException(status_code=402, detail="Payment not completed")
+
+    html = render_report_email(
+        check_data=result.check_data,
+        verdict=None,  # verdicts removed
+        report_ref=result.report_ref,
+    )
+    return HTMLResponse(html)
 
 
 @router.get("/basic/status", response_model=FulfilmentResponse)

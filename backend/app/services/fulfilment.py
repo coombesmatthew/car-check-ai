@@ -29,8 +29,6 @@ from app.core.cache import cache
 from app.core.logging import logger
 from app.services.check.orchestrator import CheckOrchestrator
 from app.services.ev.orchestrator import EVOrchestrator
-from app.services.ai.report_generator import generate_ai_report
-from app.services.ai.ev_report_generator import generate_ev_report
 from app.services.report.pdf_generator import generate_pdf, _extract_verdict
 from app.services.notification.email_sender import send_report_email
 from app.services.payment.stripe_service import retrieve_session
@@ -122,20 +120,16 @@ async def fulfil_report(session_id: str) -> FulfilmentResult:
 
 
 async def _run_ev_pipeline(registration: str, tier: str) -> tuple[dict, str | None]:
-    """Run EV orchestrator + EV AI report generator."""
+    """Run EV orchestrator. AI narrative report was removed — the email
+    (and new browser view) present the data directly. Reports now ship
+    faster, have zero LLM cost, and don't risk AI hallucinations.
+    """
     orch_tier = "ev_complete" if tier == "ev_complete" else "ev_health"
     orchestrator = EVOrchestrator()
     try:
         result = await orchestrator.run_ev_check(registration, tier=orch_tier)
         check_data = result.model_dump()
-
-        ai_report = await generate_ev_report(
-            registration=registration,
-            vehicle_data=getattr(orchestrator, "_raw_dvla_data", None),
-            mot_analysis=getattr(orchestrator, "_raw_mot_analysis", {}),
-            ev_check_data=check_data,
-        )
-        return check_data, ai_report
+        return check_data, None
     finally:
         await orchestrator.close()
 
@@ -143,22 +137,16 @@ async def _run_ev_pipeline(registration: str, tier: str) -> tuple[dict, str | No
 async def _run_car_pipeline(
     registration: str, tier: str, session: dict
 ) -> tuple[dict, str | None]:
-    """Run car check orchestrator + car AI report generator."""
+    """Run car check orchestrator. AI narrative report was removed — see
+    _run_ev_pipeline for rationale. The orchestrator still fetches DVLA,
+    MOT, Experian AutoCheck, Brego valuation and CarGuide salvage; the
+    email and browser view render those directly.
+    """
     orchestrator = CheckOrchestrator()
     try:
         result = await orchestrator.run_free_check(registration, tier=tier)
         check_data = result.model_dump()
-
-        ai_report = await generate_ai_report(
-            registration=registration,
-            vehicle_data=getattr(orchestrator, "_raw_dvla_data", None),
-            mot_analysis=getattr(orchestrator, "_raw_mot_analysis", {}),
-            ulez_data=getattr(orchestrator, "_raw_ulez_data", None),
-            listing_price=session.get("listing_price"),
-            listing_url=session.get("listing_url"),
-            check_result=check_data,
-        )
-        return check_data, ai_report
+        return check_data, None
     finally:
         await orchestrator.close()
 
