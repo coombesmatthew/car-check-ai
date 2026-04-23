@@ -123,9 +123,9 @@ function ReportContent() {
       </div>
 
       {data.is_ev ? (
-        <EVCheckResult result={data.check_data} />
+        <EVCheckResult result={data.check_data} reportMode />
       ) : (
-        <CheckResult data={data.check_data} />
+        <CheckResult data={data.check_data} reportMode />
       )}
     </div>
   );

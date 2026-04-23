@@ -5,10 +5,32 @@ import OverviewSections from "@/components/sections/OverviewSections";
 import HistorySections from "@/components/sections/HistorySections";
 import EmissionsSections from "@/components/sections/EmissionsSections";
 import FullCheckSection from "@/components/sections/FullCheckSection";
-import SectionNav from "@/components/SectionNav";
+import AtAGlance from "@/components/sections/AtAGlance";
+import SectionNav, { SectionConfig } from "@/components/SectionNav";
 import PremiumBottomBar from "@/components/PremiumBottomBar";
 
-export default function CheckResult({ data }: { data: FreeCheckResponse }) {
+const FREE_SECTIONS: SectionConfig[] = [
+  { id: "section-overview", label: "Overview" },
+  { id: "section-history", label: "History" },
+  { id: "section-emissions", label: "Emissions" },
+  { id: "section-fullcheck", label: "Full Check", locked: true },
+];
+
+const REPORT_SECTIONS: SectionConfig[] = [
+  { id: "section-glance", label: "At a Glance" },
+  { id: "section-fullcheck", label: "Full Check" },
+  { id: "section-overview", label: "Overview" },
+  { id: "section-history", label: "History" },
+  { id: "section-emissions", label: "Emissions" },
+];
+
+export default function CheckResult({
+  data,
+  reportMode = false,
+}: {
+  data: FreeCheckResponse;
+  reportMode?: boolean;
+}) {
   const {
     vehicle, mot_summary, mot_tests, clocking_analysis,
     ulez_compliance, mileage_timeline, failure_patterns,
@@ -18,6 +40,37 @@ export default function CheckResult({ data }: { data: FreeCheckResponse }) {
   } = data;
 
   const hasPremium = !!(finance_check || stolen_check || write_off_check || valuation);
+
+  const overview = (
+    <div id="section-overview" className="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <OverviewSections vehicle={vehicle} mot_summary={mot_summary} tax_calculation={tax_calculation} vehicle_stats={vehicle_stats} safety_rating={safety_rating} />
+    </div>
+  );
+
+  const history = (
+    <div id="section-history" className="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <HistorySections mot_summary={mot_summary} clocking_analysis={clocking_analysis} mileage_timeline={mileage_timeline} failure_patterns={failure_patterns} mot_tests={mot_tests} vehicle={vehicle} />
+    </div>
+  );
+
+  const emissions = (
+    <div id="section-emissions" className="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <EmissionsSections ulez_compliance={ulez_compliance} tax_calculation={tax_calculation} />
+    </div>
+  );
+
+  const fullCheck = (
+    <div id="section-fullcheck">
+      <FullCheckSection
+        finance_check={finance_check} stolen_check={stolen_check}
+        write_off_check={write_off_check} valuation={valuation}
+        salvage_check={salvage_check} import_status={import_status}
+        plate_changes={plate_changes}
+        keeper_history={keeper_history} high_risk={high_risk}
+        previous_searches={previous_searches} registration={data.registration}
+      />
+    </div>
+  );
 
   return (
     <div className="space-y-4 pb-20 md:pb-0">
@@ -56,39 +109,46 @@ export default function CheckResult({ data }: { data: FreeCheckResponse }) {
       )}
 
       {/* Section navigation */}
-      <SectionNav hasPremium={hasPremium} />
+      <SectionNav
+        sections={reportMode ? REPORT_SECTIONS : FREE_SECTIONS}
+        hasPremium={hasPremium}
+      />
 
-      {/* Overview */}
-      <div id="section-overview" className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <OverviewSections vehicle={vehicle} mot_summary={mot_summary} tax_calculation={tax_calculation} vehicle_stats={vehicle_stats} safety_rating={safety_rating} />
-      </div>
+      {reportMode ? (
+        <>
+          {/* At a Glance */}
+          <div id="section-glance">
+            <AtAGlance
+              finance_check={finance_check}
+              stolen_check={stolen_check}
+              write_off_check={write_off_check}
+              salvage_check={salvage_check}
+              clocking_analysis={clocking_analysis}
+              vehicle={vehicle}
+              vehicle_stats={vehicle_stats}
+              ulez_compliance={ulez_compliance}
+            />
+          </div>
+          {fullCheck}
+          {overview}
+          {history}
+          {emissions}
+        </>
+      ) : (
+        <>
+          {overview}
+          {history}
+          {emissions}
+          {fullCheck}
+        </>
+      )}
 
-      {/* History */}
-      <div id="section-history" className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <HistorySections mot_summary={mot_summary} clocking_analysis={clocking_analysis} mileage_timeline={mileage_timeline} failure_patterns={failure_patterns} mot_tests={mot_tests} vehicle={vehicle} />
-      </div>
-
-      {/* Emissions */}
-      <div id="section-emissions" className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <EmissionsSections ulez_compliance={ulez_compliance} tax_calculation={tax_calculation} />
-      </div>
-
-      {/* Full Check */}
-      <div id="section-fullcheck">
-        <FullCheckSection
-          finance_check={finance_check} stolen_check={stolen_check}
-          write_off_check={write_off_check} valuation={valuation}
-          salvage_check={salvage_check} import_status={import_status}
-          plate_changes={plate_changes}
-          keeper_history={keeper_history} high_risk={high_risk}
-          previous_searches={previous_searches} registration={data.registration}
-        />
-      </div>
-
-      {/* Free tier badge */}
+      {/* Tier badge */}
       <div className="text-center pt-2">
         <span className="inline-block bg-slate-100 text-slate-500 text-xs px-3 py-1 rounded-full">
-          Free Check &middot; Powered by DVLA &amp; DVSA data
+          {reportMode
+            ? "Full Vehicle Report \u00B7 Powered by DVLA, DVSA & Experian data"
+            : "Free Check \u00B7 Powered by DVLA & DVSA data"}
         </span>
       </div>
 
@@ -98,8 +158,10 @@ export default function CheckResult({ data }: { data: FreeCheckResponse }) {
         <a href="/terms" className="underline hover:text-slate-600">Terms of Service</a>.
       </p>
 
-      {/* Premium upsell bottom bar (mobile only) */}
-      <PremiumBottomBar hasPremium={!!(finance_check || stolen_check || write_off_check || valuation)} registration={data.registration} />
+      {/* Premium upsell bottom bar (mobile only) — hidden in reportMode since already paid */}
+      {!reportMode && (
+        <PremiumBottomBar hasPremium={hasPremium} registration={data.registration} />
+      )}
     </div>
   );
 }
