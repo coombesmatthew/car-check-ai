@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   FinanceCheck, StolenCheck, WriteOffCheck, Valuation,
   SalvageCheck, ImportStatusCheck, PlateChangeHistory, KeeperHistory,
@@ -9,12 +10,30 @@ import Card from "@/components/ui/Card";
 import { DetailRow, icons } from "./shared";
 import PremiumPreview from "./PremiumPreview";
 import TheftAlertsCarousel from "./TheftAlertsCarousel";
+import { computePriceVerdict, PriceVerdictTone } from "@/lib/priceVerdict";
 
-function toSentenceCase(s: string | null | undefined): string {
-  if (!s) return "";
-  const lower = s.toLowerCase();
-  return lower.charAt(0).toUpperCase() + lower.slice(1);
-}
+const VERDICT_CLASSES: Record<PriceVerdictTone, { pill: string; bar: string; deltaText: string }> = {
+  emerald: {
+    pill: "bg-emerald-100 text-emerald-800 border-emerald-200",
+    bar: "bg-emerald-500",
+    deltaText: "text-emerald-700",
+  },
+  blue: {
+    pill: "bg-blue-100 text-blue-800 border-blue-200",
+    bar: "bg-blue-500",
+    deltaText: "text-blue-700",
+  },
+  amber: {
+    pill: "bg-amber-100 text-amber-800 border-amber-200",
+    bar: "bg-amber-500",
+    deltaText: "text-amber-700",
+  },
+  red: {
+    pill: "bg-red-100 text-red-800 border-red-200",
+    bar: "bg-red-500",
+    deltaText: "text-red-700",
+  },
+};
 
 interface FullCheckSectionProps {
   finance_check: FinanceCheck | null;
@@ -31,12 +50,83 @@ interface FullCheckSectionProps {
   registration: string;
 }
 
-function formatDelta(deltaPounds: number): { label: string; className: string } {
-  const absStr = `£${Math.abs(deltaPounds).toLocaleString()}`;
-  if (deltaPounds === 0) return { label: `Exactly at market`, className: "text-slate-600" };
-  if (deltaPounds < 0) return { label: `−${absStr}`, className: "text-emerald-700 font-semibold" };
-  // Over market: amber if within 10%, red if further
-  return { label: `+${absStr}`, className: "text-red-700 font-semibold" };
+function AskingPriceBlock({
+  listingPricePence,
+  valuation,
+}: {
+  listingPricePence: number;
+  valuation: Valuation;
+}) {
+  const [showDetail, setShowDetail] = useState(false);
+  const verdict = computePriceVerdict(listingPricePence, valuation);
+  if (!verdict) return null;
+  const styles = VERDICT_CLASSES[verdict.tone];
+  const listingPounds = Math.round(listingPricePence / 100);
+
+  return (
+    <div className="relative -mx-4 -mt-4 mb-4 px-4 pt-4 pb-4 border-b border-slate-100 bg-slate-50/50 rounded-t-lg overflow-hidden">
+      <div className={`absolute inset-y-0 left-0 w-1 ${styles.bar}`} aria-hidden="true" />
+      <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Your Asking Price</p>
+      <div className="flex items-baseline gap-3 mt-1">
+        <span className="text-3xl font-bold text-slate-900">£{listingPounds.toLocaleString()}</span>
+        <span
+          className={`inline-flex items-center font-semibold rounded-full border px-2.5 py-0.5 text-xs ${styles.pill}`}
+        >
+          {verdict.label}
+        </span>
+      </div>
+      <p className={`text-sm font-semibold mt-1 ${styles.deltaText}`}>{verdict.deltaLabel}</p>
+      <p className="text-xs text-slate-500 mt-1.5 leading-relaxed">{verdict.detail}</p>
+
+      <button
+        type="button"
+        onClick={() => setShowDetail(!showDetail)}
+        className="mt-2 inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700 font-medium"
+      >
+        <svg
+          className={`w-3 h-3 transition-transform ${showDetail ? "rotate-180" : ""}`}
+          fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+        </svg>
+        {showDetail ? "Hide detailed comparison" : "Detailed comparison"}
+      </button>
+
+      {showDetail && (
+        <div className="mt-2 space-y-1 text-xs">
+          {valuation.private_sale !== null && (
+            <div className="flex justify-between">
+              <span className="text-slate-500">vs Private Sale (£{valuation.private_sale.toLocaleString()})</span>
+              <DeltaCell delta={listingPounds - valuation.private_sale} />
+            </div>
+          )}
+          {valuation.dealer_forecourt !== null && (
+            <div className="flex justify-between">
+              <span className="text-slate-500">vs Dealer (£{valuation.dealer_forecourt.toLocaleString()})</span>
+              <DeltaCell delta={listingPounds - valuation.dealer_forecourt} />
+            </div>
+          )}
+          {valuation.trade_in !== null && (
+            <div className="flex justify-between">
+              <span className="text-slate-500">vs Trade-in (£{valuation.trade_in.toLocaleString()})</span>
+              <DeltaCell delta={listingPounds - valuation.trade_in} />
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DeltaCell({ delta }: { delta: number }) {
+  if (delta === 0) return <span className="text-slate-600 font-medium">at value</span>;
+  if (delta < 0)
+    return (
+      <span className="text-emerald-700 font-semibold">
+        −£{Math.abs(delta).toLocaleString()}
+      </span>
+    );
+  return <span className="text-red-700 font-semibold">+£{delta.toLocaleString()}</span>;
 }
 
 export default function FullCheckSection({
@@ -69,11 +159,17 @@ export default function FullCheckSection({
         import_status={import_status}
       />
 
-      {/* Remaining cards in a two-column grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+      {/* Remaining cards in a masonry-style column layout — CSS columns
+          pack cards by height so a short card next to a tall one doesn't
+          leave dead space. Order on mobile is single-column sequential;
+          on desktop cards flow into the two columns by height. */}
+      <div className="columns-1 md:columns-2 gap-3 [&>div]:break-inside-avoid [&>div]:mb-3">
       {/* Valuation */}
       {valuation && (
         <Card title="Valuation" icon={icons.currency} status="neutral">
+          {listing_price && listing_price > 0 && (
+            <AskingPriceBlock listingPricePence={listing_price} valuation={valuation} />
+          )}
           {valuation.private_sale !== null && (
             <DetailRow label="Private Sale" value={`£${valuation.private_sale.toLocaleString()}`} />
           )}
@@ -116,37 +212,6 @@ export default function FullCheckSection({
           </div>
 
           {/* Asking-price comparison — only if buyer entered a price pre-payment */}
-          {listing_price && listing_price > 0 && (
-            <div className="mt-3 pt-3 border-t border-slate-100">
-              <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-2">Your Asking Price</p>
-              <DetailRow label="You entered" value={`£${Math.round(listing_price / 100).toLocaleString()}`} />
-              {valuation.private_sale !== null && (
-                <div className="flex justify-between py-1.5 border-b border-slate-100">
-                  <span className="text-sm text-slate-500">vs Private Sale</span>
-                  <span className={`text-sm ${formatDelta(Math.round(listing_price / 100) - valuation.private_sale).className}`}>
-                    {formatDelta(Math.round(listing_price / 100) - valuation.private_sale).label}
-                  </span>
-                </div>
-              )}
-              {valuation.dealer_forecourt !== null && (
-                <div className="flex justify-between py-1.5 border-b border-slate-100 last:border-0">
-                  <span className="text-sm text-slate-500">vs Dealer</span>
-                  <span className={`text-sm ${formatDelta(Math.round(listing_price / 100) - valuation.dealer_forecourt).className}`}>
-                    {formatDelta(Math.round(listing_price / 100) - valuation.dealer_forecourt).label}
-                  </span>
-                </div>
-              )}
-              {valuation.trade_in !== null && (
-                <div className="flex justify-between py-1.5 last:border-0">
-                  <span className="text-sm text-slate-500">vs Trade-in</span>
-                  <span className={`text-sm ${formatDelta(Math.round(listing_price / 100) - valuation.trade_in).className}`}>
-                    {formatDelta(Math.round(listing_price / 100) - valuation.trade_in).label}
-                  </span>
-                </div>
-              )}
-            </div>
-          )}
-
           <div className="mt-2 text-xs text-slate-400 bg-slate-50 rounded px-2 py-1">
             Source: {valuation.data_source}
           </div>
@@ -334,47 +399,109 @@ export default function FullCheckSection({
       )}
 
       {/* Previous Checks */}
-      {previous_searches && (
-        <Card title="Previous Checks" icon={icons.search} status="neutral">
-          <div className="mb-3">
-            <div className="flex items-center gap-3">
-              <div className="text-3xl font-bold text-slate-900">{previous_searches.search_count}</div>
-              <p className="text-sm text-slate-700">
-                previous check{previous_searches.search_count !== 1 ? "s" : ""} on this vehicle
-              </p>
-            </div>
-          </div>
-          {previous_searches.search_count > 10 && (
-            <div className="flex items-start gap-2 bg-blue-50 border border-blue-200 rounded-lg px-3 py-2 mb-2">
-              <svg className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
-              </svg>
-              <p className="text-xs text-blue-700">
-                High search activity may indicate the vehicle is actively being marketed or has attracted buyer interest.
-              </p>
-            </div>
-          )}
-          {previous_searches.records.length > 0 && (
-            <div className="space-y-1">
-              {previous_searches.records.slice(0, 5).map((r, i) => (
-                <div key={i} className="flex justify-between py-1.5 border-b border-slate-100 last:border-0">
-                  <span className="text-sm text-slate-500">{r.date || "Unknown date"}</span>
-                  <span className="text-sm text-slate-700">{toSentenceCase(r.business_type) || "Check"}</span>
-                </div>
-              ))}
-              {previous_searches.records.length > 5 && (
-                <p className="text-xs text-slate-400 pt-1">
-                  + {previous_searches.records.length - 5} more
-                </p>
-              )}
-            </div>
-          )}
-          <div className="mt-2 text-xs text-slate-400 bg-slate-50 rounded px-2 py-1">
-            Source: {previous_searches.data_source}
-          </div>
-        </Card>
-      )}
+      {previous_searches && <PreviousChecksCard data={previous_searches} />}
       </div>
     </div>
+  );
+}
+
+/* Previous Checks — grouped summary with definitions.
+   Replaces the repeated "Motor trade & other" list that told users nothing.
+   Pills categorise: insurer checks are the interesting signal (post-accident
+   queries); trade checks are dealer/valuator routine. */
+function PreviousChecksCard({ data }: { data: PreviousSearches }) {
+  const [showAll, setShowAll] = useState(false);
+  const records = data.records || [];
+
+  const isInsurer = (t: string | null | undefined) =>
+    !!t && t.toLowerCase().includes("insurer");
+
+  const insurerCount = records.filter((r) => isInsurer(r.business_type)).length;
+  const tradeCount = records.filter((r) => !isInsurer(r.business_type)).length;
+
+  return (
+    <Card title="Previous Checks" icon={icons.search} status="neutral">
+      <p className="text-xs text-slate-500 mb-3">
+        Every time a dealer, insurer, or valuator runs a history check on this vehicle, it&apos;s logged here.
+      </p>
+
+      <div className="flex items-baseline gap-3 mb-3">
+        <span className="text-3xl font-bold text-slate-900">{data.search_count}</span>
+        <span className="text-sm text-slate-700">
+          check{data.search_count !== 1 ? "s" : ""} in the last 12 months
+        </span>
+      </div>
+
+      <div className="space-y-2">
+        {tradeCount > 0 && (
+          <div className="flex items-start gap-2 bg-slate-50 rounded-lg px-3 py-2">
+            <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-slate-200 text-slate-700 text-xs font-bold flex-shrink-0">
+              {tradeCount}
+            </span>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-slate-700">Trade &amp; dealer checks</p>
+              <p className="text-xs text-slate-500">Routine pre-sale checks by garages or valuators.</p>
+            </div>
+          </div>
+        )}
+        {insurerCount > 0 && (
+          <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+            <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-200 text-amber-800 text-xs font-bold flex-shrink-0">
+              {insurerCount}
+            </span>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-amber-800">Insurer checks</p>
+              <p className="text-xs text-amber-700">Triggered by a claim — often indicates an accident or damage event.</p>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {data.search_count > 10 && (
+        <p className="text-xs text-blue-700 bg-blue-50 border border-blue-200 rounded px-3 py-2 mt-3">
+          High search activity — this vehicle is actively being marketed or has attracted buyer interest.
+        </p>
+      )}
+
+      {records.length > 0 && (
+        <>
+          <button
+            type="button"
+            onClick={() => setShowAll(!showAll)}
+            className="mt-3 inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700 font-medium"
+          >
+            <svg
+              className={`w-3 h-3 transition-transform ${showAll ? "rotate-180" : ""}`}
+              fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+            </svg>
+            {showAll ? "Hide dates" : "Show individual dates"}
+          </button>
+          {showAll && (
+            <div className="mt-2 space-y-1">
+              {records.map((r, i) => {
+                const insurer = isInsurer(r.business_type);
+                return (
+                  <div
+                    key={i}
+                    className={`flex justify-between py-1 px-2 rounded text-xs ${insurer ? "bg-amber-50" : ""}`}
+                  >
+                    <span className="text-slate-500">{r.date || "Unknown date"}</span>
+                    <span className={insurer ? "text-amber-800 font-medium" : "text-slate-700"}>
+                      {insurer ? "Insurer" : "Trade/dealer"}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </>
+      )}
+
+      <div className="mt-3 text-xs text-slate-400 bg-slate-50 rounded px-2 py-1">
+        Source: {data.data_source}
+      </div>
+    </Card>
   );
 }

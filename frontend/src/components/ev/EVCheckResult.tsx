@@ -76,7 +76,7 @@ export default function EVCheckResult({ result, reportMode = false }: Props) {
   };
 
   const overview = (
-    <div id="ev-section-overview" className="grid grid-cols-1 md:grid-cols-2 gap-3">
+    <div id="ev-section-overview" className="columns-1 md:columns-2 gap-3 [&>div]:break-inside-avoid [&>div]:mb-3">
       <EVOverviewSections
         vehicle={vehicle}
         mot_summary={mot_summary}
@@ -88,7 +88,7 @@ export default function EVCheckResult({ result, reportMode = false }: Props) {
   );
 
   const history = (
-    <div id="ev-section-history" className="grid grid-cols-1 md:grid-cols-2 gap-3">
+    <div id="ev-section-history" className="columns-1 md:columns-2 gap-3 [&>div]:break-inside-avoid [&>div]:mb-3">
       <EVHistorySections
         mot_summary={mot_summary}
         clocking_analysis={clocking_analysis}
@@ -101,7 +101,7 @@ export default function EVCheckResult({ result, reportMode = false }: Props) {
   );
 
   const battery = (
-    <div id="ev-section-battery" className="grid grid-cols-1 md:grid-cols-2 gap-3">
+    <div id="ev-section-battery" className="columns-1 md:columns-2 gap-3 [&>div]:break-inside-avoid [&>div]:mb-3">
       <EVBatterySections
         battery_health={battery_health}
         range_estimate={range_estimate}
