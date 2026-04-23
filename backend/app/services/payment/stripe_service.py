@@ -109,6 +109,11 @@ def create_checkout_session(
         success_url=success_url,
         cancel_url=cancel_url,
         metadata=metadata,
+        # Shows a "Promotion code" input on the Stripe page. Codes must be
+        # created in the Stripe dashboard (Products → Coupons + Promotion codes).
+        # Use a 100%-off code for internal end-to-end testing; same mechanism
+        # powers future launch/referral discounts.
+        allow_promotion_codes=True,
     )
     if email:
         session_kwargs["customer_email"] = email
