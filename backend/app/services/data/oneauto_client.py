@@ -46,7 +46,9 @@ class OneAutoClient:
         try:
             resp = await self._client.get(path, params=params)
             status_code = resp.status_code
-            body_snippet = resp.text[:500] if resp.text else None
+            # Store the full response in the DB (capped at 50 KB for safety).
+            # Keep the Railway log line short — full body is queryable later.
+            body_snippet = resp.text[:50_000] if resp.text else None
 
             if resp.status_code != 200:
                 error_msg = f"HTTP {resp.status_code}: {resp.text[:200]}"
