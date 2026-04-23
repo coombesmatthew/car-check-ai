@@ -304,7 +304,8 @@ Write in British English. Be direct, specific, and honest.
 For a 14-year-old car, 78.6% is GOOD / TYPICAL. Never call it poor.
 
 **Scoring:**
-Do NOT include star ratings, numerical condition scores, or other quantified metrics. Just state: BUY or AVOID, with 2–3 factual sentences.
+Do NOT include star ratings, numerical condition scores, or other quantified metrics.
+Do NOT issue a BUY / NEGOTIATE / AVOID verdict. Vericar presents facts; the buyer decides.
 
 ## JSON Schema Output (REQUIRED — RETURN ONLY VALID JSON)
 
@@ -331,8 +332,7 @@ The JSON must have EXACTLY these top-level keys (flat structure):
 - vehicle_summary (string, e.g. "2011 MINI Diesel (1598cc)")
 - current_mileage (integer)
 - mot_valid_until (string, e.g. "29 September 2026")
-- recommendation (string: "BUY", "NEGOTIATE", or "AVOID")
-- recommendation_points (array of strings — flat list, NOT objects)
+- key_findings (array of strings — 3 to 5 factual observations; no verdict, no advice)
 - mileage_assessment (object)
 - mot_summary (array of objects)
 - mot_tests (array of objects)
@@ -350,25 +350,25 @@ The JSON must have EXACTLY these top-level keys (flat structure):
 
 Use these detailed instructions:
 
-### recommendation
-MUST be exactly "BUY", "NEGOTIATE", or "AVOID".
+### key_findings
+3 to 5 factual observations from the dataset — as plain strings in a flat list.
+Each bullet = ONE line, data-only. These are the strongest data points the buyer
+needs to know before taking the vehicle to an independent inspection.
 
-**Guidance:**
-- **AVOID:** Only for critical safety/legal issues: stolen marker, outstanding finance, write-off history, salvage records, mileage clocking, or invalid MOT. These are deal-breakers.
-- **NEGOTIATE:** For moderate concerns: 3+ MOT failures, recurring defect patterns (tyre, brake, suspension), or other cost/reliability issues. Buyer should negotiate price.
-- **BUY:** Everything else. The vehicle is acceptable to purchase, though buyer should be aware of and budget for any noted defects.
+NO verdict. NO BUY / NEGOTIATE / AVOID. NO "we recommend". NO "you should".
+Vericar presents information; the buyer decides.
 
-### recommendation_points
-2–5 factual statements as STRINGS (flat list, not objects). Example:
+Example:
 ```json
-"recommendation_points": [
-  "Tyre wear flagged on 9 test dates (April 2014, March 2020 ×2, August 2024, September 2025).",
-  "Brake hose failed March 2020 (excessively deteriorated, insecure, rubbing on suspension).",
-  "Offside front tyre currently at legal wear limit (September 2025).",
-  "Request evidence seller has resolved these issues before purchase."
+"key_findings": [
+  "Tyre wear flagged on 9 MOT tests between April 2014 and September 2025.",
+  "Brake hose failed March 2020 (recorded as excessively deteriorated, insecure, rubbing on suspension).",
+  "Offside front tyre currently at legal wear limit (September 2025 MOT).",
+  "One registered keeper since first registration in April 2011.",
+  "Current mileage 100,440 miles; 6,700 miles/year average."
 ]
 ```
-NO interpretation. NO "requires immediate investment". NO "unsafe". FACTS ONLY.
+FACTS ONLY. Specific numbers, dates, categories.
 
 ### mileage_assessment
 Object with keys:
@@ -498,13 +498,20 @@ Use the actual VED band from vehicle_data, fuel type, and mileage. Insurance is 
 {"item": "Offside front tyre replacement", "priority": "Immediate", "estimated_cost_low": 100, "estimated_cost_high": 150, "notes": "Advisory at September 2025 MOT — at legal limit"}
 Only include items with a realistic chance of being needed. Do not invent costs.
 
-"negotiation_guidance": A single object:
+"negotiation_guidance": A single object. Rendered under the header
+"POINTS TO CHECK" — purely informational, NOT prescriptive. Do not tell
+the buyer what offer to make or when to walk away. Just surface factual
+items worth verifying in person.
 {
-  "asking_price_context": "One sentence on the asking price vs market valuation",
-  "suggested_opening": "£X,XXX — specific opening offer with brief rationale",
-  "key_leverage_points": ["Tyre advisory at legal limit — £100-150 replacement", "Rear sub-frame corrosion advisory — unknown repair cost"],
-  "walk_away_triggers": ["Seller cannot confirm brake hose was replaced after 2020 failure", "Timing chain rattle on cold start"]
+  "asking_price_context": "One neutral sentence referencing the valuation range and noted defects. No opinion. No 'we think' or 'we recommend'.",
+  "suggested_opening": "",
+  "key_leverage_points": ["Tyre advisory at legal limit as of September 2025 MOT — £100-150 tyre replacement cost.", "Rear sub-frame corrosion advisory on 2024 MOT — inspection needed to quantify."],
+  "walk_away_triggers": ["Timing chain rattle on cold start (known N47 engine fault).", "No documentary evidence of the March 2020 brake hose repair."]
 }
+IMPORTANT: key_leverage_points and walk_away_triggers are now shown
+together under "Items worth verifying before purchase". Each bullet is a
+factual observation tied to data; none tells the buyer what to do.
+Leave suggested_opening as "" — we no longer render it.
 
 "recalls": List any DVSA or manufacturer recalls applicable to this make/model/year that you are aware of. Each item:
 {"recall_ref": "R/2014/123", "description": "Fuel tank bracket corrosion", "status": "Check DVSA database", "action_required": "Contact MINI dealer"}
@@ -842,8 +849,8 @@ async def generate_ai_report(
                 normalized = {}
                 for key, value in data.items():
                     # Flat schema field name variations (Claude may use similar names)
-                    if key == "points" and "recommendation_points" not in data:
-                        key = "recommendation_points"
+                    if key in ("points", "recommendation_points", "findings") and "key_findings" not in data:
+                        key = "key_findings"
                     elif key == "mot_history_analysis" and "mot_summary" not in data:
                         # Extract summary_table from nested structure if present
                         if isinstance(value, dict) and "summary_table" in value:
@@ -971,7 +978,7 @@ def _build_demo_vehicle_report(
     patterns = mot_analysis.get("failure_patterns", [])
     condition_score = mot_analysis.get("condition_score")
 
-    # Pre-calculate repair costs for patterns (needed for recommendation points)
+    # Pre-calculate repair costs for patterns (surfaced in key_findings if relevant)
     total_repair_low = 0
     total_repair_high = 0
     for pattern in patterns:
@@ -980,77 +987,60 @@ def _build_demo_vehicle_report(
             total_repair_low += est.get("low", 0)
             total_repair_high += est.get("high", 0)
 
-    # Determine recommendation (IGNORE condition_score per SYSTEM_PROMPT)
-    # Extract critical checks
-    salvage_found = bool(check_result.get("salvage_check", {}).get("salvage_found")) if check_result else False
-    mot_status = vehicle_data.get("motStatus", "").upper() if vehicle_data else ""
-    mot_status_invalid = mot_status in ("NO MOT", "NOT VALID", "INVALID") if mot_status else False
-
-    if clocked:
-        recommendation = "AVOID"
-    elif check_result and (check_result.get("stolen_check", {}).get("stolen") or
-                           check_result.get("write_off_check", {}).get("written_off") or
-                           salvage_found):
-        recommendation = "AVOID"
-    elif check_result and check_result.get("finance_check", {}).get("finance_outstanding"):
-        recommendation = "AVOID"
-    elif mot_status_invalid:
-        recommendation = "AVOID"
-    elif total_failures > 2:
-        recommendation = "NEGOTIATE"
-    else:
-        recommendation = "BUY"
-
     # --- Build VehicleReport fields ---
 
     # Metadata
     report_date = datetime.now().strftime("%d %b %Y")
     vehicle_summary = f"{year} {_format_make(make)} {model}" + (f" ({engine}cc)" if engine else "")
 
-    # Extract keeper data early (needed for recommendation logic below)
+    # Extract keeper data early (used in key_findings and ownership section)
     keeper_data = check_result.get("keeper_history", {}) if check_result else {}
     total_keepers = keeper_data.get("total_keepers", keeper_data.get("keeper_count", 1))
 
-    # Recommendation points (factual, no condition score)
-    # Build rich narrative context for the recommendation
-    recommendation_points = []
+    # Key findings — facts only, no verdict, no advice. Vericar presents data;
+    # the buyer decides. 3-5 bullets, most important first.
+    salvage_found = bool(check_result.get("salvage_check", {}).get("salvage_found")) if check_result else False
+    mot_status = vehicle_data.get("motStatus", "").upper() if vehicle_data else ""
+    mot_status_invalid = mot_status in ("NO MOT", "NOT VALID", "INVALID") if mot_status else False
+    key_findings: List[str] = []
 
-    if recommendation == "AVOID":
-        if clocked:
-            recommendation_points.append("Mileage discrepancies detected — odometer integrity questionable. This is a major red flag.")
-        elif check_result and check_result.get("stolen_check", {}).get("stolen"):
-            recommendation_points.append("Vehicle reported stolen. Do not purchase under any circumstances.")
-        elif check_result and check_result.get("write_off_check", {}).get("written_off"):
-            cat = check_result.get("write_off_check", {}).get("records", [{}])[0].get("category", "?")
-            recommendation_points.append(f"Insurance write-off (Category {cat}) recorded. Proceed only with detailed inspection.")
-        elif total_failures > 2:
-            recommendation_points.append(f"{total_failures} MOT failures recorded. Recurring defects suggest maintenance concerns.")
-        if patterns and len(patterns) > 0:
-            recommendation_points.append(f"Recurring {patterns[0]['category']} issues ({patterns[0]['occurrences']} times). Budget £{total_repair_low}-£{total_repair_high} for repairs.")
-    elif recommendation == "NEGOTIATE":
-        recommendation_points.append(f"Vehicle has {total_failures} MOT failure(s) and recurring defects. Use as negotiation leverage.")
-        if patterns:
-            recommendation_points.append(f"{patterns[0]['category']} flagged {patterns[0]['occurrences']} times — seek price reduction.")
-        if total_repair_low > 0:
-            recommendation_points.append(f"Budget £{total_repair_low}-£{total_repair_high} for repairs before purchasing.")
-    else:  # BUY
-        if total_passes > 0:
-            pass_rate = round(total_passes / total_tests * 100) if total_tests > 0 else 0
-            recommendation_points.append(f"MOT history is solid with {pass_rate}% pass rate ({total_passes}/{total_tests} tests).")
-        if not clocked:
-            recommendation_points.append("Mileage is consistent across MOT tests — no clocking detected.")
-        if total_keepers == 1:
-            recommendation_points.append("Single keeper from new — suggests stable ownership and regular maintenance.")
-        if not patterns or len(patterns) == 0:
-            recommendation_points.append("No recurring defect patterns identified in MOT history.")
-
+    # Data-flag facts, in order of severity
+    if clocked:
+        key_findings.append("Mileage discrepancy detected — odometer progression inconsistent across MOT history.")
+    if check_result and check_result.get("stolen_check", {}).get("stolen"):
+        key_findings.append("Vehicle recorded on the Police National Computer stolen register.")
+    if check_result and check_result.get("write_off_check", {}).get("written_off"):
+        cat = check_result.get("write_off_check", {}).get("records", [{}])[0].get("category", "?")
+        key_findings.append(f"Insurance write-off recorded (Category {cat}).")
+    if salvage_found:
+        key_findings.append("Salvage-auction record found for this vehicle.")
     if check_result and check_result.get("finance_check", {}).get("finance_outstanding"):
-        recommendation_points.append("WARNING: Outstanding finance agreement(s) detected. Do not proceed without settlement.")
+        key_findings.append("Outstanding finance agreement recorded against this vehicle.")
+    if mot_status_invalid:
+        key_findings.append(f"MOT status: {mot_status.title()}.")
 
-    if len(recommendation_points) > 5:
-        recommendation_points = recommendation_points[:5]
-    elif not recommendation_points:
-        recommendation_points.append("Vehicle inspection data available for assessment.")
+    # MOT + mileage facts (always useful)
+    if total_failures > 2:
+        key_findings.append(f"{total_failures} MOT failures recorded across {total_tests} tests.")
+    elif total_passes > 0 and total_tests > 0:
+        pass_rate = round(total_passes / total_tests * 100)
+        key_findings.append(f"MOT pass rate {pass_rate}% ({total_passes} passes / {total_failures} failures over {total_tests} tests).")
+
+    if patterns:
+        top = patterns[0]
+        occurrences = top.get("occurrences") or top.get("flagged_count") or "?"
+        key_findings.append(f"Recurring {top.get('category', '')} defects — {occurrences} occurrences across MOT history.")
+
+    if total_keepers == 1:
+        key_findings.append("One registered keeper since first registration.")
+    elif isinstance(total_keepers, int) and total_keepers > 1:
+        key_findings.append(f"{total_keepers} registered keepers to date.")
+
+    # Clamp to 3-5 (schema requirement)
+    if len(key_findings) > 5:
+        key_findings = key_findings[:5]
+    while len(key_findings) < 3:
+        key_findings.append("MOT and DVLA data available for independent inspection.")
 
     # Mileage assessment — use Brego if available, else calculate from current date
     from datetime import date as _date
@@ -1498,8 +1488,7 @@ def _build_demo_vehicle_report(
             vehicle_summary=vehicle_summary,
             current_mileage=int(current_mileage) if isinstance(current_mileage, int) else int(str(current_mileage).replace(",", "") or "100000"),
             mot_valid_until=mot_expiry or "Pending MOT",
-            recommendation=recommendation,
-            recommendation_points=recommendation_points[:5],
+            key_findings=key_findings[:5],
             mileage_assessment=mileage_assessment,
             mot_summary=mot_summary_rows,
             mot_tests=mot_tests_rendered,

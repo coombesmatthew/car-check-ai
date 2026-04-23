@@ -34,17 +34,13 @@ class EVReport(BaseModel):
         pattern="^(EV Health|EV Complete)$",
     )
 
-    # --- Section 1: Verdict ---
-    recommendation: str = Field(
-        ...,
-        description="Must be 'BUY', 'NEGOTIATE', or 'AVOID'",
-        pattern="^(BUY|NEGOTIATE|AVOID)$",
-    )
-    recommendation_points: List[str] = Field(
+    # --- Section 1: Key Findings ---
+    # Informational, not prescriptive. Vericar presents facts; buyer decides.
+    key_findings: List[str] = Field(
         ...,
         min_length=3,
-        max_length=3,
-        description="Exactly 3 supporting bullet points — the strongest evidence from the data",
+        max_length=5,
+        description="3-5 factual observations from the data. No BUY/AVOID verdict, no advice.",
     )
 
     # --- Section 2: Battery Health ---
@@ -113,13 +109,6 @@ class EVReport(BaseModel):
 
     # --- Sources ---
     data_sources: Optional[List[Any]] = Field(default_factory=list)
-
-    @field_validator("recommendation")
-    @classmethod
-    def recommendation_must_be_valid(cls, v: str) -> str:
-        if v not in ("BUY", "NEGOTIATE", "AVOID"):
-            raise ValueError(f"recommendation must be 'BUY', 'NEGOTIATE', or 'AVOID', got: {v!r}")
-        return v
 
     @field_validator("tier")
     @classmethod

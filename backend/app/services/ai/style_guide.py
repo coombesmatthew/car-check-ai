@@ -39,15 +39,34 @@ BANNED_PHRASES = [
     "condition score",
     "a healthy choice",
     "a great buy",
+    # Prescriptive / advice-giving language — we present information,
+    # we do not tell the buyer whether to buy.
+    "we recommend",
+    "you should buy",
+    "you should avoid",
+    "do not buy",
+    "verdict:",
+    "our verdict",
+    "buy / negotiate / avoid",
+    "buy, negotiate, or avoid",
 ]
 
 
-VERDICT_FORMAT = """Every report opens with a one-word verdict:
-BUY / NEGOTIATE / AVOID
+FINDINGS_FORMAT = """Open every report with a "Key Findings" block — 3 to 5 bullet
+points of the most important factual observations from the dataset. Each bullet
+is ONE line, pure data, no prescription. Examples:
 
-Immediately under the verdict, give three bullet points — the three facts from
-the data that drove the verdict. One line each, no padding. These three bullets
-must be the strongest evidence in the dataset, not a summary of the report."""
+  - Three MOT failures recorded between 2019 and 2024, most recently for corrosion on the rear sub-frame (2024-10-18).
+  - Current mileage 100,440 miles; 6,700 miles/year average, below the 8,500 UK diesel average for this model year.
+  - One recorded keeper since first registration in March 2011.
+
+DO NOT write a verdict. DO NOT tell the buyer to buy / negotiate / avoid.
+DO NOT use words like "recommend", "advise", "should", "ought". State the
+facts. The buyer makes the decision.
+
+After Key Findings, the report flows through the detailed sections
+(mileage, MOT, defects, valuation, etc.). Each section is informational:
+"Here is the data. Here is what to check in person." Never judgement."""
 
 
 BRITISH_ENGLISH = """- Currency: £ (never $).
@@ -80,8 +99,8 @@ def assemble_style_block() -> str:
 ## TONE
 {REPORT_TONE}
 
-## VERDICT FORMAT
-{VERDICT_FORMAT}
+## KEY FINDINGS FORMAT
+{FINDINGS_FORMAT}
 
 ## BRITISH ENGLISH
 {BRITISH_ENGLISH}

@@ -7,7 +7,7 @@ flexibility. The renderer handles field-level validation defensively using .get(
 """
 
 from typing import Any, Dict, List, Optional
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field
 
 
 class VehicleReport(BaseModel):
@@ -24,17 +24,13 @@ class VehicleReport(BaseModel):
     current_mileage: int = Field(..., description="Current odometer reading in miles")
     mot_valid_until: str = Field(..., description="MOT expiry date (DD Mmm YYYY)")
 
-    # --- Section 1: Overall Condition Assessment ---
-    recommendation: str = Field(
+    # --- Section 1: Key Findings ---
+    # Informational, not prescriptive. Vericar presents facts; buyer decides.
+    key_findings: List[str] = Field(
         ...,
-        description="Must be 'BUY', 'NEGOTIATE', or 'AVOID'",
-        pattern="^(BUY|NEGOTIATE|AVOID)$"
-    )
-    recommendation_points: List[str] = Field(
-        ...,
-        min_length=1,
+        min_length=3,
         max_length=5,
-        description="2-5 factual points supporting the recommendation (flat strings, no interpretation)"
+        description="3-5 factual observations from the data. Flat strings, no advice, no BUY/AVOID verdict."
     )
 
     mileage_assessment: Dict[str, Any] = Field(
@@ -137,11 +133,3 @@ class VehicleReport(BaseModel):
         default_factory=list,
         description="List of sources used (for citations in report)"
     )
-
-    @field_validator("recommendation")
-    @classmethod
-    def recommendation_must_be_valid(cls, v):
-        """Validate recommendation is BUY, NEGOTIATE, or AVOID."""
-        if v not in ("BUY", "NEGOTIATE", "AVOID"):
-            raise ValueError(f"recommendation must be 'BUY', 'NEGOTIATE', or 'AVOID', got: {v!r}")
-        return v

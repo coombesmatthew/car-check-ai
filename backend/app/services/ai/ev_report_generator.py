@@ -4,7 +4,8 @@ Generates two types of reports:
 1. FREE preview — uses only DVLA + MOT data, with general EV knowledge
 2. PAID full report — uses ClearWatt, EV Database, AutoPredict data
 
-Both provide a clear BUY / NEGOTIATE / AVOID verdict.
+Both open with a "Key Findings" list — factual observations from the
+dataset, no verdict. Vericar presents information; the buyer decides.
 """
 
 from datetime import datetime
@@ -361,10 +362,11 @@ async def generate_ev_preview_report(
 
 Write the report in markdown with these exact sections:
 
-## Should You Buy This EV?
-Open with a clear, bold verdict: **BUY**, **NEGOTIATE**, or **AVOID**.
-Then 2-3 sentences explaining WHY. Focus on what the MOT and mileage data tells you about
-how this EV has been used and maintained.
+## Key Findings
+3 to 5 factual bullets from the data — MOT history, mileage, condition score,
+any flagged defects, keeper count if visible. One line each. State numbers and
+dates specifically. DO NOT issue a BUY / NEGOTIATE / AVOID verdict. DO NOT tell
+the buyer what to do. Present facts only.
 
 ## The Full Picture
 Detailed analysis covering:
@@ -453,35 +455,19 @@ def _generate_demo_ev_report(
 
     known_specs = _lookup_known_specs(make, model)
 
-    # Determine verdict
+    # Key findings — factual bullets only, no verdict.
+    report = "## Key Findings\n"
+    findings: List[str] = []
+    vehicle_label = f"{year} {_format_make(make)} {model}"
+    findings.append(f"{vehicle_label} on DVLA records{ref('dvla_ves')}.")
+    if total_tests > 0:
+        findings.append(f"MOT pass rate {pass_rate}% ({total_passes} passes / {total_failures} failures across {total_tests} tests){ref('dvsa_mot')}.")
     if clocked:
-        verdict = "AVOID"
-    elif condition and condition < 50:
-        verdict = "AVOID"
-    elif total_failures > 2 or (condition and condition < 70):
-        verdict = "NEGOTIATE"
-    else:
-        verdict = "BUY"
-
-    report = "## Should You Buy This EV?\n"
-
-    if verdict == "BUY":
-        report += f"**BUY** — This {year} {_format_make(make)} {model}{ref('dvla_ves')} is a solid choice. "
-        if condition and condition >= 80:
-            report += f"With a condition score of {condition}/100 and a {pass_rate}% MOT pass rate across {total_tests} tests{ref('dvsa_mot')}, this EV has been well maintained. "
-        else:
-            report += f"The condition score of {condition}/100 is reasonable for its age. "
-        if not clocked:
-            report += "Mileage readings are consistent with no signs of tampering.\n"
-    elif verdict == "NEGOTIATE":
-        report += f"**NEGOTIATE** — This {year} {_format_make(make)} {model}{ref('dvla_ves')} has some issues worth discussing. "
-        report += f"A condition score of {condition}/100 and {total_failures} MOT failure(s){ref('dvsa_mot')} give you leverage to negotiate.\n"
-    else:
-        report += f"**AVOID** — This {year} {_format_make(make)} {model}{ref('dvla_ves')} raises serious concerns. "
-        if clocked:
-            report += "Mileage discrepancies have been detected — on an EV, this could hide significant battery degradation.\n"
-        else:
-            report += f"The condition score of {condition}/100 and MOT history suggest this car has not been well maintained.\n"
+        findings.append("Mileage inconsistency recorded across MOT tests — odometer integrity flagged by the DVSA feed.")
+    if condition is not None:
+        findings.append(f"Condition score {condition}/100 based on MOT history and mileage progression.")
+    for f in findings[:5]:
+        report += f"- {f}\n"
 
     # Full Picture
     report += "\n## The Full Picture\n"
@@ -614,8 +600,7 @@ Return ONLY a single JSON object matching this schema exactly — no prose, no m
   "vehicle_summary": "<e.g. '2021 Tesla Model 3 | Pearl White | 42,180 miles'>",
   "tier": "{tier}",
 
-  "recommendation": "<BUY | NEGOTIATE | AVOID>",
-  "recommendation_points": ["<bullet 1>", "<bullet 2>", "<bullet 3>"],
+  "key_findings": ["<fact 1>", "<fact 2>", "<fact 3>"],
 
   "battery_score": <int 0-100>,
   "battery_grade": "<A | B | C | D | F>",
@@ -671,7 +656,7 @@ HARD RULES:
 - Return ONLY the JSON object. No ```json fences. No leading or trailing text.
 - Every numeric field must be a number (not a string).
 - If a required field has no supporting data, state that in the prose field — do not fabricate.
-- recommendation_points: exactly 3 bullets.
+- key_findings: 3 to 5 factual bullets. No verdict. No advice. State numbers and dates.
 - range_scenarios: minimum 3 entries covering a meaningful spread (e.g. summer city, summer motorway, winter motorway)."""
 
     try:

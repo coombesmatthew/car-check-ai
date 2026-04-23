@@ -126,12 +126,6 @@ function SuccessContent() {
     );
   }
 
-  const verdictColour = {
-    BUY: "text-emerald-600 bg-emerald-50 border-emerald-200",
-    NEGOTIATE: "text-amber-600 bg-amber-50 border-amber-200",
-    AVOID: "text-red-600 bg-red-50 border-red-200",
-  }[result?.verdict || ""] || "text-slate-600 bg-slate-50 border-slate-200";
-
   const evCheck = result?.ev_check;
   const batteryHealth = evCheck?.battery_health;
   const chargingCosts = evCheck?.charging_costs;
@@ -171,11 +165,6 @@ function SuccessContent() {
                 {result?.registration}
               </p>
             </div>
-            {result?.verdict && (
-              <span className={`px-4 py-1.5 rounded-lg font-bold text-sm border ${verdictColour}`}>
-                {result.verdict}
-              </span>
-            )}
           </div>
         </div>
         <div className="px-6 py-4 space-y-3">

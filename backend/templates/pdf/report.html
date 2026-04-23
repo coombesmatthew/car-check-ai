@@ -328,11 +328,6 @@
     <div class="cover-vehicle">{{ make }} {{ model }}</div>
     <div class="cover-year">{{ year }} &bull; {{ colour }} &bull; {{ fuel_type }}</div>
 
-    {% if verdict %}
-    <div class="cover-verdict verdict-{{ verdict_class }}">{{ verdict }}</div>
-    <div class="cover-verdict-label">AI Recommendation</div>
-    {% endif %}
-
     <div class="cover-meta">
       Report generated: {{ generated_date }}<br>
       {% if checks_summary | selectattr("status", "equalto", "fail") | list %}

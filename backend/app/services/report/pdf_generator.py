@@ -299,21 +299,11 @@ def _is_vehicle_identity_heading(title: str) -> bool:
 
 
 def _extract_verdict(report_text: str) -> Optional[str]:
-    """Extract BUY/NEGOTIATE/AVOID verdict from report text.
-
-    Handles both '**AVOID**' (exact) and '**AVOID —...' (with trailing text).
+    """Deprecated. Vericar no longer produces AI verdicts — reports are
+    informational ("here are the facts"), not prescriptive. Always returns
+    None. Kept as a shim so existing callers (fulfilment, endpoints) don't
+    break; field is passed through to frontend which hides the badge.
     """
-    if not report_text:
-        return None
-    # Match **VERDICT** or **VERDICT — ...** or **VERDICT: ...** at start of a line
-    m = re.search(r"\*\*(AVOID|NEGOTIATE|BUY)[\s*\-—:]", report_text)
-    if m:
-        return m.group(1)
-    # Fallback: bare word in first 500 chars
-    snippet = report_text[:500].upper()
-    for word in ("AVOID", "NEGOTIATE", "BUY"):
-        if word in snippet:
-            return word
     return None
 
 

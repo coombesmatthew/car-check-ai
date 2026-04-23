@@ -18,12 +18,12 @@ def render_report_to_markdown(report: VehicleReport) -> str:
     """Convert VehicleReport JSON to markdown string."""
     lines = []
 
-    # === SECTION 1: OVERALL CONDITION ASSESSMENT ===
-    # The template handles page 1 (cover) and page 2 (vehicle summary + At a Glance).
-    # Renderer starts directly at the numbered sections.
-    lines.append("## 1. OVERALL CONDITION ASSESSMENT")
+    # === SECTION 1: KEY FINDINGS ===
+    # Informational — we present facts, buyer decides. No verdict.
+    lines.append("## 1. KEY FINDINGS")
     lines.append("")
-    lines.append(f"Recommendation: **{report.recommendation}**")
+    for finding in report.key_findings:
+        lines.append(f"- {finding}")
     lines.append("")
     lines.append("---")
     lines.append("")
@@ -296,32 +296,26 @@ def render_report_to_markdown(report: VehicleReport) -> str:
     lines.append("---")
     lines.append("")
 
-    # Section 6: Negotiation Guidance (NEW top-level section)
+    # Section 6: Points To Check — informational, not prescriptive.
+    # Presents data-backed items for the buyer to verify in person; we do
+    # not tell them what offer to make or when to walk away.
     lines.append("---")
     lines.append("")
-    lines.append("## 6. NEGOTIATION GUIDANCE")
+    lines.append("## 6. POINTS TO CHECK")
     lines.append("")
     ng = report.negotiation_guidance or {}
     asking_ctx = ng.get("asking_price_context", "")
-    opening = ng.get("suggested_opening", "")
     leverage = ng.get("key_leverage_points", [])
     walk_away = ng.get("walk_away_triggers", [])
 
     if asking_ctx:
-        lines.append(f"**Market Context:** {asking_ctx}")
+        lines.append(f"**Market context:** {asking_ctx}")
         lines.append("")
-    if opening:
-        lines.append(f"**Suggested Opening Offer:** {opening}")
-        lines.append("")
-    if leverage:
-        lines.append("**Key Leverage Points:**")
-        for point in leverage:
-            lines.append(f"- {point}")
-        lines.append("")
-    if walk_away:
-        lines.append("**Walk Away If:**")
-        for trigger in walk_away:
-            lines.append(f"- {trigger}")
+    combined = list(leverage or []) + list(walk_away or [])
+    if combined:
+        lines.append("**Items worth verifying before purchase:**")
+        for item in combined:
+            lines.append(f"- {item}")
         lines.append("")
     lines.append("---")
     lines.append("")

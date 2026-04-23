@@ -41,13 +41,12 @@ def render_ev_report_to_markdown(report: EVReport) -> str:
     lines.append("---")
     lines.append("")
 
-    # --- Section 1: Verdict ---
-    lines.append("## 1. SHOULD YOU BUY THIS EV?")
+    # --- Section 1: Key Findings ---
+    # Informational — we present facts, buyer decides. No verdict.
+    lines.append("## 1. KEY FINDINGS")
     lines.append("")
-    lines.append(f"**{report.recommendation}**")
-    lines.append("")
-    for point in report.recommendation_points:
-        lines.append(f"- {point}")
+    for finding in report.key_findings:
+        lines.append(f"- {finding}")
     lines.append("")
     lines.append("---")
     lines.append("")
