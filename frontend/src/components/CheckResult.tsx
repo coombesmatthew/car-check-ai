@@ -43,19 +43,19 @@ export default function CheckResult({
   const hasPremium = !!(finance_check || stolen_check || write_off_check || valuation);
 
   const overview = (
-    <div id="section-overview" className="columns-1 md:columns-2 gap-3 [&>div]:break-inside-avoid [&>div]:mb-3">
+    <div id="section-overview" className="space-y-3">
       <OverviewSections vehicle={vehicle} mot_summary={mot_summary} tax_calculation={tax_calculation} vehicle_stats={vehicle_stats} safety_rating={safety_rating} />
     </div>
   );
 
   const history = (
-    <div id="section-history" className="columns-1 md:columns-2 gap-3 [&>div]:break-inside-avoid [&>div]:mb-3">
+    <div id="section-history" className="space-y-3">
       <HistorySections mot_summary={mot_summary} clocking_analysis={clocking_analysis} mileage_timeline={mileage_timeline} failure_patterns={failure_patterns} mot_tests={mot_tests} vehicle={vehicle} />
     </div>
   );
 
   const emissions = (
-    <div id="section-emissions" className="columns-1 md:columns-2 gap-3 [&>div]:break-inside-avoid [&>div]:mb-3">
+    <div id="section-emissions" className="space-y-3">
       <EmissionsSections ulez_compliance={ulez_compliance} tax_calculation={tax_calculation} />
     </div>
   );

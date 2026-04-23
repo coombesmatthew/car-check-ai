@@ -75,7 +75,7 @@ function AskingPriceBlock({
           {verdict.label}
         </span>
       </div>
-      <p className={`text-sm font-semibold mt-1 ${styles.deltaText}`}>{verdict.deltaLabel}</p>
+      <p className={`text-sm font-semibold mt-1 ${styles.deltaText}`}>{verdict.reference}</p>
       <p className="text-xs text-slate-500 mt-1.5 leading-relaxed">{verdict.detail}</p>
 
       <button
@@ -159,11 +159,9 @@ export default function FullCheckSection({
         import_status={import_status}
       />
 
-      {/* Remaining cards in a masonry-style column layout — CSS columns
-          pack cards by height so a short card next to a tall one doesn't
-          leave dead space. Order on mobile is single-column sequential;
-          on desktop cards flow into the two columns by height. */}
-      <div className="columns-1 md:columns-2 gap-3 [&>div]:break-inside-avoid [&>div]:mb-3">
+      {/* Remaining cards stack vertically at full width — simplest layout,
+          no dead space, each card takes exactly the height it needs. */}
+      <div className="space-y-3">
       {/* Valuation */}
       {valuation && (
         <Card title="Valuation" icon={icons.currency} status="neutral">

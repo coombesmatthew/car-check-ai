@@ -1,11 +1,12 @@
-/* Turns a buyer-entered asking price + Brego valuation bands into a single
-   verdict pill and a clean delta vs mid-market. Five bands:
+/* Turns a buyer-entered asking price + Brego valuation bands into a verdict
+   pill + a human-readable reference line. Five bands:
      bargain  — below trade-in          (emerald, "verify first")
      good     — between trade-in + private sale  (emerald)
      fair     — between private sale + dealer    (blue)
      over     — 0–10% above dealer      (amber)
      bad      — more than 10% above dealer (red)
-*/
+   The reference line anchors the verdict against real Brego figures
+   rather than a synthetic midpoint. */
 
 import type { Valuation } from "./api";
 
@@ -14,14 +15,10 @@ export type PriceVerdictTone = "emerald" | "blue" | "amber" | "red";
 export interface PriceVerdict {
   label: string;
   tone: PriceVerdictTone;
-  /** Delta vs mid-market (midpoint of private sale + dealer forecourt). £. */
-  deltaPounds: number;
-  /** Human "£800 above market" / "£120 below market" / "at market price". */
-  deltaLabel: string;
+  /** Short reference sentence anchoring the verdict against a real Brego band. */
+  reference: string;
   /** One-line explainer shown under the pill. */
   detail: string;
-  /** Numeric mid-market reference, for display. */
-  midMarketPounds: number;
 }
 
 export function computePriceVerdict(
@@ -34,27 +31,17 @@ export function computePriceVerdict(
   if (priv == null || dealer == null) return null;
 
   const listingPounds = Math.round(listingPricePence / 100);
-  const midMarketPounds = Math.round((priv + dealer) / 2);
-  const deltaPounds = listingPounds - midMarketPounds;
   const tradeIn = valuation.trade_in;
-
-  const deltaLabel =
-    deltaPounds === 0
-      ? "Exactly at market price"
-      : deltaPounds < 0
-        ? `£${Math.abs(deltaPounds).toLocaleString()} below market`
-        : `£${deltaPounds.toLocaleString()} above market`;
+  const fmt = (n: number) => `£${n.toLocaleString()}`;
 
   // Below trade-in — suspicious bargain
   if (tradeIn != null && listingPounds < tradeIn) {
     return {
       label: "Bargain",
       tone: "emerald",
-      deltaPounds,
-      deltaLabel,
+      reference: `${fmt(tradeIn - listingPounds)} below trade-in value (${fmt(tradeIn)})`,
       detail:
-        "Priced below trade-in — unusually cheap. Great if genuine, but verify the full history carefully first.",
-      midMarketPounds,
+        "Priced below what a dealer would pay as a trade-in. Great if genuine — but verify the full history carefully first.",
     };
   }
 
@@ -63,10 +50,8 @@ export function computePriceVerdict(
     return {
       label: "Good deal",
       tone: "emerald",
-      deltaPounds,
-      deltaLabel,
-      detail: "Priced at or below a typical private-sale figure.",
-      midMarketPounds,
+      reference: `${fmt(priv - listingPounds)} below typical private-sale value (${fmt(priv)})`,
+      detail: "Priced at or below what a private seller would typically ask.",
     };
   }
 
@@ -75,31 +60,26 @@ export function computePriceVerdict(
     return {
       label: "Fair price",
       tone: "blue",
-      deltaPounds,
-      deltaLabel,
-      detail: "In the normal market range between private sale and dealer forecourt.",
-      midMarketPounds,
+      reference: `Between private sale (${fmt(priv)}) and dealer forecourt (${fmt(dealer)})`,
+      detail: "In the normal market range — private sellers tend to sit at the lower end; dealers at the upper.",
     };
   }
 
   // Above dealer forecourt — check how far
   const overPct = ((listingPounds - dealer) / dealer) * 100;
+  const overDealer = listingPounds - dealer;
   if (overPct <= 10) {
     return {
       label: "Slightly overpriced",
       tone: "amber",
-      deltaPounds,
-      deltaLabel,
-      detail: "Above the typical dealer asking price — there may be room to negotiate.",
-      midMarketPounds,
+      reference: `${fmt(overDealer)} above dealer forecourt value (${fmt(dealer)})`,
+      detail: "Above what even a dealer would typically ask — there may be room to negotiate.",
     };
   }
   return {
     label: "Overpriced",
     tone: "red",
-    deltaPounds,
-    deltaLabel,
-    detail: `£${Math.round(listingPounds - dealer).toLocaleString()} above dealer forecourt asking — worth pushing back hard on price.`,
-    midMarketPounds,
+    reference: `${fmt(overDealer)} above dealer forecourt value (${fmt(dealer)})`,
+    detail: "Well above dealer forecourt pricing — worth pushing back hard on price before committing.",
   };
 }
