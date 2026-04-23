@@ -328,6 +328,26 @@ def _parse_stolen(raw: Optional[Dict]) -> Dict:
     return _empty_stolen()
 
 
+_CAT_LETTERS = {"A", "B", "C", "D", "S", "N"}
+
+
+def _extract_writeoff_category(item: Dict) -> Optional[str]:
+    """Derive the Cat letter (A/B/C/D/S/N).
+
+    `recovered_category` is often null even on genuine Cat N/Cat S records.
+    The `vehicle_status` text (e.g. "CAT N NON STRUCTURAL DAMAGE") carries
+    the letter reliably — fall back to parsing it.
+    """
+    if item.get("recovered_category"):
+        return item["recovered_category"]
+    status = (item.get("vehicle_status") or "").upper()
+    # Match "CAT X" as a word boundary
+    for word in status.split():
+        if word in _CAT_LETTERS and "CAT " in status:
+            return word
+    return None
+
+
 def _parse_condition(raw: Optional[Dict]) -> Dict:
     """Extract write-off / condition data from AutoCheck response."""
     if not raw:
@@ -336,10 +356,19 @@ def _parse_condition(raw: Optional[Dict]) -> Dict:
     items = raw.get("condition_data_items") or []
     records = []
     for item in items:
+        damage_items = item.get("damage_location_items") or []
+        damage_locations = [
+            d.get("damage_location_desc")
+            for d in damage_items
+            if d.get("damage_location_desc")
+        ]
         records.append({
-            "category": item.get("recovered_category", ""),
+            "category": _extract_writeoff_category(item),
             "date": item.get("date_of_loss", ""),
             "loss_type": item.get("loss_type") or item.get("cause_of_damage"),
+            "insurer_name": item.get("insurer_name"),
+            "claim_number": item.get("insurer_claim_number"),
+            "damage_locations": damage_locations,
         })
 
     return {

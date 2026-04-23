@@ -187,9 +187,12 @@ export interface StolenCheck {
 }
 
 export interface WriteOffRecord {
-  category: string;
+  category: string | null;
   date: string;
   loss_type: string | null;
+  insurer_name?: string | null;
+  claim_number?: string | null;
+  damage_locations?: string[];
 }
 
 export interface WriteOffCheck {

@@ -201,6 +201,9 @@ class WriteOffRecord(BaseModel):
     category: Optional[str] = None
     date: str
     loss_type: Optional[str] = None
+    insurer_name: Optional[str] = None
+    claim_number: Optional[str] = None
+    damage_locations: List[str] = []
 
 
 class WriteOffCheck(BaseModel):

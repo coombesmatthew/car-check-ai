@@ -94,11 +94,16 @@ export default function TheftAlertsCarousel({
         source={write_off_check.data_source}
         details={
           write_off_check.written_off && write_off_check.records.length > 0 ? (
-            <div className="bg-slate-50 rounded-lg p-2 text-sm">
+            <div className="bg-slate-50 rounded-lg p-2 text-sm space-y-2">
               {write_off_check.records.slice(0, 2).map((r, i) => (
                 <div key={i}>
                   <DetailRow label="Date" value={r.date} />
                   {r.loss_type && <DetailRow label="Loss Type" value={r.loss_type} />}
+                  {r.damage_locations && r.damage_locations.length > 0 && (
+                    <DetailRow label="Damage" value={r.damage_locations.join(", ")} />
+                  )}
+                  {r.insurer_name && <DetailRow label="Insurer" value={r.insurer_name} />}
+                  {r.claim_number && <DetailRow label="Claim" value={r.claim_number} />}
                 </div>
               ))}
             </div>
