@@ -99,16 +99,9 @@ def _build_checks_summary(check_data: Dict) -> List[Dict[str, str]]:
         items.append({"status": "fail", "icon": "❌", "colour": "#dc2626", "bg": "#fee2e2",
                       "label": "MOT Not Valid", "detail": f"Status: {mot_status}"})
 
-    # ULEZ / CAZ
-    ulez = check_data.get("ulez_compliance") or {}
-    if ulez.get("compliant") is False:
-        charge = ulez.get("daily_charge", "charges apply")
-        items.append({"status": "warn", "icon": "⚠️", "colour": "#d97706", "bg": "#fffbeb",
-                      "label": "CAZ Non-Compliant",
-                      "detail": f"{charge} in affected UK zones"})
-    elif ulez.get("compliant") is True:
-        items.append({"status": "pass", "icon": "✅", "colour": "#059669", "bg": "#f0fdf4",
-                      "label": "All Clean Air Zones Clear", "detail": "Compliant with all UK zones"})
+    # CAZ/ULEZ compliance intentionally omitted from At a Glance — running-
+    # cost signal belongs in the dedicated Emissions section, not alongside
+    # buy/don't-buy risk factors like stolen or finance.
 
     return items
 

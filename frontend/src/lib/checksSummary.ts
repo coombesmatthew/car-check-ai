@@ -153,20 +153,9 @@ export function buildChecksSummary(data: SourceData): ChecksSummaryItem[] {
     });
   }
 
-  if (data.ulez_compliance?.compliant === false) {
-    const charge = data.ulez_compliance.daily_charge || "charges apply";
-    items.push({
-      status: "warn",
-      label: "CAZ Non-Compliant",
-      detail: `${charge} in affected UK zones`,
-    });
-  } else if (data.ulez_compliance?.compliant === true) {
-    items.push({
-      status: "pass",
-      label: "All Clean Air Zones Clear",
-      detail: "Compliant with all UK zones",
-    });
-  }
+  // CAZ/ULEZ compliance intentionally omitted from At a Glance — it's a
+  // running-cost signal (shown in the Emissions section) rather than a
+  // buy/don't-buy risk factor alongside stolen, finance, write-off, clocking.
 
   return items;
 }
