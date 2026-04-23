@@ -388,7 +388,6 @@ export interface FulfilmentResponse {
   registration: string;
   report_ref: string;
   email_sent: boolean;
-  pdf_size_bytes: number;
   verdict: string | null;
   payment_status: string;
 }

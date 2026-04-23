@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { DetailRow, PeekCard, icons } from "@/components/sections/shared";
+import Card from "@/components/ui/Card";
+import SwipeCarousel from "@/components/ui/SwipeCarousel";
 import { createEVCheckout } from "@/lib/api";
 
 interface EVFullCheckSectionProps {
@@ -29,9 +31,12 @@ export default function EVFullCheckSection({ registration }: EVFullCheckSectionP
 
   return (
     <div className="space-y-5">
-      {/* Peek cards grid */}
-      <div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+      {/* Peek cards carousel — swipe through locked previews */}
+      <Card title="What's in the EV Complete Check" icon={icons.shield} status="neutral">
+        <p className="text-xs text-slate-500 mb-3">
+          Swipe through each check to see what you&apos;ll get. Everything unlocks instantly on payment.
+        </p>
+        <SwipeCarousel ariaLabel="EV Complete check previews" itemNoun="Check">
 
           {/* Market Valuation */}
           <PeekCard href="#unlock" title="Market Valuation" icon={icons.currency} status="pass">
@@ -117,8 +122,8 @@ export default function EVFullCheckSection({ registration }: EVFullCheckSectionP
             <DetailRow label="Last Updated" value={currentMonth} />
           </PeekCard>
 
-        </div>
-      </div>
+        </SwipeCarousel>
+      </Card>
 
       {/* CTA */}
       <div className="mt-2 text-center">

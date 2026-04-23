@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { DetailRow, PeekCard, icons } from "./shared";
+import Card from "@/components/ui/Card";
+import SwipeCarousel from "@/components/ui/SwipeCarousel";
 import { createCheckout } from "@/lib/api";
 
 interface PremiumPreviewProps {
@@ -29,9 +31,12 @@ export default function PremiumPreview({ registration }: PremiumPreviewProps) {
 
   return (
     <div className="space-y-5">
-      {/* Peek cards grid — 6 sample cards */}
-      <div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+      {/* Peek cards carousel — swipe through locked previews */}
+      <Card title="What's in the Premium Check" icon={icons.shield} status="neutral">
+        <p className="text-xs text-slate-500 mb-3">
+          Swipe through each check to see what you&apos;ll get. Everything unlocks instantly on payment.
+        </p>
+        <SwipeCarousel ariaLabel="Premium check previews" itemNoun="Check">
 
           {/* Market Valuation */}
           <PeekCard title="Market Valuation" icon={icons.currency} status="pass">
@@ -117,8 +122,8 @@ export default function PremiumPreview({ registration }: PremiumPreviewProps) {
             <DetailRow label="Last Updated" value={currentMonth} />
           </PeekCard>
 
-        </div>
-      </div>
+        </SwipeCarousel>
+      </Card>
 
       {/* CTA */}
       <div>

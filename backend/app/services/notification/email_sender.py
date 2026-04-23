@@ -1,6 +1,5 @@
 """Email delivery service using Resend API."""
 
-import base64
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional
@@ -186,12 +185,12 @@ def render_report_email(
 async def send_report_email(
     to_email: str,
     check_data: Dict,
-    pdf_bytes: bytes,
-    verdict: Optional[str] = None,  # retained for signature compat; always None
     report_ref: str = "",
     session_id: Optional[str] = None,
 ) -> bool:
-    """Send the vehicle report via Resend with PDF attachment."""
+    """Send the vehicle report via Resend. Email is fully self-contained —
+    no PDF attachment. Customers revisit online via the /report link for 30
+    days."""
     if not settings.RESEND_API_KEY or settings.RESEND_API_KEY.startswith("your_"):
         logger.warning("Resend API key not configured — email not sent")
         return False
@@ -202,22 +201,13 @@ async def send_report_email(
         resend.api_key = settings.RESEND_API_KEY
 
         registration = check_data.get("registration", "UNKNOWN")
-        html_content = render_report_email(check_data, verdict, report_ref, session_id=session_id)
-
-        filename = f"VeriCar-{registration}-{report_ref}.pdf"
+        html_content = render_report_email(check_data, None, report_ref, session_id=session_id)
 
         result = resend.Emails.send({
             "from": settings.FROM_EMAIL,
             "to": [to_email],
             "subject": f"Your VeriCar Report — {registration}",
             "html": html_content,
-            "attachments": [
-                {
-                    "filename": filename,
-                    "content": base64.b64encode(pdf_bytes).decode("utf-8"),
-                    "content_type": "application/pdf",
-                }
-            ],
         })
 
         logger.info(f"Report email sent to {to_email} for {registration} (ref: {report_ref}, id: {result.get('id', '?')})")

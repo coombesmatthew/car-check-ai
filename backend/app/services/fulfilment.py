@@ -27,7 +27,6 @@ from app.core.cache import cache
 from app.core.logging import logger
 from app.services.check.orchestrator import CheckOrchestrator
 from app.services.ev.orchestrator import EVOrchestrator
-from app.services.report.pdf_generator import generate_pdf
 from app.services.notification.email_sender import send_report_email
 from app.services.payment.stripe_service import retrieve_session
 
@@ -48,7 +47,6 @@ class FulfilmentResult:
     registration: str
     report_ref: str
     email_sent: bool
-    pdf_size_bytes: int
     verdict: Optional[str]
     payment_status: str
     check_data: dict
@@ -83,18 +81,13 @@ async def fulfil_report(session_id: str) -> FulfilmentResult:
         check_data = await _run_car_pipeline(registration, tier)
         ref_prefix = "CV"
 
-    # 3. Generate PDF (shared for all tiers)
-    pdf_bytes = generate_pdf(check_data)
-
-    # 4. Generate report reference
+    # 3. Generate report reference
     report_ref = f"{ref_prefix}-{dt.utcnow().strftime('%Y%m%d')}-{uuid.uuid4().hex[:8].upper()}"
 
-    # 5. Send email (shared for all tiers)
+    # 4. Send email — the report lives online for 30 days; no PDF attachment.
     email_sent = await send_report_email(
         to_email=email,
         check_data=check_data,
-        pdf_bytes=pdf_bytes,
-        verdict=None,
         report_ref=report_ref,
         session_id=session_id,
     )
@@ -108,7 +101,6 @@ async def fulfil_report(session_id: str) -> FulfilmentResult:
         registration=registration,
         report_ref=report_ref,
         email_sent=email_sent,
-        pdf_size_bytes=len(pdf_bytes),
         verdict=None,
         payment_status="paid",
         check_data=check_data,

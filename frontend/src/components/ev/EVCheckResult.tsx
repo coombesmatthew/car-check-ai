@@ -223,7 +223,7 @@ export default function EVCheckResult({ result, reportMode = false }: Props) {
             </div>
             <div className="p-5">
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-2.5">
-                {["Battery Health Score", "Real-World Range", "Charging Cost Comparison", "Lifespan Prediction", "PDF Report & Email"].map((item) => (
+                {["Battery Health Score", "Real-World Range", "Charging Cost Comparison", "Lifespan Prediction", "Emailed & online for 30 days"].map((item) => (
                   <div key={item} className="flex items-center gap-2">
                     <svg className="w-4 h-4 text-emerald-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />

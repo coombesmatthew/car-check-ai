@@ -130,7 +130,6 @@ class EVFulfilmentResponse(BaseModel):
     registration: str
     report_ref: str
     email_sent: bool
-    pdf_size_bytes: int
     verdict: Optional[str] = None
     payment_status: str
     ev_check: Optional[dict] = None
@@ -149,7 +148,6 @@ async def fulfil_ev_report(session_id: str):
             registration=result.registration,
             report_ref=result.report_ref,
             email_sent=result.email_sent,
-            pdf_size_bytes=result.pdf_size_bytes,
             verdict=result.verdict,
             payment_status=result.payment_status,
             ev_check=result.check_data,
@@ -184,7 +182,6 @@ async def ev_fulfilment_status(session_id: str):
         registration=result.registration,
         report_ref=result.report_ref,
         email_sent=result.email_sent,
-        pdf_size_bytes=result.pdf_size_bytes,
         verdict=result.verdict,
         payment_status=result.payment_status,
         ev_check=result.check_data,
