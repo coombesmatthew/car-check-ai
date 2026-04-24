@@ -230,19 +230,49 @@ class EVOrchestrator:
         return response
 
     def _get_current_mileage(self) -> Optional[int]:
-        """Get current mileage from MOT data for ClearWatt API."""
-        if not self._raw_mot_analysis:
+        """Get current mileage for ClearWatt API.
+
+        Preference order:
+          1. Latest MOT current_odometer
+          2. Last entry in the MOT mileage timeline
+          3. Estimate from vehicle age × UK average annual mileage (7,500 mi)
+             — covers brand-new cars with no MOT yet, so ClearWatt still runs
+             with a reasonable figure rather than failing entirely.
+        """
+        if self._raw_mot_analysis:
+            summary = self._raw_mot_analysis.get("mot_summary")
+            if summary and summary.get("current_odometer"):
+                try:
+                    return int(summary["current_odometer"])
+                except (ValueError, TypeError):
+                    pass
+            timeline = self._raw_mot_analysis.get("mileage_timeline", [])
+            if timeline and timeline[-1].get("miles"):
+                return int(timeline[-1]["miles"])
+
+        # Age-based fallback
+        return self._estimate_mileage_from_age()
+
+    def _estimate_mileage_from_age(self) -> Optional[int]:
+        """Very rough mileage estimate when MOT data has none — based on
+        vehicle age × UK average annual mileage. Only used as a last resort
+        so ClearWatt doesn't skip brand-new EVs entirely. Flagged as an
+        estimate in the response metadata so callers/UI can disclose if
+        relying on it. Minimum 500 miles so a 0-year-old gets a sane number.
+        """
+        if not self._raw_dvla_data:
             return None
-        summary = self._raw_mot_analysis.get("mot_summary")
-        if summary and summary.get("current_odometer"):
-            try:
-                return int(summary["current_odometer"])
-            except (ValueError, TypeError):
-                pass
-        timeline = self._raw_mot_analysis.get("mileage_timeline", [])
-        if timeline:
-            return timeline[-1].get("miles")
-        return None
+        year = self._raw_dvla_data.get("yearOfManufacture")
+        if not year:
+            return None
+        try:
+            age_years = max(0, datetime.utcnow().year - int(year))
+        except (ValueError, TypeError):
+            return None
+        # 7,500 mi/yr is the UK average for private cars (DfT 2023 data)
+        estimated = max(500, age_years * 7500)
+        logger.info(f"Estimated mileage {estimated} miles for {age_years}-year-old vehicle (MOT mileage unavailable)")
+        return estimated
 
     def _extract_evdb_vehicle_id(self, search_raw: Optional[Dict]) -> Optional[int]:
         """Pick the best EVDB match for a VRM search.
