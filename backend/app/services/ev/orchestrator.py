@@ -244,28 +244,71 @@ class EVOrchestrator:
             return timeline[-1].get("miles")
         return None
 
+    def _extract_evdb_vehicle_id(self, search_raw: Optional[Dict]) -> Optional[int]:
+        """Pick the best EVDB match for a VRM search.
+
+        Returns the vehicle_id whose confidence_scoring.overall_score is highest;
+        ties resolved by first appearance. Returns None if no results.
+        """
+        if not search_raw:
+            return None
+        results = search_raw.get("evdb_results") or []
+        if not results:
+            return None
+        best = None
+        best_score = -1
+        for r in results:
+            vid = r.get("evdb_vehicle_id")
+            if vid is None:
+                continue
+            score = ((r.get("confidence_scoring") or {}).get("overall_score")) or 0
+            if score > best_score:
+                best_score = score
+                best = vid
+        return best
+
     async def _fetch_ev_data(self, registration: str) -> Optional[Dict]:
         """Fetch ClearWatt battery health + Range & Pence Per Mile charging costs.
 
-        NOTE: Currently only ClearWatt and Range & Pence Per Mile are enabled on the plan.
-        To enable additional specs, request plan upgrade to include:
-        EVDB Search + Range/Efficiency + AutoPredict.
+        Currently ClearWatt + Range & Pence Per Mile are the only EV One Auto
+        endpoints enabled. PPM goes through a 2-phase lookup: VRM search →
+        evdb_vehicle_id → pencepermile.
+
+        Both calls are attempted independently so one failing doesn't starve the
+        other — ClearWatt needs MOT mileage (odometer) to work; PPM doesn't.
         """
+        mileage = self._get_current_mileage()
+
+        clearwatt_raw: Optional[Dict] = None
+        ppm_raw: Optional[Dict] = None
+
+        # ClearWatt — requires current mileage. Skip if MOT hasn't reported one yet
+        # (brand-new car, trade plate, etc.) rather than blocking the whole fetch.
+        if mileage:
+            try:
+                clearwatt_raw = await self.oneauto_client.get_clearwatt(registration, mileage)
+            except Exception as e:
+                logger.warning(f"ClearWatt failed for {registration}: {e}")
+        else:
+            logger.info(f"Skipping ClearWatt for {registration} — no mileage from MOT")
+
+        # Range & Pence Per Mile — 2-phase: search by VRM to get evdb_vehicle_id,
+        # then call pencepermile with that ID. Each step is gated so a failure
+        # (e.g. vehicle not in EVDB) doesn't block ClearWatt.
         try:
-            mileage = self._get_current_mileage()
-            if not mileage:
-                logger.warning(f"Cannot fetch ClearWatt without mileage for {registration}")
-                return None
-
-            # Fetch both ClearWatt and Range & Pence Per Mile in parallel
-            clearwatt_raw = await self.oneauto_client.get_clearwatt(registration, mileage)
-            ppm_raw = await self.oneauto_client.get_evdb_pence_per_mile(registration)
-
-            return self._parse_ev_data(clearwatt_raw=clearwatt_raw, ppm_raw=ppm_raw)
-
+            search_raw = await self.oneauto_client.get_evdb_search(registration)
+            vehicle_id = self._extract_evdb_vehicle_id(search_raw)
+            if vehicle_id:
+                ppm_raw = await self.oneauto_client.get_evdb_pence_per_mile(vehicle_id)
+            else:
+                logger.info(f"No EVDB match for {registration} — PPM skipped")
         except Exception as e:
-            logger.error(f"EV data fetch failed: {e}")
+            logger.warning(f"EVDB PPM lookup failed for {registration}: {e}")
+
+        if not clearwatt_raw and not ppm_raw:
             return None
+
+        return self._parse_ev_data(clearwatt_raw=clearwatt_raw, ppm_raw=ppm_raw)
 
     async def _fetch_provenance_data(self, registration: str, current_mileage: Optional[int] = None) -> Optional[Dict]:
         """Fetch AutoCheck + Brego valuation + Salvage Check for vehicle history."""

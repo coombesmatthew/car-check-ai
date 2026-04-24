@@ -3,6 +3,7 @@
 import { BatteryHealth, RangeEstimate, RangeScenario, ChargingCosts, EVSpecs, LifespanPrediction } from "@/lib/api";
 import Card from "@/components/ui/Card";
 import { DetailRow, PeekCard, icons } from "@/components/sections/shared";
+import SwipeCarousel from "@/components/ui/SwipeCarousel";
 import BatteryHealthGauge from "../BatteryHealthGauge";
 import RangeChart from "../RangeChart";
 import ChargingCard from "../ChargingCard";
@@ -16,42 +17,47 @@ const boltIcon = (
 
 function BatteryPeekCards() {
   return (
-    <>
-      <PeekCard href="#unlock" title="Battery Health Score" icon={boltIcon} status="pass">
-        <div className="text-center py-2 mb-2">
-          <span className="text-4xl font-bold text-emerald-600">87</span>
-          <span className="text-lg text-slate-400">/100</span>
-          <p className="text-sm text-slate-500 mt-1">Grade A &middot; Excellent</p>
-        </div>
-        <DetailRow label="Degradation" value="4%" />
-        <DetailRow label="Test Date" value="March 2025" />
-      </PeekCard>
+    <Card title="What's in the EV Health Check" icon={boltIcon} status="neutral">
+      <p className="text-xs text-slate-500 mb-3">
+        Swipe through each check to see what you&apos;ll get. Everything unlocks instantly on payment.
+      </p>
+      <SwipeCarousel ariaLabel="EV Health check previews" itemNoun="Check">
+        <PeekCard href="#unlock" title="Battery Health Score" icon={boltIcon} status="pass">
+          <div className="text-center py-2 mb-2">
+            <span className="text-4xl font-bold text-emerald-600">87</span>
+            <span className="text-lg text-slate-400">/100</span>
+            <p className="text-sm text-slate-500 mt-1">Grade A &middot; Excellent</p>
+          </div>
+          <DetailRow label="Degradation" value="4%" />
+          <DetailRow label="Test Date" value="March 2025" />
+        </PeekCard>
 
-      <PeekCard href="#unlock" title="Real-World Range" icon={icons.chart} status="pass">
-        <DetailRow label="Estimated Range" value="238 miles" />
-        <DetailRow label="Official WLTP" value="246 miles" />
-        <DetailRow label="Range Retention" value="96%" />
-        <DetailRow label="Battery Capacity" value="50 kWh" />
-        <DetailRow label="Warranty Remaining" value="36 months" />
-      </PeekCard>
+        <PeekCard href="#unlock" title="Real-World Range" icon={icons.chart} status="pass">
+          <DetailRow label="Estimated Range" value="238 miles" />
+          <DetailRow label="Official WLTP" value="246 miles" />
+          <DetailRow label="Range Retention" value="96%" />
+          <DetailRow label="Battery Capacity" value="50 kWh" />
+          <DetailRow label="Warranty Remaining" value="36 months" />
+        </PeekCard>
 
-      <PeekCard href="#unlock" title="Charging Cost" icon={icons.currency} status="pass">
-        <DetailRow label="Home (7p/kWh)" value="£3.50 full charge" />
-        <DetailRow label="Standard (28p)" value="£14.00 full charge" />
-        <DetailRow label="Rapid (75p)" value="£37.50 full charge" />
-        <DetailRow label="Cost per mile (home)" value="1.5p/mi" />
-      </PeekCard>
+        <PeekCard href="#unlock" title="Charging Cost" icon={icons.currency} status="pass">
+          <DetailRow label="Home (7p/kWh)" value="£3.50 full charge" />
+          <DetailRow label="Standard (28p)" value="£14.00 full charge" />
+          <DetailRow label="Rapid (75p)" value="£37.50 full charge" />
+          <DetailRow label="Cost per mile (home)" value="1.5p/mi" />
+        </PeekCard>
 
-      <PeekCard href="#unlock" title="Lifespan Prediction" icon={icons.clock} status="pass">
-        <div className="text-center py-2 mb-2">
-          <span className="text-3xl font-bold text-slate-900">12</span>
-          <p className="text-sm text-slate-500">Predicted Remaining Years</p>
-        </div>
-        <DetailRow label="1-Year Survival" value="99.2%" />
-        <DetailRow label="Still on Road (10yr)" value="89%" />
-        <DetailRow label="Model Avg Final Miles" value="142,000" />
-      </PeekCard>
-    </>
+        <PeekCard href="#unlock" title="Lifespan Prediction" icon={icons.clock} status="pass">
+          <div className="text-center py-2 mb-2">
+            <span className="text-3xl font-bold text-slate-900">12</span>
+            <p className="text-sm text-slate-500">Predicted Remaining Years</p>
+          </div>
+          <DetailRow label="1-Year Survival" value="99.2%" />
+          <DetailRow label="Still on Road (10yr)" value="89%" />
+          <DetailRow label="Model Avg Final Miles" value="142,000" />
+        </PeekCard>
+      </SwipeCarousel>
+    </Card>
   );
 }
 

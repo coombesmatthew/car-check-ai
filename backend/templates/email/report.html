@@ -646,7 +646,7 @@
                 {% endif %}
                 <tr>
                   <td style="padding: 5px 0; color: #64748b;">Condition</td>
-                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">{{ valuation.condition }}</td>
+                  <td style="padding: 5px 0; color: #1e293b; font-weight: 500;">{% if valuation.condition == "Mileage-adjusted" %}Average (adjusted for mileage){% else %}{{ valuation.condition }}{% endif %}</td>
                 </tr>
                 {% if valuation.mileage_used is not none %}
                 <tr>
@@ -674,30 +674,38 @@
                 <tr>
                   <td>
                     {% if finance.finance_outstanding %}
-                    <span style="display: inline-block; background-color: #fee2e2; color: #991b1b; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 4px;">&#10060; FINANCE OUTSTANDING</span>
+                    <span style="display: inline-block; background-color: #fee2e2; color: #991b1b; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 4px;">&#10060; Finance outstanding</span>
                     {% else %}
-                    <span style="display: inline-block; background-color: #d1fae5; color: #065f46; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 4px;">&#9989; NO FINANCE</span>
+                    <span style="display: inline-block; background-color: #d1fae5; color: #065f46; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 4px;">&#9989; No finance</span>
                     {% endif %}
                   </td>
                 </tr>
               </table>
               {% if finance.records %}
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size: 12px;">
+              {% for r in finance.records %}
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top: 10px; font-size: 13px; background-color: #f8fafc; border-radius: 6px;">
                 <tr>
-                  <td style="padding: 6px 8px; background-color: #f1f5f9; font-weight: 600; color: #475569;">Type</td>
-                  <td style="padding: 6px 8px; background-color: #f1f5f9; font-weight: 600; color: #475569;">Company</td>
-                  <td style="padding: 6px 8px; background-color: #f1f5f9; font-weight: 600; color: #475569;">Date</td>
-                  <td style="padding: 6px 8px; background-color: #f1f5f9; font-weight: 600; color: #475569;">Term</td>
+                  <td style="padding: 8px 12px; color: #64748b; width: 40%; vertical-align: top;">Agreement type</td>
+                  <td style="padding: 8px 12px; color: #1e293b; font-weight: 500;">{{ r.agreement_type | title }}</td>
                 </tr>
-                {% for r in finance.records %}
                 <tr>
-                  <td style="padding: 5px 8px; border-bottom: 1px solid #f1f5f9; color: #334155;">{{ r.agreement_type }}</td>
-                  <td style="padding: 5px 8px; border-bottom: 1px solid #f1f5f9; color: #334155;">{{ r.finance_company }}</td>
-                  <td style="padding: 5px 8px; border-bottom: 1px solid #f1f5f9; color: #334155;">{{ r.agreement_date or '&mdash;' }}</td>
-                  <td style="padding: 5px 8px; border-bottom: 1px solid #f1f5f9; color: #334155;">{{ r.agreement_term or '&mdash;' }}</td>
+                  <td style="padding: 8px 12px; color: #64748b; vertical-align: top;">Lender</td>
+                  <td style="padding: 8px 12px; color: #1e293b; font-weight: 500;">{{ r.finance_company | title }}</td>
                 </tr>
-                {% endfor %}
+                {% if r.agreement_date %}
+                <tr>
+                  <td style="padding: 8px 12px; color: #64748b;">Date</td>
+                  <td style="padding: 8px 12px; color: #1e293b;">{{ r.agreement_date }}</td>
+                </tr>
+                {% endif %}
+                {% if r.agreement_term %}
+                <tr>
+                  <td style="padding: 8px 12px; color: #64748b;">Term</td>
+                  <td style="padding: 8px 12px; color: #1e293b;">{{ r.agreement_term }}</td>
+                </tr>
+                {% endif %}
               </table>
+              {% endfor %}
               {% endif %}
             </td>
           </tr>
@@ -714,9 +722,9 @@
                 <tr>
                   <td>
                     {% if stolen.stolen %}
-                    <span style="display: inline-block; background-color: #fee2e2; color: #991b1b; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 4px;">&#10060; REPORTED STOLEN</span>
+                    <span style="display: inline-block; background-color: #fee2e2; color: #991b1b; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 4px;">&#10060; Reported stolen</span>
                     {% else %}
-                    <span style="display: inline-block; background-color: #d1fae5; color: #065f46; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 4px;">&#9989; NOT STOLEN</span>
+                    <span style="display: inline-block; background-color: #d1fae5; color: #065f46; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 4px;">&#9989; Not stolen</span>
                     {% endif %}
                   </td>
                 </tr>
@@ -746,9 +754,9 @@
                 <tr>
                   <td>
                     {% if writeoff.written_off %}
-                    <span style="display: inline-block; background-color: #fee2e2; color: #991b1b; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 4px;">&#10060; WRITE-OFF RECORDED</span>
+                    <span style="display: inline-block; background-color: #fee2e2; color: #991b1b; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 4px;">&#10060; Insurance write-off</span>
                     {% else %}
-                    <span style="display: inline-block; background-color: #d1fae5; color: #065f46; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 4px;">&#9989; NOT WRITTEN OFF</span>
+                    <span style="display: inline-block; background-color: #d1fae5; color: #065f46; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 4px;">&#9989; Not written off</span>
                     {% endif %}
                   </td>
                 </tr>
@@ -859,9 +867,9 @@
                 <tr>
                   <td>
                     {% if salvage.salvage_found %}
-                    <span style="display: inline-block; background-color: #fee2e2; color: #991b1b; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 4px;">&#10060; SALVAGE RECORD FOUND</span>
+                    <span style="display: inline-block; background-color: #fee2e2; color: #991b1b; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 4px;">&#10060; Salvage records found</span>
                     {% else %}
-                    <span style="display: inline-block; background-color: #d1fae5; color: #065f46; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 4px;">&#9989; NO SALVAGE RECORDS</span>
+                    <span style="display: inline-block; background-color: #d1fae5; color: #065f46; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 4px;">&#9989; No salvage records</span>
                     {% endif %}
                   </td>
                 </tr>
