@@ -73,7 +73,7 @@ function SuccessContent() {
           </svg>
         </div>
         <h2 className="text-2xl font-bold text-slate-900 mb-2">Generating your report...</h2>
-        <p className="text-slate-500">Payment confirmed. Building your full vehicle report — this usually takes 30–90 seconds.</p>
+        <p className="text-slate-500">Payment confirmed. Building your full vehicle report — almost there.</p>
         <p className="text-xs text-slate-400 mt-6">You can safely close this tab. We&apos;ll email your PDF when it&apos;s ready.</p>
       </div>
     );
