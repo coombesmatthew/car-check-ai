@@ -160,7 +160,12 @@ async def report_data(session_id: str):
         raise HTTPException(status_code=402, detail="Payment not completed")
 
     check = result.check_data or {}
-    is_ev = any(check.get(k) for k in ("battery_health", "range_estimate", "ev_specs"))
+    # is_electric comes from DVLA fuel_type — the truth source that doesn't
+    # depend on upstream EV API success. Fall back to checking EV data
+    # fields only for legacy cached results pre-dating the is_electric flag.
+    is_ev = bool(check.get("is_electric")) or any(
+        check.get(k) for k in ("battery_health", "range_estimate", "ev_specs", "charging_costs")
+    )
     return {
         "registration": result.registration,
         "report_ref": result.report_ref,

@@ -305,35 +305,48 @@ class EVOrchestrator:
         evdb_vehicle_id → pencepermile.
 
         Both calls are attempted independently so one failing doesn't starve the
-        other — ClearWatt needs MOT mileage (odometer) to work; PPM doesn't.
+        other — ClearWatt needs mileage to work; PPM doesn't.
+
+        Verbose logging on every branch so "EV data missing" outages are
+        diagnosable without re-running the orchestrator locally.
         """
         mileage = self._get_current_mileage()
+        logger.info(f"_fetch_ev_data start: reg={registration} mileage={mileage}")
 
         clearwatt_raw: Optional[Dict] = None
         ppm_raw: Optional[Dict] = None
 
-        # ClearWatt — requires current mileage. Skip if MOT hasn't reported one yet
-        # (brand-new car, trade plate, etc.) rather than blocking the whole fetch.
+        # ClearWatt — always attempt (mileage fallback in _get_current_mileage
+        # guarantees a non-None value for any DVLA-visible vehicle).
         if mileage:
             try:
                 clearwatt_raw = await self.oneauto_client.get_clearwatt(registration, mileage)
+                logger.info(f"ClearWatt returned: data_present={bool(clearwatt_raw)} for {registration}")
             except Exception as e:
-                logger.warning(f"ClearWatt failed for {registration}: {e}")
+                logger.warning(f"ClearWatt raised for {registration}: {e}")
         else:
-            logger.info(f"Skipping ClearWatt for {registration} — no mileage from MOT")
+            logger.info(f"Skipping ClearWatt for {registration} — no mileage available even after fallback")
 
-        # Range & Pence Per Mile — 2-phase: search by VRM to get evdb_vehicle_id,
-        # then call pencepermile with that ID. Each step is gated so a failure
-        # (e.g. vehicle not in EVDB) doesn't block ClearWatt.
+        # Range & Pence Per Mile — 2-phase: search by VRM → vehicle_id → pencepermile.
+        # Each step is logged so we can see exactly where data is lost.
         try:
+            logger.info(f"EVDB search starting for {registration}")
             search_raw = await self.oneauto_client.get_evdb_search(registration)
+            logger.info(f"EVDB search returned: data_present={bool(search_raw)} for {registration}")
             vehicle_id = self._extract_evdb_vehicle_id(search_raw)
+            logger.info(f"EVDB vehicle_id extracted: {vehicle_id} for {registration}")
             if vehicle_id:
                 ppm_raw = await self.oneauto_client.get_evdb_pence_per_mile(vehicle_id)
+                logger.info(f"EVDB pencepermile returned: data_present={bool(ppm_raw)} for vehicle_id={vehicle_id}")
             else:
-                logger.info(f"No EVDB match for {registration} — PPM skipped")
+                logger.info(f"No EVDB match for {registration} — pencepermile skipped")
         except Exception as e:
-            logger.warning(f"EVDB PPM lookup failed for {registration}: {e}")
+            logger.warning(f"EVDB 2-phase lookup raised for {registration}: {e}", exc_info=True)
+
+        logger.info(
+            f"_fetch_ev_data complete: reg={registration} "
+            f"clearwatt={bool(clearwatt_raw)} ppm={bool(ppm_raw)}"
+        )
 
         if not clearwatt_raw and not ppm_raw:
             return None
