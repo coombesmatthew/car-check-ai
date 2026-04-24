@@ -86,6 +86,7 @@ export default function EVCheckResult({ result, reportMode = false }: Props) {
         charging_costs={charging_costs}
         ev_specs={ev_specs}
         lifespan_prediction={lifespan_prediction}
+        paidTier={reportMode}
       />
     </div>
   );

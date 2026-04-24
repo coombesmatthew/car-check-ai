@@ -61,17 +61,42 @@ function BatteryPeekCards() {
   );
 }
 
-export default function EVBatterySections({ battery_health, range_estimate, range_scenarios, charging_costs, ev_specs, lifespan_prediction }: {
+export default function EVBatterySections({ battery_health, range_estimate, range_scenarios, charging_costs, ev_specs, lifespan_prediction, paidTier = false }: {
   battery_health: BatteryHealth | null;
   range_estimate: RangeEstimate | null;
   range_scenarios: RangeScenario[];
   charging_costs: ChargingCosts | null;
   ev_specs: EVSpecs | null;
   lifespan_prediction: LifespanPrediction | null;
+  /** True when rendered inside a paid EV report — changes the empty state
+      from the locked preview to a "data unavailable" notice. */
+  paidTier?: boolean;
 }) {
   const hasAnyEVData = !!(battery_health || range_estimate || charging_costs || lifespan_prediction || ev_specs);
 
   if (!hasAnyEVData) {
+    if (paidTier) {
+      // Paid tier but upstream (ClearWatt / EVDB) returned no data for this
+      // vehicle — show a clear notice instead of the locked-preview teaser.
+      return (
+        <Card title="EV Battery & Range" icon={boltIcon} status="neutral">
+          <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-lg px-4 py-3">
+            <svg className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+            </svg>
+            <div>
+              <p className="text-sm font-semibold text-amber-800">EV data temporarily unavailable</p>
+              <p className="text-xs text-amber-700 mt-1">
+                Our battery-health provider couldn&apos;t return data for this vehicle right now — usually because the model isn&apos;t in their database or their service is briefly unavailable. The rest of your report (history, valuation, provenance) is complete.
+              </p>
+              <p className="text-xs text-amber-700 mt-2">
+                If this persists, reply to your report email and we&apos;ll look into it.
+              </p>
+            </div>
+          </div>
+        </Card>
+      );
+    }
     return <BatteryPeekCards />;
   }
 
