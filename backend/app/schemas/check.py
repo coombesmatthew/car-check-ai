@@ -1,7 +1,23 @@
-from pydantic import BaseModel, Field, field_validator
-from typing import Optional, List, Dict, Any
-from datetime import datetime
+from __future__ import annotations
+
 import re
+from datetime import datetime
+from typing import Any, Dict, List, Literal, Optional  # noqa: UP035 (legacy generics still used elsewhere in this module)
+
+from pydantic import BaseModel, Field, field_validator
+
+# Canonical set of data-source attribution values surfaced in reports and emails.
+# Tightened from free-text to prevent drift (e.g. "Experian" vs "Experian Automotive"
+# vs "Experian via One Auto"). Aligns with Experian Requirement 4 — every section's
+# attribution must be unambiguous and consistent.
+DataSource = Literal[
+    "Experian",
+    "Experian + DVLA",
+    "Brego",
+    "CarGuide",
+    "One Auto",
+    "Demo",
+]
 
 
 class FreeCheckRequest(BaseModel):
@@ -14,6 +30,9 @@ class FreeCheckRequest(BaseModel):
         description="UK vehicle registration number",
         examples=["AB12CDE"],
     )
+    # SEO attribution: source="seo", source_slug="ford-focus-mk3"
+    source: Optional[str] = None
+    source_slug: Optional[str] = None
 
     @field_validator("registration")
     @classmethod
@@ -186,7 +205,7 @@ class FinanceCheck(BaseModel):
     finance_outstanding: bool
     record_count: int = 0
     records: List[FinanceRecord] = []
-    data_source: str = "Demo"
+    data_source: DataSource = "Demo"
 
 
 class StolenCheck(BaseModel):
@@ -194,7 +213,7 @@ class StolenCheck(BaseModel):
     reported_date: Optional[str] = None
     police_force: Optional[str] = None
     reference: Optional[str] = None
-    data_source: str = "Demo"
+    data_source: DataSource = "Demo"
 
 
 class WriteOffRecord(BaseModel):
@@ -210,7 +229,7 @@ class WriteOffCheck(BaseModel):
     written_off: bool
     record_count: int = 0
     records: List[WriteOffRecord] = []
-    data_source: str = "Demo"
+    data_source: DataSource = "Demo"
 
 
 class PlateChangeRecord(BaseModel):
@@ -223,7 +242,7 @@ class PlateChangeHistory(BaseModel):
     changes_found: bool
     record_count: int = 0
     records: List[PlateChangeRecord] = []
-    data_source: str = "Demo"
+    data_source: DataSource = "Demo"
 
 
 class Valuation(BaseModel):
@@ -234,7 +253,7 @@ class Valuation(BaseModel):
     valuation_date: str
     mileage_used: Optional[int] = None
     condition: str
-    data_source: str = "Demo"
+    data_source: DataSource = "Demo"
 
 
 class KeeperRecord(BaseModel):
@@ -253,7 +272,7 @@ class KeeperHistory(BaseModel):
     keeper_count: Optional[int] = None
     last_change_date: Optional[str] = None
     keepers: List[KeeperRecord] = []   # reverse-chronological (current first)
-    data_source: str = "Experian"
+    data_source: DataSource = "Experian"
 
 
 class HighRiskRecord(BaseModel):
@@ -267,7 +286,7 @@ class HighRiskRecord(BaseModel):
 class HighRiskCheck(BaseModel):
     flagged: bool = False
     records: List[HighRiskRecord] = []
-    data_source: str = "Experian"
+    data_source: DataSource = "Experian"
 
 
 class PreviousSearchRecord(BaseModel):
@@ -278,13 +297,13 @@ class PreviousSearchRecord(BaseModel):
 class PreviousSearches(BaseModel):
     search_count: int = 0
     records: List[PreviousSearchRecord] = []
-    data_source: str = "Experian"
+    data_source: DataSource = "Experian"
 
 
 class SalvageCheck(BaseModel):
     salvage_found: bool = False
     records: List[Dict] = []
-    data_source: str = "CarGuide"
+    data_source: DataSource = "CarGuide"
 
 
 class ImportStatusCheck(BaseModel):
@@ -297,14 +316,14 @@ class ImportStatusCheck(BaseModel):
     is_imported: bool = False
     is_exported: bool = False
     marked_for_export: bool = False
-    data_source: str = "Experian + DVLA"
+    data_source: DataSource = "Experian + DVLA"
 
 
 class VehicleImages(BaseModel):
     """Vehicle images by angle from One Auto Global Image Search."""
     images: Dict[str, Optional[str]] = {}  # angle -> image_id (front, right, rear, left, etc.)
     color_list: List[str] = []
-    data_source: str = "One Auto"
+    data_source: DataSource = "One Auto"
 
 
 class VehicleIdentity(BaseModel):

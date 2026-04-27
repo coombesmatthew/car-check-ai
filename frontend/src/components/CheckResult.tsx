@@ -8,6 +8,7 @@ import FullCheckSection from "@/components/sections/FullCheckSection";
 import AtAGlance from "@/components/sections/AtAGlance";
 import SectionNav, { SectionConfig } from "@/components/SectionNav";
 import PremiumBottomBar from "@/components/PremiumBottomBar";
+import KnownIssuesCard from "@/components/KnownIssuesCard";
 
 const FREE_SECTIONS: SectionConfig[] = [
   { id: "section-overview", label: "Overview" },
@@ -110,6 +111,13 @@ export default function CheckResult({
           </div>
         </div>
       )}
+
+      {/* Known-issues SEO link (renders only when a matching page exists) */}
+      <KnownIssuesCard
+        make={vehicle?.make || mot_summary?.make}
+        model={mot_summary?.model}
+        year={vehicle?.year_of_manufacture}
+      />
 
       {/* Section navigation */}
       <SectionNav

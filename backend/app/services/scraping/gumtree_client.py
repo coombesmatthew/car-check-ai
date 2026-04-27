@@ -146,6 +146,11 @@ class GumtreeClient:
                     await page_obj.wait_for_timeout(5000)
 
                 html = await page_obj.content()
+                try:
+                    with open(f"/tmp/gumtree_last_{page}.html", "w") as fh:
+                        fh.write(html)
+                except Exception:
+                    pass
             finally:
                 await context.close()
 

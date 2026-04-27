@@ -88,20 +88,22 @@ export default function TermsPage() {
 
           <h2 className="text-lg font-semibold text-slate-900 mt-8">4. Provenance and Experian Data</h2>
           <p>
-            Certain provenance checks (including finance records, stolen vehicle registers, insurance write-offs,
-            and number plate changes) are supplied by Experian Automotive.
+            Certain provenance checks (including finance records, stolen vehicle registers, insurance
+            write-offs, plate changes, keeper history, high-risk markers and previous-search history) are
+            supplied by Experian Automotive under licence via our data partner. Sections of your report
+            that draw on this data are individually marked &quot;Source: Experian&quot;.
           </p>
           <p>
-            This information is provided using data licensed from Experian and may also be subject to
-            Experian&apos;s own data accuracy policies, available at:{" "}
-            <a
-              href="https://www.experian.co.uk/automotive/data-guarantee"
-              className="text-blue-600 underline"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              experian.co.uk/automotive/data-guarantee
-            </a>
+            <strong>VeriCar does not currently offer a separate data accuracy guarantee on Experian-sourced
+            data.</strong> Any reference to Experian within our reports identifies the supplier of the
+            underlying data only. It does not constitute, extend, or underwrite any guarantee, warranty,
+            or commitment that Experian may itself offer directly to its own commercial customers, and you
+            should not interpret it as such.
+          </p>
+          <p>
+            Your remedy in the event of an error or omission in Experian-sourced data is set out in
+            Section 13 (Limitation of Liability). Experian-sourced data is otherwise subject to the same
+            third-party data disclaimers in Section 3.
           </p>
 
           <h2 className="text-lg font-semibold text-slate-900 mt-8">5. AI-Generated Content</h2>

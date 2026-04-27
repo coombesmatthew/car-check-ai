@@ -41,6 +41,8 @@ def create_checkout_session(
     listing_price: int | None = None,
     success_url: str | None = None,
     cancel_url: str | None = None,
+    source: str | None = None,
+    source_slug: str | None = None,
 ) -> dict:
     """Create a Stripe Checkout Session for a paid tier.
 
@@ -52,6 +54,8 @@ def create_checkout_session(
         listing_price: Optional listing price in pence
         success_url: URL to redirect on successful payment
         cancel_url: URL to redirect on cancelled payment
+        source: SEO attribution channel (e.g. "seo")
+        source_slug: SEO landing page slug (e.g. "ford-focus-mk3")
 
     Returns:
         Dict with session_id and checkout_url.
@@ -84,6 +88,10 @@ def create_checkout_session(
         metadata["listing_url"] = listing_url
     if listing_price is not None:
         metadata["listing_price"] = str(listing_price)
+    if source:
+        metadata["source"] = source
+    if source_slug:
+        metadata["source_slug"] = source_slug
 
     session_kwargs = dict(
         # No payment_method_types — Stripe serves every method enabled in the
@@ -116,6 +124,12 @@ def create_checkout_session(
         # Use a 100%-off code for internal end-to-end testing; same mechanism
         # powers future launch/referral discounts.
         allow_promotion_codes=True,
+        # Forces customer to tick "I agree to the Terms of Service" before
+        # paying. Required so the Experian-attribution clauses in our T&Cs
+        # are explicitly agreed at point of sale (Experian Requirement 5).
+        # Stripe pulls the ToS URL from Dashboard → Settings → Public details
+        # → Terms of service URL — must be set to https://vericar.co.uk/terms.
+        consent_collection={"terms_of_service": "required"},
     )
     if email:
         session_kwargs["customer_email"] = email

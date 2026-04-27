@@ -266,23 +266,123 @@ def trigger_fulfilment_background(session_id: str) -> None:
     asyncio.create_task(_runner())
 
 
-def handle_webhook(event: dict) -> dict:
-    """Shared webhook handler for all tier payments.
+_PROCESSED_EVENT_PREFIX = "stripe_event"
+_PROCESSED_EVENT_TTL_SECONDS = 7 * 86400  # 7 days — matches Stripe's retry horizon
 
-    On checkout.session.completed, triggers fulfilment in the background
-    (idempotent; safe if frontend also triggers). Both checks.py and ev.py
-    route their webhook events here.
+
+async def handle_webhook(event: dict) -> dict:
+    """Shared webhook handler for all Stripe events.
+
+    Handles five event types beyond plain checkout completion. Each path
+    is idempotent via Redis-backed event_id deduplication so Stripe
+    retries (which they do aggressively on any non-2xx) don't cause
+    duplicate fulfilment, double-pinging Discord, etc.
+
+    Always returns 200 quickly — heavy work (fulfilment, alerts) is
+    fired in background tasks so Stripe never times out waiting for us.
     """
-    if event["type"] == "checkout.session.completed":
-        session = event["data"]["object"]
-        session_id = session.get("id")
-        tier = session.get("metadata", {}).get("tier", "unknown")
-        reg = session.get("metadata", {}).get("registration", "unknown")
+    event_id = event.get("id", "unknown")
+    event_type = event.get("type", "unknown")
+
+    # Idempotency guard. set_nx returns True only on first sight of this
+    # event ID — Stripe retries land on second/Nth sight and short-circuit.
+    is_first_sight = await cache.set_nx(
+        _PROCESSED_EVENT_PREFIX, event_id, "1", ttl=_PROCESSED_EVENT_TTL_SECONDS
+    )
+    if not is_first_sight:
+        logger.info(f"Webhook duplicate ignored: {event_type} {event_id}")
+        return {"received": True, "duplicate": True}
+
+    obj = event.get("data", {}).get("object", {}) or {}
+    metadata = obj.get("metadata", {}) or {}
+
+    if event_type == "checkout.session.completed":
+        session_id = obj.get("id")
+        tier = metadata.get("tier", "unknown")
+        reg = metadata.get("registration", "unknown")
         logger.info(
             f"Webhook: checkout.session.completed for {reg} "
-            f"(tier: {tier}, session: {session_id})"
+            f"(tier: {tier}, session: {session_id}, event: {event_id})"
         )
+        if metadata.get("source"):
+            logger.info(
+                f"SEO-sourced paid conversion: source={metadata.get('source')} "
+                f"slug={metadata.get('source_slug')} tier={metadata.get('tier')} "
+                f"reg={metadata.get('registration')}"
+            )
         if session_id:
             trigger_fulfilment_background(session_id)
+
+    elif event_type == "payment_intent.payment_failed":
+        # Card declined / authentication failed / insufficient funds.
+        # Useful for spotting fraud + understanding lost revenue.
+        amount_pence = obj.get("amount", 0) or 0
+        currency = (obj.get("currency") or "gbp").upper()
+        decline_code = (obj.get("last_payment_error") or {}).get("decline_code", "unknown")
+        decline_reason = (obj.get("last_payment_error") or {}).get("message", "")
+        logger.warning(
+            f"Webhook: payment_intent.payment_failed amount={currency}{amount_pence/100:.2f} "
+            f"reason={decline_code}: {decline_reason[:200]}"
+        )
+        from app.services.notification.discord import notify_discord
+        asyncio.create_task(
+            notify_discord(
+                f"⚠️ **Payment declined** — {currency} {amount_pence/100:.2f}\n"
+                f"Reason: `{decline_code}` · {decline_reason[:300] if decline_reason else 'no detail'}"
+            )
+        )
+
+    elif event_type == "checkout.session.expired":
+        # Customer abandoned checkout (24h timeout). Quiet — no Discord.
+        # Tracked in PostHog only so we can analyse abandon rates later.
+        tier = metadata.get("tier", "unknown")
+        reg = metadata.get("registration", "unknown")
+        logger.info(f"Webhook: checkout.session.expired for {reg} (tier: {tier})")
+        from app.services.notification.analytics import track_event
+        track_event(
+            event="checkout_session_expired",
+            registration=reg if reg != "unknown" else None,
+            properties={"tier": tier},
+        )
+
+    elif event_type == "charge.refunded":
+        amount_pence = obj.get("amount_refunded", 0) or 0
+        currency = (obj.get("currency") or "gbp").upper()
+        # Charge.metadata isn't always populated on refund events; fall back
+        # to amount-only message.
+        logger.info(
+            f"Webhook: charge.refunded amount={currency}{amount_pence/100:.2f} (event: {event_id})"
+        )
+        from app.services.notification.discord import notify_discord
+        asyncio.create_task(
+            notify_discord(
+                f"💸 **Refund issued** — {currency} {amount_pence/100:.2f}"
+            )
+        )
+
+    elif event_type == "charge.dispute.created":
+        # Chargeback. Very high priority — 7-day response window, £15 fee
+        # per occurrence. Use @here so the alert is impossible to miss.
+        amount_pence = obj.get("amount", 0) or 0
+        currency = (obj.get("currency") or "gbp").upper()
+        reason = obj.get("reason", "unknown")
+        dispute_id = obj.get("id", "unknown")
+        logger.error(
+            f"Webhook: charge.dispute.created amount={currency}{amount_pence/100:.2f} "
+            f"reason={reason} dispute={dispute_id}"
+        )
+        from app.services.notification.discord import notify_discord
+        asyncio.create_task(
+            notify_discord(
+                f"@here 🚨 **Chargeback opened** — {currency} {amount_pence/100:.2f}\n"
+                f"Reason: `{reason}` · Dispute ID: `{dispute_id}`\n"
+                f"Respond within 7 days at https://dashboard.stripe.com/disputes/{dispute_id}"
+            )
+        )
+
+    else:
+        # Unhandled event type — log so we know about new Stripe events
+        # we might want to act on later.
+        logger.info(f"Webhook: unhandled event type {event_type} (event: {event_id})")
 
     return {"received": True}

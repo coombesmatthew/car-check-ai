@@ -44,6 +44,9 @@ class EVCheckoutRequest(BaseModel):
     email: Optional[str] = None  # optional — Stripe collects if absent
     tier: str = "ev"
     listing_price: Optional[int] = None  # pence; optional buyer-entered asking price
+    # SEO attribution: source="seo", source_slug="ford-focus-mk3"
+    source: Optional[str] = None
+    source_slug: Optional[str] = None
 
 
 class RangeEstimate(BaseModel):

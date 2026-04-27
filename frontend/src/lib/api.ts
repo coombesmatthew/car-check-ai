@@ -2,6 +2,27 @@ import { track } from "./analytics";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8001";
 
+/**
+ * Read stashed source attribution from sessionStorage. Falls back to nulls when
+ * unavailable, expired, or running on the server. Set via SearchSection on
+ * landing-page mount when ?utm_source / ?utm_content are present in the URL.
+ */
+export function readStashedSource(): { source: string | null; source_slug: string | null } {
+  if (typeof window === "undefined") return { source: null, source_slug: null };
+  try {
+    const raw = sessionStorage.getItem("vericar_source");
+    if (!raw) return { source: null, source_slug: null };
+    const data = JSON.parse(raw);
+    if (data.expires_at && data.expires_at < Date.now()) {
+      sessionStorage.removeItem("vericar_source");
+      return { source: null, source_slug: null };
+    }
+    return { source: data.source || null, source_slug: data.source_slug || null };
+  } catch {
+    return { source: null, source_slug: null };
+  }
+}
+
 export interface VehicleIdentity {
   registration: string | null;
   make: string | null;
@@ -347,10 +368,14 @@ export async function getCheckCount(): Promise<number> {
 export async function runFreeCheck(
   registration: string
 ): Promise<FreeCheckResponse> {
+  const body: Record<string, unknown> = { registration };
+  const { source, source_slug } = readStashedSource();
+  if (source) body.source = source;
+  if (source_slug) body.source_slug = source_slug;
   const res = await fetch(`${API_URL}/api/v1/checks/free`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ registration }),
+    body: JSON.stringify(body),
   });
 
   if (!res.ok) {
@@ -375,6 +400,9 @@ export async function createCheckout(
   const body: Record<string, unknown> = { registration, tier };
   if (email) body.email = email;
   if (listingPricePence && listingPricePence > 0) body.listing_price = listingPricePence;
+  const { source, source_slug } = readStashedSource();
+  if (source) body.source = source;
+  if (source_slug) body.source_slug = source_slug;
   track("checkout_started", { tier, product: "standard", registration });
   const res = await fetch(`${API_URL}/api/v1/checks/basic/checkout`, {
     method: "POST",
@@ -651,6 +679,9 @@ export async function createEVCheckout(
   const body: Record<string, unknown> = { registration, tier };
   if (email) body.email = email;
   if (listingPricePence && listingPricePence > 0) body.listing_price = listingPricePence;
+  const { source, source_slug } = readStashedSource();
+  if (source) body.source = source;
+  if (source_slug) body.source_slug = source_slug;
   track("checkout_started", { tier, product: "ev", registration });
   const res = await fetch(`${API_URL}/api/v1/ev/checkout`, {
     method: "POST",

@@ -38,8 +38,10 @@ ATTRIBUTE_BLOCK_PATTERN = re.compile(
     r'"name"\s*:\s*"([^"]+)"\s*,\s*"value"\s*:\s*"([^"]*?)"\s*,\s*"key"\s*:\s*"([^"]+)"',
 )
 
-# Pattern for listing IDs in Gumtree URLs
-LISTING_ID_PATTERN = re.compile(r'/p/([^/]+)/(\d+)')
+# Pattern for listing IDs in Gumtree URLs.
+# Require >=8 digits — real listing IDs are 10-digit numerics; 4-digit years
+# embedded in slugs (e.g. /p/audi/2009-audi-a4-...) must not match.
+LISTING_ID_PATTERN = re.compile(r'/p/([^/]+)/(\d{8,})')
 
 # UK VRN format validator (post-2001 format: AB12CDE)
 UK_VRN_REGEX = re.compile(r'^[A-Z]{2}\d{2}[A-Z]{3}$')
@@ -48,24 +50,119 @@ UK_VRN_REGEX = re.compile(r'^[A-Z]{2}\d{2}[A-Z]{3}$')
 def parse_search_page(html: str) -> List[GumtreeListing]:
     """Parse a Gumtree search results page and extract listings with data.
 
-    Args:
-        html: Raw HTML of a Gumtree search results page.
-
-    Returns:
-        List of GumtreeListing objects, each with as much data as could be extracted.
+    Strategy order:
+    1. searchAds JSON array — Gumtree embeds a `"searchAds":[{...},...]`
+       array in the page state when fully hydrated. Each ad has id, path,
+       title, price, and an attributes array (containing VRM). This is the
+       only strategy that yields real listing URLs, so try it first.
+    2. Attribute regex windowing — fallback for older/partial pages where
+       attribute blocks exist but searchAds doesn't. URLs unreliable here.
+    3. BeautifulSoup HTML cards — last resort.
     """
-    # URL-decode the entire HTML to expose embedded JSON
     decoded = unquote(html)
 
-    # Try primary strategy: extract structured attribute blocks
+    listings = _extract_from_search_ads(decoded)
+    if listings:
+        logger.info(f"Parsed {len(listings)} listings via searchAds JSON")
+        return listings
+
     listings = _extract_from_attributes(decoded)
     if listings:
         logger.info(f"Parsed {len(listings)} listings via attribute extraction")
         return listings
 
-    # Fallback: BeautifulSoup card parsing
     listings = _extract_from_html(html)
     logger.info(f"Parsed {len(listings)} listings via HTML fallback")
+    return listings
+
+
+def _find_matching_bracket(text: str, start: int) -> int:
+    """Return index of the closing bracket matching the open at `start`.
+
+    Tracks JSON string state so brackets inside string values don't count.
+    """
+    depth = 0
+    in_string = False
+    escape = False
+    for i in range(start, len(text)):
+        c = text[i]
+        if escape:
+            escape = False
+            continue
+        if c == "\\":
+            escape = True
+            continue
+        if in_string:
+            if c == '"':
+                in_string = False
+            continue
+        if c == '"':
+            in_string = True
+        elif c == "[":
+            depth += 1
+        elif c == "]":
+            depth -= 1
+            if depth == 0:
+                return i
+    return -1
+
+
+def _extract_from_search_ads(decoded: str) -> List[GumtreeListing]:
+    """Locate the searchAds JSON array, parse it, and build listings.
+
+    Returns [] if the array isn't present (page wasn't fully hydrated).
+    """
+    key_match = re.search(r'"searchAds"\s*:\s*\[', decoded)
+    if not key_match:
+        return []
+    array_start = decoded.find("[", key_match.start())
+    if array_start == -1:
+        return []
+    array_end = _find_matching_bracket(decoded, array_start)
+    if array_end == -1:
+        return []
+    try:
+        ads = json.loads(decoded[array_start:array_end + 1])
+    except json.JSONDecodeError:
+        return []
+
+    listings = []
+    seen_vrns = set()
+    for ad in ads:
+        if not isinstance(ad, dict):
+            continue
+        attrs = {
+            a.get("key", "").lower(): a.get("value", "")
+            for a in ad.get("attributes") or []
+            if isinstance(a, dict)
+        }
+        vrm = (attrs.get("vrn") or "").upper().replace(" ", "")
+        if not vrm or vrm in seen_vrns:
+            continue
+        seen_vrns.add(vrm)
+
+        path = ad.get("path") or ""
+        url = f"https://www.gumtree.com{path}" if path.startswith("/") else path
+        listing = GumtreeListing(
+            vrn=vrm,
+            listing_id=str(ad.get("id") or ""),
+            url=url,
+            title=ad.get("title") or "",
+            make=attrs.get("vehicle_make") or attrs.get("make"),
+            model=attrs.get("vehicle_model") or attrs.get("model"),
+            year=_parse_year(
+                attrs.get("vehicle_registration_year")
+                or attrs.get("year")
+                or attrs.get("vehicle_year")
+                or ""
+            ),
+            mileage=_parse_mileage(
+                attrs.get("vehicle_mileage") or attrs.get("mileage") or ""
+            ),
+            price=_parse_price(ad.get("price") or ""),
+            seller_type=attrs.get("seller_type"),
+        )
+        listings.append(listing)
     return listings
 
 

@@ -4,7 +4,11 @@ export type AnalyticsEvent =
   | "checkout_started"
   | "check_submitted"
   | "report_viewed"
-  | "upsell_clicked";
+  | "upsell_clicked"
+  | "seo_page_viewed"
+  | "seo_page_cta_clicked"
+  | "seo_sourced_check"
+  | "seo_sourced_paid_conversion";
 
 export function track(
   event: AnalyticsEvent,

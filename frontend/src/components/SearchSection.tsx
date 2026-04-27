@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { runFreeCheck, getCheckCount, FreeCheckResponse } from "@/lib/api";
 import TrustBar from "@/components/ui/TrustBar";
 import CheckResult from "@/components/CheckResult";
@@ -11,7 +11,12 @@ const EV_FUEL_TYPES = ["ELECTRICITY", "ELECTRIC"];
 
 export default function SearchSection({ onCheckComplete }: { onCheckComplete?: (hasResult: boolean) => void }) {
   const router = useRouter();
-  const [registration, setRegistration] = useState("");
+  const searchParams = useSearchParams();
+  const initialReg = searchParams?.get("reg") || "";
+  const utmSource = searchParams?.get("utm_source");
+  const utmContent = searchParams?.get("utm_content");
+
+  const [registration, setRegistration] = useState(initialReg);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<FreeCheckResponse | null>(null);
@@ -26,6 +31,23 @@ export default function SearchSection({ onCheckComplete }: { onCheckComplete?: (
       if (count > 0) setCheckCount(count);
     });
   }, []);
+
+  // Stash source attribution from URL params (TTL: 1 hour) so it survives
+  // through the free check, upsell, and checkout flow even after navigation.
+  useEffect(() => {
+    if (utmSource) {
+      const data = {
+        source: utmSource,
+        source_slug: utmContent || null,
+        expires_at: Date.now() + 60 * 60 * 1000,
+      };
+      try {
+        sessionStorage.setItem("vericar_source", JSON.stringify(data));
+      } catch {
+        // sessionStorage unavailable (Safari private mode etc.) — non-fatal
+      }
+    }
+  }, [utmSource, utmContent]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

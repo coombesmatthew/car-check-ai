@@ -153,6 +153,64 @@ async def recent_fulfilments(
     }
 
 
+@router.get("/ghost-paid-sessions")
+async def ghost_paid_sessions(
+    token: str = Query(..., description="Admin API token"),
+    hours: int = Query(168, ge=1, le=720, description="Look-back window (default 7 days)"),
+):
+    """List paid Stripe sessions in the look-back window with NO cached
+    fulfilment in Redis — i.e. the customer paid but we never delivered.
+
+    Use this after replaying failed Stripe webhook events to spot any
+    customer whose payment succeeded but whose report never landed
+    (Stewart-style ghosts). Each entry shows the curl-able resend URL.
+    """
+    _check_token(token)
+
+    import stripe as stripe_lib
+
+    from app.services.payment.stripe_service import _init_stripe
+
+    _init_stripe()
+    cutoff = datetime.utcnow() - timedelta(hours=hours)
+    cutoff_unix = int(cutoff.timestamp())
+
+    ghosts: list[dict] = []
+    try:
+        # Iterate paid checkout sessions in the window
+        sessions = stripe_lib.checkout.Session.list(
+            created={"gte": cutoff_unix},
+            limit=100,
+            status="complete",
+        )
+        for s in sessions.auto_paging_iter():
+            if s.payment_status != "paid":
+                continue
+            cached = await cache.get(FULFIL_RESULT_CACHE_PREFIX, s.id)
+            if cached:
+                continue
+            metadata = s.metadata or {}
+            ghosts.append({
+                "session_id": s.id,
+                "registration": metadata.get("registration"),
+                "tier": metadata.get("tier"),
+                "amount_total_pence": s.amount_total,
+                "created": datetime.utcfromtimestamp(s.created).isoformat() + "Z",
+                "resend_url": (
+                    f"POST /api/v1/admin/resend-email?session_id={s.id}&token=…"
+                ),
+            })
+    except Exception as e:
+        logger.error(f"ghost-paid-sessions Stripe iteration failed: {e}")
+        raise HTTPException(status_code=502, detail=f"Stripe lookup failed: {e}")
+
+    return {
+        "hours": hours,
+        "ghost_count": len(ghosts),
+        "ghosts": ghosts,
+    }
+
+
 @router.post("/run-health-check")
 async def run_health_check_endpoint(
     token: str = Query(..., description="Admin API token"),

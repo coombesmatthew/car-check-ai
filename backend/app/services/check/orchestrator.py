@@ -354,7 +354,7 @@ class CheckOrchestrator:
             return VehicleImages(
                 images=images,
                 color_list=colors,
-                data_source="One Auto Global Image Search",
+                data_source="One Auto",
             )
         except Exception as e:
             logger.warning(f"Global image search failed for {make} {model}: {e}")

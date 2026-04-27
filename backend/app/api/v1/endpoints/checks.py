@@ -76,6 +76,9 @@ class CheckoutRequest(BaseModel):
     tier: str = "premium"
     listing_url: Optional[str] = None
     listing_price: Optional[int] = None
+    # SEO attribution: source="seo", source_slug="ford-focus-mk3"
+    source: Optional[str] = None
+    source_slug: Optional[str] = None
 
 
 class CheckoutResponse(BaseModel):
@@ -97,6 +100,8 @@ async def create_basic_checkout(request: CheckoutRequest):
             tier=tier,
             listing_url=request.listing_url,
             listing_price=request.listing_price,
+            source=request.source,
+            source_slug=request.source_slug,
         )
         return CheckoutResponse(**result)
     except RuntimeError as e:
@@ -257,7 +262,7 @@ async def stripe_webhook(request: Request):
         logger.warning(f"Webhook signature verification failed: {e}")
         raise HTTPException(status_code=400, detail="Invalid signature")
 
-    return handle_webhook(event)
+    return await handle_webhook(event)
 
 
 # --- Lead Capture ---

@@ -1,8 +1,8 @@
 """Email delivery service using Resend API."""
+from __future__ import annotations
 
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional
 
 from jinja2 import Environment, FileSystemLoader
 
@@ -12,7 +12,7 @@ from app.core.logging import logger
 TEMPLATE_DIR = Path(__file__).resolve().parents[3] / "templates" / "email"
 
 
-def _build_checks_summary(check_data: Dict) -> List[Dict[str, str]]:
+def _build_checks_summary(check_data: dict) -> list[dict[str, str]]:
     """Build a pass/fail checklist for the At a Glance section.
 
     Items are ordered by severity — most critical (stolen, finance, write-off) first.
@@ -135,7 +135,7 @@ def _build_checks_summary(check_data: Dict) -> List[Dict[str, str]]:
     return items
 
 
-def _score_colour(score: Optional[int]) -> str:
+def _score_colour(score: int | None) -> str:
     if score is None:
         return "#64748b"
     if score >= 80:
@@ -146,10 +146,10 @@ def _score_colour(score: Optional[int]) -> str:
 
 
 def render_report_email(
-    check_data: Dict,
-    verdict: Optional[str] = None,  # retained for signature compat; always None
+    check_data: dict,
+    verdict: str | None = None,  # retained for signature compat; always None
     report_ref: str = "",
-    session_id: Optional[str] = None,
+    session_id: str | None = None,
 ) -> str:
     """Render the report email HTML from template."""
     env = Environment(loader=FileSystemLoader(str(TEMPLATE_DIR)), autoescape=True)
@@ -199,6 +199,19 @@ def render_report_email(
         "keeper_history": check_data.get("keeper_history"),
         "salvage": check_data.get("salvage_check"),
         "tier": check_data.get("tier", "free"),
+        # True if any Experian-AutoCheck-derived field is present. Drives the
+        # "Data sources: ... Experian AutoCheck" line in the email footer so we
+        # always credit Experian when their data was used (Experian Requirement 4).
+        "autocheck_used": any([
+            check_data.get("finance_check"),
+            check_data.get("stolen_check"),
+            check_data.get("write_off_check"),
+            check_data.get("plate_changes"),
+            check_data.get("keeper_history"),
+            check_data.get("high_risk"),
+            check_data.get("previous_searches"),
+            check_data.get("import_status"),
+        ]),
     }
 
     return template.render(**context)
@@ -206,9 +219,9 @@ def render_report_email(
 
 async def send_report_email(
     to_email: str,
-    check_data: Dict,
+    check_data: dict,
     report_ref: str = "",
-    session_id: Optional[str] = None,
+    session_id: str | None = None,
 ) -> bool:
     """Send the vehicle report via Resend. Email is fully self-contained —
     no PDF attachment. Customers revisit online via the /report link for 30

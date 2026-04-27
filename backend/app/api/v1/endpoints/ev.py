@@ -129,6 +129,8 @@ async def ev_checkout(request: EVCheckoutRequest):
             email=request.email,
             tier=request.tier,
             listing_price=request.listing_price,
+            source=request.source,
+            source_slug=request.source_slug,
         )
         return EVCheckoutResponse(**result)
     except RuntimeError as e:
@@ -216,4 +218,4 @@ async def ev_webhook(request: Request):
         logger.warning(f"EV webhook signature verification failed: {e}")
         raise HTTPException(status_code=400, detail="Invalid signature")
 
-    return handle_webhook(event)
+    return await handle_webhook(event)

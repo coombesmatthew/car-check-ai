@@ -72,9 +72,10 @@ When escalating, use a **Board Report**:
 - **Docker**: `docker-compose.yml` orchestrates all services
 
 ## Product Tiers
-- **FREE** (£0): DVLA VES + DVSA MOT - zero marginal cost
-- **BASIC** (£3.99): + Brego valuation + Claude AI report
-- **PREMIUM** (£9.99): + Experian + Percayso + market data
+- **FREE** (£0): DVLA VES + DVSA MOT — zero marginal cost
+- **PREMIUM** (£9.99): + Experian AutoCheck (via One Auto API) + Brego valuation + CarGuide salvage
+- **EV Health** (£8.99): + ClearWatt battery + EVDB specs + AutoPredict lifespan
+- **EV Complete** (£13.99): EV Health + Experian AutoCheck + Brego + CarGuide
 
 ## Key Commands
 ```bash
