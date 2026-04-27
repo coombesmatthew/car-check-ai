@@ -27,6 +27,13 @@ from app.core.cache import cache
 from app.core.logging import logger
 from app.services.check.orchestrator import CheckOrchestrator
 from app.services.ev.orchestrator import EVOrchestrator
+from app.services.notification.analytics import (
+    EVENT_EMAIL_FAILED,
+    EVENT_EMAIL_SENT,
+    EVENT_FULFILMENT_COMPLETED,
+    EVENT_PAYMENT_RECEIVED,
+    track_event,
+)
 from app.services.notification.discord import alert_email_failure, alert_payment_received
 from app.services.notification.email_sender import send_report_email
 from app.services.payment.stripe_service import retrieve_session
@@ -89,6 +96,25 @@ async def fulfil_report(session_id: str) -> FulfilmentResult:
     if listing_price:
         check_data["listing_price"] = listing_price
 
+    # PostHog: payment received + fulfilment computed (separate events because
+    # they answer different funnel questions). GDPR: registration is hashed.
+    track_event(
+        event=EVENT_PAYMENT_RECEIVED,
+        registration=registration,
+        properties={"tier": tier, "has_listing_price": listing_price is not None},
+    )
+    track_event(
+        event=EVENT_FULFILMENT_COMPLETED,
+        registration=registration,
+        properties={
+            "tier": tier,
+            "has_battery_health": bool(check_data.get("battery_health")),
+            "has_charging_costs": bool(check_data.get("charging_costs")),
+            "has_valuation": bool(check_data.get("valuation")),
+            "has_provenance": bool(check_data.get("finance_check") or check_data.get("stolen_check")),
+        },
+    )
+
     # 3. Generate report reference
     report_ref = f"{ref_prefix}-{dt.utcnow().strftime('%Y%m%d')}-{uuid.uuid4().hex[:8].upper()}"
 
@@ -112,6 +138,11 @@ async def fulfil_report(session_id: str) -> FulfilmentResult:
             report_ref=report_ref,
             session_id=session_id,
         )
+        track_event(
+            event=EVENT_EMAIL_SENT,
+            registration=registration,
+            properties={"tier": tier, "report_ref": report_ref},
+        )
     else:
         # Loud, grep-able tag so future failures get caught fast. Customer paid
         # but email didn't land — needs a manual resend via /admin/resend-email.
@@ -130,6 +161,11 @@ async def fulfil_report(session_id: str) -> FulfilmentResult:
             report_ref=report_ref,
             session_id=session_id,
             reason="send_report_email returned False — see preceding log line",
+        )
+        track_event(
+            event=EVENT_EMAIL_FAILED,
+            registration=registration,
+            properties={"tier": tier, "report_ref": report_ref},
         )
 
     return FulfilmentResult(

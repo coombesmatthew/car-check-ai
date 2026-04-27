@@ -7,6 +7,7 @@ from app.core.logging import logger
 from app.core.cache import cache
 from app.schemas.check import FreeCheckRequest, FreeCheckResponse
 from app.services.check.orchestrator import CheckOrchestrator
+from app.services.notification.analytics import track_event
 from app.services.payment.stripe_service import create_checkout_session, verify_webhook_signature
 from app.services.fulfilment import (
     fulfil_report_idempotent,
@@ -36,6 +37,16 @@ async def free_check(request: FreeCheckRequest):
             )
         # Increment check counter (fire-and-forget, don't block response)
         await cache.increment("checks_total")
+        # PostHog: free vehicle search performed. GDPR: registration is hashed.
+        track_event(
+            event="vehicle_search_performed",
+            registration=request.registration,
+            properties={
+                "surface": "car",
+                "found_data": bool(result.vehicle or result.mot_summary),
+                "is_electric": (result.vehicle.fuel_type or "").upper() in ("ELECTRICITY", "ELECTRIC DIESEL", "ELECTRIC PETROL") if result.vehicle else False,
+            },
+        )
         return result
     except HTTPException:
         raise

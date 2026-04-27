@@ -17,6 +17,7 @@ from app.core.logging import logger
 from app.core.cache import cache
 from app.schemas.ev import EVCheckRequest, EVCheckResponse, EVCheckoutRequest
 from app.services.ev.orchestrator import EVOrchestrator
+from app.services.notification.analytics import track_event
 from app.services.payment.stripe_service import create_checkout_session, verify_webhook_signature
 from app.services.fulfilment import (
     fulfil_report_idempotent,
@@ -55,6 +56,17 @@ async def ev_check(request: EVCheckRequest):
                 detail=f"No data found for registration {request.registration}",
             )
         await cache.increment("ev_checks_total")
+        # PostHog: free EV search performed. GDPR: registration is hashed.
+        track_event(
+            event="vehicle_search_performed",
+            registration=request.registration,
+            properties={
+                "surface": "ev",
+                "found_data": bool(result.vehicle or result.mot_summary),
+                "is_electric": result.is_electric,
+                "ev_type": result.ev_type,
+            },
+        )
         return result
     except HTTPException:
         raise

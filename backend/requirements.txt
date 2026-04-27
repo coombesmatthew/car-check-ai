@@ -47,6 +47,7 @@ tenacity==8.2.3
 
 # Monitoring
 sentry-sdk[fastapi]==1.39.2
+posthog==3.7.0
 
 # Date/Time
 python-dateutil==2.8.2

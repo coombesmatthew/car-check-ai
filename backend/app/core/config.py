@@ -83,6 +83,16 @@ class Settings(BaseSettings):
     # identifiers (registration, session_id, report_ref, tier).
     DISCORD_WEBHOOK_URL: str = ""
 
+    # PostHog server-side analytics (in addition to client-side via
+    # frontend/src/lib/analytics.ts). Empty disables all backend events.
+    # Use the same project key as the frontend so events land in one project.
+    POSTHOG_API_KEY: str = ""
+    POSTHOG_HOST: str = "https://eu.i.posthog.com"
+    # Server-side pepper used to hash registration plates before they're
+    # passed to PostHog as a distinct_id. Not a real secret (PostHog has
+    # them anyway), but rotating it would force a new identity space.
+    POSTHOG_REG_HASH_PEPPER: str = "vericar-default-pepper-set-in-prod"
+
     class Config:
         env_file = ".env"
         case_sensitive = True
