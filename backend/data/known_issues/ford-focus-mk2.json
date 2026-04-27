@@ -1,0 +1,140 @@
+{
+  "make": "Ford",
+  "model": "Focus",
+  "generation": "Mk2",
+  "years": "2004-2007",
+  "top_issues": [
+    {
+      "title": "Turbo failures and intercooler pipe cracks on 1.6 TDCi diesel",
+      "description": "The 1.6 TDCi DV6 diesel engine is prone to turbo bearing wear and intercooler pipe cracks, particularly on higher-mileage examples. The thin steel turbo-to-intercooler pipe can split at the weld due to vibration fatigue. By 2010, turbo failures were becoming increasingly common. Repairs typically involve replacement of the turbo, oil pipes, pump, and pick-up assembly, making this an expensive fault.",
+      "typical_symptoms": [
+        "Loss of engine power",
+        "Growling or whining noise from turbo area",
+        "Engine entering limp-home mode",
+        "Visible wear in turbo bearings when inlet pipe is removed"
+      ],
+      "affected_years": [
+        2004,
+        2005,
+        2006,
+        2007
+      ],
+      "estimated_repair_cost_gbp_range": [
+        1200,
+        2000
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Ford Focus (2004 – 2007) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/ford/focus/2004/"
+        }
+      ]
+    },
+    {
+      "title": "Diesel Particulate Filter blockages and failures on 1.6 and 2.0 TDCi",
+      "description": "The DPF on EU5 1.6 TDCi 110 and 2.0 TDCi 136 engines can fail around 100,000 miles. Blockages occur if the Eolys fluid is not replenished at service intervals or if the filter becomes clogged. A forced regeneration and fluid top-up may resolve the issue, but full DPF replacement is costly. Combined with other diesel faults such as dual-mass flywheel failure, repair bills can exceed £2,500.",
+      "typical_symptoms": [
+        "DPF warning light on dashboard",
+        "Engine entering limp-home mode",
+        "Reduced fuel economy",
+        "Excessive smoke from exhaust"
+      ],
+      "affected_years": null,
+      "estimated_repair_cost_gbp_range": [
+        1200,
+        2500
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Ford Focus (2004 – 2007) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/ford/focus/2004/"
+        }
+      ]
+    },
+    {
+      "title": "Spark plug corrosion from washer fluid leakage into cylinder head",
+      "description": "Screen washer fluid can leak into the spark plug channel at the top of the engine, particularly on 1.6 petrol models. If the engine does not run hot enough to evaporate the fluid, the spark plugs rust and seize in their sockets. This can also corrode core plugs in the channel. Removal of seized plugs requires removal of the cylinder head, making this a very expensive repair. This issue is especially common in ex-Motability cars that are driven infrequently.",
+      "typical_symptoms": [
+        "Difficulty starting the engine",
+        "Rough idle",
+        "Visible corrosion around spark plug wells when bonnet is open",
+        "Washer fluid visible in spark plug channel"
+      ],
+      "affected_years": null,
+      "estimated_repair_cost_gbp_range": [
+        2500,
+        3500
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Ford Focus (2004 – 2007) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/ford/focus/2004/"
+        }
+      ]
+    },
+    {
+      "title": "Dual-mass flywheel premature failure on diesel engines",
+      "description": "The dual-mass flywheel on diesel Focus models can fail after as few as 30,000 miles, though failures are more common at higher mileage. This is a significant expense and often occurs alongside other diesel-related faults such as DPF blockages, compounding repair costs. Replacement is necessary for the car to be driveable.",
+      "typical_symptoms": [
+        "Juddering or vibration when pulling away from standstill",
+        "Difficulty engaging gears",
+        "Rattling noise from engine bay",
+        "Clutch pedal feeling spongy or unresponsive"
+      ],
+      "affected_years": null,
+      "estimated_repair_cost_gbp_range": [
+        800,
+        1500
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Ford Focus (2004 – 2007) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/ford/focus/2004/"
+        }
+      ]
+    },
+    {
+      "title": "Throttle body switch faults causing limp-home mode on petrol and diesel engines",
+      "description": "A fault in the Throttle Body Switch can develop on both petrol and diesel engines, causing the engine to enter limp-home mode and display an 'Engine Malfunction' warning. The car may also experience serious engine vibration. The fault is often temporary and can be reset by switching off the engine and restarting after five minutes. Ford acknowledges the problem and will replace the switch under warranty, but out-of-warranty repairs can be costly.",
+      "typical_symptoms": [
+        "Engine Malfunction warning light on dashboard",
+        "Serious engine vibration",
+        "Limp-home mode (reduced power)",
+        "Fault clears after switching off and restarting"
+      ],
+      "affected_years": null,
+      "estimated_repair_cost_gbp_range": [
+        300,
+        600
+      ],
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Ford Focus (2004 – 2007) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/ford/focus/2004/"
+        }
+      ]
+    }
+  ],
+  "overall_reliability_note": "The second-generation Focus is a capable and enjoyable car to drive, but diesel variants require careful maintenance and can become expensive to repair due to turbo, DPF, and dual-mass flywheel issues; petrol models are generally more straightforward but can suffer from spark plug corrosion if washers leak and the engine is not run hot enough regularly.",
+  "last_updated": "2026-04-27T00:00:00Z",
+  "sources": [
+    {
+      "title": "Ford Focus (2004 – 2007) Review | Honest John",
+      "url": "https://www.honestjohn.co.uk/ford/focus/2004/"
+    }
+  ],
+  "hero_image": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/2008_Ford_Focus_Zetec_TD_109_1.6_Front.jpg/3840px-2008_Ford_Focus_Zetec_TD_109_1.6_Front.jpg",
+    "width": 4004,
+    "height": 2366,
+    "source_page_url": "https://en.wikipedia.org/wiki/Ford_Focus_(second_generation%2C_Europe)",
+    "artist": null,
+    "license_short": null,
+    "license_url": null
+  }
+}

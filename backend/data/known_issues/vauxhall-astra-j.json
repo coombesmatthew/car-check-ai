@@ -1,0 +1,154 @@
+{
+  "make": "Vauxhall",
+  "model": "Astra",
+  "generation": "J",
+  "years": "2009-2015",
+  "top_issues": [
+    {
+      "title": "Getrag M32 manual gearbox layshaft wear and bearing failure",
+      "description": "The six-speed manual gearbox fitted to 1.4 turbo models is prone to layshaft wear, particularly affecting third and fourth gears, and bearing failure at relatively low mileages. Owners report clattering or whining noises from the transmission, and in some cases complete gearbox failure requiring replacement at substantial cost. The fault appears linked to servicing history and oil filter specification.",
+      "typical_symptoms": [
+        "Clattering or whining noise from gearbox, especially in third and fourth gears",
+        "Difficulty engaging gears smoothly",
+        "Grinding sensation when changing gear",
+        "Complete loss of drive"
+      ],
+      "affected_years": [
+        2009,
+        2010,
+        2011,
+        2012,
+        2013,
+        2014
+      ],
+      "estimated_repair_cost_gbp_range": [
+        1200,
+        2700
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Vauxhall Astra (2009 – 2015) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/vauxhall/astra/2009/"
+        }
+      ]
+    },
+    {
+      "title": "Electric parking brake failure and unexpected release",
+      "description": "Early production Astra Js (pre-August 2012) are fitted with an electronic parking brake that can release unexpectedly or fail to hold the car on slopes. The fault is particularly dangerous when reversing uphill or on inclines, and has resulted in cars rolling away and causing damage. Vauxhall switched to a mechanical lever and cable system from August 2012 onwards.",
+      "typical_symptoms": [
+        "Parking brake releases with slight accelerator input",
+        "Parking brake fails to hold car on a slope",
+        "Car rolls backwards when parked on an incline",
+        "Parking brake seizes and will not release"
+      ],
+      "affected_years": [
+        2009,
+        2010,
+        2011,
+        2012
+      ],
+      "estimated_repair_cost_gbp_range": null,
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Vauxhall Astra (2009 – 2015) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/vauxhall/astra/2009/"
+        }
+      ]
+    },
+    {
+      "title": "Automatic transmission failure and control module faults",
+      "description": "The automatic transmission fitted to some Astra J models is prone to failure, particularly at moderate mileages. Faults include complete transmission failure, jerking and noise when reversing, and intermittent control module faults. Replacement or repair is expensive and parts availability has been poor, with long waiting times reported.",
+      "typical_symptoms": [
+        "Jerking or grinding noise when reversing",
+        "Loss of drive or transmission slipping",
+        "Transmission warning light on dashboard",
+        "Limp-home mode activation",
+        "Intermittent loss of power"
+      ],
+      "affected_years": [
+        2010,
+        2011,
+        2012
+      ],
+      "estimated_repair_cost_gbp_range": [
+        2119,
+        5000
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Vauxhall Astra (2009 – 2015) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/vauxhall/astra/2009/"
+        }
+      ]
+    },
+    {
+      "title": "Rear brake caliper piston seal leaks and caliper rattle",
+      "description": "Rear brake calipers are prone to leaking at the main piston seal, requiring replacement. Additionally, early production cars suffer from rattles caused by incorrect pins in the rear brake calipers. Some owners have had calipers replaced multiple times under warranty, and seized rear pads have caused damage to brake discs.",
+      "typical_symptoms": [
+        "Brake fluid leak visible near rear wheels",
+        "Rattling noise from rear of car",
+        "Brake warning light on dashboard",
+        "Soft or spongy brake pedal",
+        "Rear brake pads seized in caliper"
+      ],
+      "affected_years": [
+        2009,
+        2010,
+        2011,
+        2012,
+        2013
+      ],
+      "estimated_repair_cost_gbp_range": [
+        200,
+        600
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Vauxhall Astra (2009 – 2015) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/vauxhall/astra/2009/"
+        }
+      ]
+    },
+    {
+      "title": "Water ingress into door cavities and hatchback seal",
+      "description": "Water becomes trapped inside the front driver and passenger doors, held in by the door seals when doors are closed. Additionally, the hatchback seal allows rainwater to enter the load area after heavy rain. Blocked drain holes in door bottoms (often sealed with protective wax during manufacture) prevent water from escaping, leading to corrosion and electrical faults.",
+      "typical_symptoms": [
+        "Water sloshing sound in door bottoms when turning or braking",
+        "Water visible inside door cavities",
+        "Water pooling in boot area after rain",
+        "Musty smell from interior",
+        "Electrical faults or window regulator failure"
+      ],
+      "affected_years": [
+        2009,
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015
+      ],
+      "estimated_repair_cost_gbp_range": null,
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Vauxhall Astra (2009 – 2015) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/vauxhall/astra/2009/"
+        }
+      ]
+    }
+  ],
+  "overall_reliability_note": "The Vauxhall Astra J is a competent and well-appointed hatchback with good ride quality and a range of efficient engines, but it suffers from several significant mechanical faults, particularly in the manual gearbox, automatic transmission, brake system, and electrical parking brake on early models. Diesel variants require diligent DPF regeneration and are prone to EGR cooler and turbocharger issues.",
+  "last_updated": "2026-04-27T00:00:00Z",
+  "sources": [
+    {
+      "title": "Vauxhall Astra (2009 – 2015) Review | Honest John",
+      "url": "https://www.honestjohn.co.uk/vauxhall/astra/2009/"
+    }
+  ],
+  "hero_image": null
+}

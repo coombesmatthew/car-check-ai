@@ -1,0 +1,146 @@
+{
+  "make": "Peugeot",
+  "model": "3008",
+  "generation": "2016–2024 (Mk2)",
+  "years": "2016-2024",
+  "top_issues": [
+    {
+      "title": "1.2 PureTech petrol engine carbon buildup and premature failure",
+      "description": "The 1.2 PureTech petrol engine is prone to excessive carbon deposits on the intake valves, leading to engine warning lights, starting problems, and in some cases complete engine failure requiring replacement. This has occurred at relatively low mileages (14,500–27,000 miles) even on cars serviced to schedule. The root cause appears linked to the engine's design and fuel quality; Peugeot has not always advised owners to use premium unleaded fuel exclusively, which may accelerate the problem.",
+      "typical_symptoms": [
+        "Engine warning light illuminated on dashboard",
+        "Difficulty starting or failure to start",
+        "Fault codes related to throttle control (P0638, P2173)",
+        "Excessive oil consumption (1 litre per 2,000–4,000 miles)",
+        "Loss of power or rough running"
+      ],
+      "affected_years": [
+        2017,
+        2018,
+        2020
+      ],
+      "estimated_repair_cost_gbp_range": [
+        4500,
+        6000
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Peugeot 3008 (2016 – 2024) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/peugeot/3008/2016/"
+        }
+      ]
+    },
+    {
+      "title": "Manual gearbox first gear popping out under load",
+      "description": "Both the 2017 and 2020 2.0 HDi manual models have been reported to pop out of first gear during normal driving. This is a gearbox synchroniser or selector mechanism fault that makes the car unsafe and difficult to drive, particularly in traffic or on hills. Repair typically requires gearbox removal and overhaul or replacement.",
+      "typical_symptoms": [
+        "Gearbox slips out of first gear while driving",
+        "Difficulty engaging first gear",
+        "Grinding or notchy gear change"
+      ],
+      "affected_years": [
+        2017,
+        2020
+      ],
+      "estimated_repair_cost_gbp_range": [
+        1200,
+        2500
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Peugeot 3008 (2016 – 2024) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/peugeot/3008/2016/"
+        }
+      ]
+    },
+    {
+      "title": "Electrical system faults and software glitches",
+      "description": "Several owners have reported recurring electrical problems including stop/start system failure, satnav malfunction, and dashboard rattles linked to electrical issues. Some faults appear temperature-sensitive or related to battery charge state. Early 1.2 PureTech models also had software issues with the massage seat function defaulting to 'on' and requiring multiple button presses to disable. Peugeot has issued software update campaigns for some engine control units.",
+      "typical_symptoms": [
+        "Stop/start system stops working",
+        "Satnav or infotainment system failure",
+        "Massage seat activates automatically and cannot be easily switched off",
+        "Dashboard rattles or buzzing noises",
+        "Intermittent electrical faults that reappear after short periods"
+      ],
+      "affected_years": [
+        2017,
+        2018,
+        2020
+      ],
+      "estimated_repair_cost_gbp_range": null,
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Peugeot 3008 (2016 – 2024) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/peugeot/3008/2016/"
+        }
+      ]
+    },
+    {
+      "title": "Oil pump failure and insufficient oil pressure on 1.2 PureTech engines",
+      "description": "Some 1.2 PureTech engines have developed faults with the oil pump intermittently failing to produce sufficient oil pressure, triggering the orange engine management light. The fault is not always immediately obvious and may require the engine to be stripped down for diagnosis. This is a serious issue as low oil pressure can lead to engine damage if not addressed promptly.",
+      "typical_symptoms": [
+        "Orange engine management light illuminated",
+        "Light may extinguish after engine restart",
+        "No other obvious symptoms until engine damage occurs"
+      ],
+      "affected_years": [
+        2018
+      ],
+      "estimated_repair_cost_gbp_range": [
+        1500,
+        3500
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Peugeot 3008 (2016 – 2024) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/peugeot/3008/2016/"
+        }
+      ]
+    },
+    {
+      "title": "Diesel engine oil contamination and camshaft oil leaks",
+      "description": "The 1.5 BlueHDi diesel engine has been reported to suffer from oil contamination at very low mileages (around 4,000 miles), requiring an unscheduled oil change. Additionally, some 2018 models have developed oil leaks from the camshaft seal, and dealers have been reluctant to cover the repair cost under warranty. These issues suggest potential design or manufacturing quality concerns with the diesel engine.",
+      "typical_symptoms": [
+        "Oil level warning or service reminder at unusually low mileage",
+        "Visible oil leak from engine bay, particularly around camshaft area",
+        "Dark or contaminated oil on dipstick check"
+      ],
+      "affected_years": [
+        2018
+      ],
+      "estimated_repair_cost_gbp_range": [
+        400,
+        1200
+      ],
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Peugeot 3008 (2016 – 2024) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/peugeot/3008/2016/"
+        }
+      ]
+    }
+  ],
+  "overall_reliability_note": "The 2016–2024 Peugeot 3008 is a stylish and well-equipped family SUV, but early 1.2 PureTech petrol engines have shown a concerning tendency towards carbon buildup and premature failure, whilst manual gearbox and electrical gremlins have affected some examples. Diesel variants and automatic transmissions have generally been more reliable, though oil contamination and seal leaks have been reported.",
+  "last_updated": "2026-04-27T00:00:00Z",
+  "sources": [
+    {
+      "title": "Peugeot 3008 (2016 – 2024) Review | Honest John",
+      "url": "https://www.honestjohn.co.uk/peugeot/3008/2016/"
+    }
+  ],
+  "hero_image": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Peugeot_e-3008_Automesse_Ludwigsburg_2024_IMG_1537.jpg/3840px-Peugeot_e-3008_Automesse_Ludwigsburg_2024_IMG_1537.jpg",
+    "width": 4771,
+    "height": 2927,
+    "source_page_url": "https://en.wikipedia.org/wiki/Peugeot_3008",
+    "artist": null,
+    "license_short": null,
+    "license_url": null
+  }
+}

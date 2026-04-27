@@ -1,0 +1,164 @@
+{
+  "make": "Nissan",
+  "model": "Qashqai",
+  "generation": "J10 (first generation)",
+  "years": "2007-2013",
+  "top_issues": [
+    {
+      "title": "CVT transmission failures and juddering",
+      "description": "The CVT automatic gearbox fitted to many Qashqai models has a notably high failure rate. Owners report complete transmission failure, juddering on acceleration or hill climbing, and oil starvation damage. Repair or replacement costs are substantial, and Nissan's goodwill contributions vary widely depending on mileage and age. Some failures occur well within the vehicle's life but outside the manufacturer warranty period.",
+      "typical_symptoms": [
+        "Juddering or shuddering when pulling away or climbing hills",
+        "Loss of drive or slipping sensation",
+        "Whining or grinding noise from transmission",
+        "Transmission warning light on dashboard",
+        "Sudden complete loss of forward or reverse gears"
+      ],
+      "affected_years": [
+        2007,
+        2008,
+        2009,
+        2010,
+        2011,
+        2012,
+        2013
+      ],
+      "estimated_repair_cost_gbp_range": [
+        2500,
+        7500
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Nissan Qashqai (2007 – 2013) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/nissan/qashqai/2007/"
+        }
+      ]
+    },
+    {
+      "title": "Diesel particulate filter blockages on 1.5 and 2.0 dCi engines",
+      "description": "The DPF on diesel variants can become blocked, particularly on 2.0 dCi models and when vehicles are not driven at sustained high speeds. Owners who use their Qashqai for short, low-speed journeys are especially vulnerable. Blocked filters trigger warning lights and can require expensive cleaning or replacement. Some owners report repeated blockages even after professional cleaning.",
+      "typical_symptoms": [
+        "Engine management warning light illuminated",
+        "Reduced engine power or limp-home mode",
+        "Increased fuel consumption",
+        "Difficulty starting or rough running",
+        "Acrid smell from exhaust"
+      ],
+      "affected_years": [
+        2007,
+        2008,
+        2009,
+        2010,
+        2011,
+        2012,
+        2013
+      ],
+      "estimated_repair_cost_gbp_range": [
+        800,
+        2500
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Nissan Qashqai (2007 – 2013) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/nissan/qashqai/2007/"
+        }
+      ]
+    },
+    {
+      "title": "Timing belt failures on 1.5 dCi engines",
+      "description": "Multiple reports of timing belt failure on 1.5 dCi Qashqais, often at relatively low mileage (38,000–65,000 miles). When the timing belt fails, it typically causes catastrophic engine damage as the valves strike the pistons. Nissan issued a technical service bulletin for early 1.5 dCi models to address this issue. Replacement requires a new engine in most cases.",
+      "typical_symptoms": [
+        "Sudden loud clattering or knocking from engine",
+        "Engine will not start after the noise occurs",
+        "No warning signs before failure"
+      ],
+      "affected_years": [
+        2007,
+        2008,
+        2009,
+        2010
+      ],
+      "estimated_repair_cost_gbp_range": [
+        5000,
+        5500
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Nissan Qashqai (2007 – 2013) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/nissan/qashqai/2007/"
+        }
+      ]
+    },
+    {
+      "title": "EGR valve sticking and turbo bearing failure on 1.5 dCi engines",
+      "description": "The EGR valve on early 1.5 dCi engines can stick in either the open or closed position. When stuck closed, exhaust gas temperature rises excessively, causing turbo bearings to fail and engine oil to be drawn into the induction system. This can lead to engine seizure or catastrophic damage. Even when a new turbo is fitted, if the EGR valve is not replaced, the new turbo will fail prematurely.",
+      "typical_symptoms": [
+        "Rough running or misfiring",
+        "Turbo whistling or whining noise",
+        "Engine management warning light",
+        "Loss of power under load",
+        "Excessive exhaust temperature"
+      ],
+      "affected_years": [
+        2007,
+        2008,
+        2009,
+        2010
+      ],
+      "estimated_repair_cost_gbp_range": [
+        800,
+        2000
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Nissan Qashqai (2007 – 2013) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/nissan/qashqai/2007/"
+        }
+      ]
+    },
+    {
+      "title": "Front brake disc uneven wear and premature failure",
+      "description": "Some Qashqais experience uneven wear on the front brake discs, with the inner face wearing through much faster than expected. This has been reported at mileages as low as 24,000 miles. The issue appears to be related to brake pad calipers not floating correctly. Owners report thumping noises under braking, likely caused by warped discs. Early detection is important to prevent brake failure.",
+      "typical_symptoms": [
+        "Thumping or juddering sensation when braking",
+        "Brake warning light on dashboard",
+        "Uneven pad wear visible during inspection",
+        "Reduced braking performance",
+        "Grinding noise when braking"
+      ],
+      "affected_years": [
+        2007,
+        2008,
+        2009,
+        2010,
+        2011,
+        2012,
+        2013
+      ],
+      "estimated_repair_cost_gbp_range": [
+        300,
+        800
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Nissan Qashqai (2007 – 2013) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/nissan/qashqai/2007/"
+        }
+      ]
+    }
+  ],
+  "overall_reliability_note": "The first-generation Qashqai is a practical and comfortable crossover, but it has a mixed reliability record. CVT automatic transmissions are particularly problematic, and diesel variants require careful maintenance to avoid DPF blockages. Timing belt failures on 1.5 dCi engines and EGR valve issues can cause catastrophic engine damage. Brake and suspension components also show premature wear on some examples.",
+  "last_updated": "2026-04-27T00:00:00Z",
+  "sources": [
+    {
+      "title": "Nissan Qashqai (2007 – 2013) Review | Honest John",
+      "url": "https://www.honestjohn.co.uk/nissan/qashqai/2007/"
+    }
+  ],
+  "hero_image": null
+}

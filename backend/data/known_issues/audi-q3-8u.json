@@ -1,0 +1,148 @@
+{
+  "make": "Audi",
+  "model": "Q3",
+  "generation": "8U",
+  "years": "2011-2018",
+  "top_issues": [
+    {
+      "title": "DSG gearbox juddering and rough engagement",
+      "description": "Some Q3 models with DSG automatic gearboxes report juddering during acceleration and rough gear changes, particularly after standing for a while. The 6-speed wet clutch DSG is generally more reliable than the 7-speed dry clutch unit found in other VAG models, but occasional faults do occur. Repairs typically require dealer intervention and can be costly.",
+      "typical_symptoms": [
+        "Juddering or hesitation during acceleration",
+        "Rough or delayed gear engagement",
+        "Transmission warning light on dashboard",
+        "Hesitation between 2,200 and 2,400 rpm after the car has been parked"
+      ],
+      "affected_years": [
+        2014,
+        2015,
+        2016
+      ],
+      "estimated_repair_cost_gbp_range": [
+        1500,
+        3000
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Audi Q3 (2011 – 2018) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/audi/q3/2011/"
+        }
+      ]
+    },
+    {
+      "title": "Clutch failure and gearbox damage",
+      "description": "A small number of Q3 owners have experienced clutch failure, in one documented case at 49,000 miles, where clutch material entered the transmission and caused catastrophic gearbox damage. Whilst infrequent, this is a known issue affecting some VAG models. Repair costs are substantial and may not be fully covered by warranty.",
+      "typical_symptoms": [
+        "Difficulty engaging gears or gear slipping",
+        "Burning smell from the engine bay",
+        "Grinding noise when changing gear",
+        "Loss of drive or inability to move the car"
+      ],
+      "affected_years": [
+        2013,
+        2014
+      ],
+      "estimated_repair_cost_gbp_range": [
+        2000,
+        4000
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Audi Q3 (2011 – 2018) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/audi/q3/2011/"
+        }
+      ]
+    },
+    {
+      "title": "Turbo oil feed pipe blockage on diesel engines",
+      "description": "Some 2.0 TDI diesel Q3 models have experienced hesitation and poor acceleration, particularly between 2,200 and 2,400 rpm after the car has been standing. This is often caused by partial blockage of the turbocharger oil feed pipe. The issue may worsen over time if not addressed.",
+      "typical_symptoms": [
+        "Hesitation or flat spot during acceleration",
+        "Loss of power in the 2,200–2,400 rpm range",
+        "Sluggish response after the car has been parked for a while",
+        "Possible turbo boost lag"
+      ],
+      "affected_years": [
+        2014
+      ],
+      "estimated_repair_cost_gbp_range": [
+        400,
+        800
+      ],
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Audi Q3 (2011 – 2018) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/audi/q3/2011/"
+        }
+      ]
+    },
+    {
+      "title": "Front suspension bush wear at low mileage",
+      "description": "Some Q3 models have required replacement of front suspension bushes at relatively low mileage, around 18,000 miles. This suggests potential durability issues with the suspension components, particularly on cars driven on poor road surfaces or in harsh conditions.",
+      "typical_symptoms": [
+        "Clunking or knocking noise from the front suspension",
+        "Increased steering play or vagueness",
+        "Uneven tyre wear",
+        "Vibration through the steering wheel"
+      ],
+      "affected_years": [
+        2015
+      ],
+      "estimated_repair_cost_gbp_range": [
+        200,
+        600
+      ],
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Audi Q3 (2011 – 2018) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/audi/q3/2011/"
+        }
+      ]
+    },
+    {
+      "title": "Dual mass flywheel failure on diesel models",
+      "description": "At least one owner reported symptoms consistent with a failing dual mass flywheel on a 2.0 TDI diesel Q3, with the engine sounding like a tractor when stationary and rattling when in gear. Dual mass flywheels are expensive to replace and the fault typically worsens over time.",
+      "typical_symptoms": [
+        "Rattling or clattering noise from the engine when stationary",
+        "Loud rattling when the car is in gear but not moving",
+        "Noise increases as the engine warms up",
+        "Possible vibration through the gearbox"
+      ],
+      "affected_years": [
+        2016
+      ],
+      "estimated_repair_cost_gbp_range": [
+        800,
+        1500
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Audi Q3 (2011 – 2018) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/audi/q3/2011/"
+        }
+      ]
+    }
+  ],
+  "overall_reliability_note": "The Audi Q3 is a generally competent compact SUV with good practicality and fuel economy, but buyers should be aware of potential DSG gearbox issues, clutch durability concerns on some examples, and suspension wear at lower mileages. Diesel variants require careful monitoring of turbo oil feed pipes and dual mass flywheel condition.",
+  "last_updated": "2026-04-27T00:00:00Z",
+  "sources": [
+    {
+      "title": "Audi Q3 (2011 – 2018) Review | Honest John",
+      "url": "https://www.honestjohn.co.uk/audi/q3/2011/"
+    }
+  ],
+  "hero_image": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Audi_Q3_F3_DSC_7494.jpg/3840px-Audi_Q3_F3_DSC_7494.jpg",
+    "width": 4578,
+    "height": 3060,
+    "source_page_url": "https://en.wikipedia.org/wiki/Audi_Q3",
+    "artist": null,
+    "license_short": null,
+    "license_url": null
+  }
+}

@@ -1,0 +1,172 @@
+{
+  "make": "BMW",
+  "model": "5 Series",
+  "generation": "F10",
+  "years": "2010-2016",
+  "top_issues": [
+    {
+      "title": "Timing chain failure on 520d diesel engines",
+      "description": "The 2.0-litre turbodiesel 520d engine is prone to timing chain tensioner wear and chain failure, sometimes occurring at relatively low mileage (74,000–107,000 miles). Failure can result in severe engine damage if driving continues after symptoms appear. Repair costs are substantial and may require full engine replacement.",
+      "typical_symptoms": [
+        "Rattling noise from the engine, especially on cold start or under load",
+        "Check engine warning light",
+        "Loss of power or rough running",
+        "Smoke from the engine bay"
+      ],
+      "affected_years": [
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015
+      ],
+      "estimated_repair_cost_gbp_range": [
+        6500,
+        9000
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "BMW 5 Series (2010 – 2016) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/bmw/5-series/2010/"
+        }
+      ]
+    },
+    {
+      "title": "Air conditioning condenser failure due to poor soldering",
+      "description": "The air conditioning condenser is prone to failure caused by poor-quality soldering in the manufacturing process, not stone damage as initially thought. BMW has issued a Technical Service Bulletin for replacement. Failures have been reported on cars with low mileage, and parts shortages can lead to extended waiting times for repair.",
+      "typical_symptoms": [
+        "Air conditioning not cooling effectively",
+        "Loss of air conditioning function entirely",
+        "Refrigerant leaks visible under the car"
+      ],
+      "affected_years": [
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016
+      ],
+      "estimated_repair_cost_gbp_range": [
+        800,
+        1500
+      ],
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "BMW 5 Series (2010 – 2016) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/bmw/5-series/2010/"
+        }
+      ]
+    },
+    {
+      "title": "Front wishbone bush wear and premature failure",
+      "description": "Front lower suspension wishbone bushes can wear or fail prematurely, sometimes within three years and at low mileage. BMW has been reluctant to cover failures under warranty or goodwill, leaving owners with repair bills. This affects ride quality and handling.",
+      "typical_symptoms": [
+        "Clunking or knocking noise from the front suspension over bumps",
+        "Increased play in the steering wheel",
+        "Uneven tyre wear",
+        "Vague or wandering steering feel"
+      ],
+      "affected_years": [
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016
+      ],
+      "estimated_repair_cost_gbp_range": [
+        300,
+        700
+      ],
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "BMW 5 Series (2010 – 2016) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/bmw/5-series/2010/"
+        }
+      ]
+    },
+    {
+      "title": "Exhaust Gas Recirculation (EGR) cooler failure",
+      "description": "The EGR cooler can fail, leading to coolant loss and overheating. In severe cases, the cooler can overheat dramatically whilst driving, creating a dangerous situation with smoke pouring from the engine bay. Early warning signs include amber drivetrain warning lights and coolant loss.",
+      "typical_symptoms": [
+        "Amber drivetrain warning light on dashboard",
+        "Coolant level dropping",
+        "Smoke from the engine compartment",
+        "Engine overheating"
+      ],
+      "affected_years": [
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015
+      ],
+      "estimated_repair_cost_gbp_range": [
+        600,
+        1200
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "BMW 5 Series (2010 – 2016) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/bmw/5-series/2010/"
+        }
+      ]
+    },
+    {
+      "title": "Automatic transmission oil pan leaks and clutch pack wear",
+      "description": "The automatic transmission (particularly on 530d models) can suffer from leaking plastic oil pans, leading to insufficient oil circulation and clutch pack wear. BMW dealers have issued software upgrades to address the problem, but replacement oil pans can fail again. In some cases, complete transmission failure has occurred.",
+      "typical_symptoms": [
+        "Oil leaking underneath the car",
+        "Loss of drive or hesitation when accelerating",
+        "Transmission warning light on dashboard",
+        "Slipping or jerking during gear changes"
+      ],
+      "affected_years": [
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016
+      ],
+      "estimated_repair_cost_gbp_range": [
+        1500,
+        3500
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "BMW 5 Series (2010 – 2016) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/bmw/5-series/2010/"
+        }
+      ]
+    }
+  ],
+  "overall_reliability_note": "The BMW 5 Series F10 is generally a well-engineered executive saloon with excellent handling and a refined interior, but diesel variants (particularly the 520d) are prone to timing chain tensioner failure, EGR cooler problems, and transmission issues that can be costly to repair. Petrol versions are rare on the used market.",
+  "last_updated": "2026-04-27T00:00:00Z",
+  "sources": [
+    {
+      "title": "BMW 5 Series (2010 – 2016) Review | Honest John",
+      "url": "https://www.honestjohn.co.uk/bmw/5-series/2010/"
+    }
+  ],
+  "hero_image": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/9/93/BMW_550i_%28F10%29_%E2%80%93_Frontansicht_%282%29%2C_17._Juli_2011%2C_Mettmann.jpg",
+    "width": 2506,
+    "height": 1244,
+    "source_page_url": "https://en.wikipedia.org/wiki/BMW_5_Series_(F10)",
+    "artist": "M 93",
+    "license_short": "CC BY-SA 3.0 de",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0/de/deed.en"
+  }
+}

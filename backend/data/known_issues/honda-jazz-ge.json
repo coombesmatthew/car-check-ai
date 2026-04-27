@@ -1,0 +1,154 @@
+{
+  "make": "Honda",
+  "model": "Jazz",
+  "generation": "GE (2008–2015)",
+  "years": "2008–2015",
+  "top_issues": [
+    {
+      "title": "Manual transmission bearing noise and failure",
+      "description": "Manual gearboxes in this generation are prone to bearing wear, typically manifesting as a whine or grinding noise within the first few years of ownership. The root cause appears to be inadequate initial oil quality or swarf contamination; Honda's remedy has been to replace transmission bearings under warranty, though the problem has recurred in some cases. This is a long-standing issue affecting Jazz models since 2001.",
+      "typical_symptoms": [
+        "Whining or grinding noise from the gearbox, especially when cold or under load",
+        "Difficulty shifting between gears, particularly 2nd to 1st or 3rd",
+        "Transmission warning light or fault code",
+        "Noise worsening over time despite oil changes"
+      ],
+      "affected_years": [
+        2008,
+        2009,
+        2010,
+        2011,
+        2012,
+        2013
+      ],
+      "estimated_repair_cost_gbp_range": [
+        800,
+        2000
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Honda Jazz (2008 – 2015) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/honda/jazz/2008/"
+        }
+      ]
+    },
+    {
+      "title": "Excessive front tyre wear and Dunlop tyre defects",
+      "description": "Early 2008–2011 models fitted with Dunlop SP Sport 2030 tyres (size 185/55 R16) suffer from premature wear and cracking between the treads. Front tyres commonly wear to legal limits within 11,000–15,000 miles, and cracking has been reported as widespread. Honda initially replaced affected tyres free of charge but stopped this practice around 2012. Later models were fitted with alternative Dunlop compounds (Blu Response and Fast Response) which appear to have resolved the issue.",
+      "typical_symptoms": [
+        "Rapid tread wear on front tyres (11,000–15,000 miles typical)",
+        "Visible cracking between tyre treads",
+        "Slow tyre deflation",
+        "Uneven wear pattern on front axle"
+      ],
+      "affected_years": [
+        2008,
+        2009,
+        2010,
+        2011
+      ],
+      "estimated_repair_cost_gbp_range": [
+        400,
+        800
+      ],
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Honda Jazz (2008 – 2015) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/honda/jazz/2008/"
+        }
+      ]
+    },
+    {
+      "title": "i-SHIFT automated manual gearbox software and engagement faults",
+      "description": "The i-SHIFT automated manual transmission (fitted to 2008–2010 models) has been subject to software failures that can immobilise the car. Common issues include failure to engage reverse or drive gears, with the gear indicator flashing but no engagement occurring. Some failures have required complete transmission replacement. The CVT-7 automatic (reintroduced from February 2011) is not suitable for towing and invalidates the warranty if a towing hitch is fitted.",
+      "typical_symptoms": [
+        "Gear indicator flashing but gear not engaging (especially reverse)",
+        "Car refusing to shift out of park despite brake pedal depressed",
+        "Refusal to accelerate",
+        "Need to switch off and restart to clear fault",
+        "VSA (Vehicle Stability Assistance) light coming on intermittently"
+      ],
+      "affected_years": [
+        2008,
+        2009,
+        2010
+      ],
+      "estimated_repair_cost_gbp_range": [
+        1500,
+        3500
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Honda Jazz (2008 – 2015) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/honda/jazz/2008/"
+        }
+      ]
+    },
+    {
+      "title": "Catalytic converter theft",
+      "description": "This generation Jazz is frequently targeted for catalytic converter theft due to easy access with an electric hacksaw. Thieves remove the converter for its precious metals content. Replacement with an OEM part is expensive, and aftermarket replacements can trigger persistent exhaust warning lights and sensor issues. Protective clamps and shields are available but add cost.",
+      "typical_symptoms": [
+        "Catalytic converter missing from underneath the car",
+        "Loud rattling or grinding noise from the exhaust",
+        "Exhaust warning light on dashboard after theft and repair",
+        "Collateral damage to surrounding exhaust components"
+      ],
+      "affected_years": null,
+      "estimated_repair_cost_gbp_range": [
+        800,
+        1500
+      ],
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Honda Jazz (2008 – 2015) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/honda/jazz/2008/"
+        }
+      ]
+    },
+    {
+      "title": "Spark plug ejection from cylinder head",
+      "description": "A small number of 2012–2013 models have experienced spark plugs being blown out of the cylinder head without warning, causing complete loss of engine power whilst driving. The cause is not fully understood, but it has occurred shortly after scheduled servicing. This is a rare but serious safety issue.",
+      "typical_symptoms": [
+        "Complete loss of engine power whilst driving",
+        "Visible spark plug missing from cylinder head",
+        "Possible misfiring or rough running before failure"
+      ],
+      "affected_years": [
+        2012,
+        2013
+      ],
+      "estimated_repair_cost_gbp_range": [
+        400,
+        800
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Honda Jazz (2008 – 2015) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/honda/jazz/2008/"
+        }
+      ]
+    }
+  ],
+  "overall_reliability_note": "Generally a practical and versatile small car, but manual transmission bearing wear is a persistent weakness, early models suffer from tyre quality issues, and the i-SHIFT automated manual can be problematic; catalytic converter theft is also a common concern.",
+  "last_updated": "2026-04-27T00:00:00Z",
+  "sources": [
+    {
+      "title": "Honda Jazz (2008 – 2015) Review | Honest John",
+      "url": "https://www.honestjohn.co.uk/honda/jazz/2008/"
+    }
+  ],
+  "hero_image": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/b/b6/2008-2010_Honda_Jazz_%28GE%29_hatchback_%282011-10-25%29.jpg",
+    "width": 3812,
+    "height": 2112,
+    "source_page_url": "https://en.wikipedia.org/wiki/Honda_Fit_(second_generation)",
+    "artist": "OSX",
+    "license_short": "Public domain",
+    "license_url": null
+  }
+}

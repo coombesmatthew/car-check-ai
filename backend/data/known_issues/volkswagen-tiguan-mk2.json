@@ -1,0 +1,149 @@
+{
+  "make": "Volkswagen",
+  "model": "Tiguan",
+  "generation": "Mk2 (2016–2023)",
+  "years": "2016–2023",
+  "top_issues": [
+    {
+      "title": "DQ500 DSG gearbox metallic grating and clonking noises",
+      "description": "The 7-speed DQ500 wet-clutch DSG transmission fitted to many Tiguans has been reported to produce metallic grating or clonking noises, particularly when changing down gears or after the car has sat overnight. Volkswagen dealers have sometimes dismissed these as a 'characteristic' of the transmission, but owners report the noise is unacceptable on a vehicle costing £40,000+. Early intervention by dealers has included gearbox replacement under warranty.",
+      "typical_symptoms": [
+        "Metallic grating or grinding noise when changing down gears",
+        "Clonking sound when driving off after the car has been parked overnight",
+        "Noise becomes more noticeable as mileage increases from new",
+        "Noise audible in the cabin, particularly at low speed"
+      ],
+      "affected_years": [
+        2016,
+        2017,
+        2018
+      ],
+      "estimated_repair_cost_gbp_range": [
+        1500,
+        3000
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Volkswagen Tiguan (2016 – 2023) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/volkswagen/tiguan/2016/"
+        }
+      ]
+    },
+    {
+      "title": "1.5 TSI petrol engine stalling, hesitation and kangarooing",
+      "description": "The 1.5 TSI EVO petrol engine has been prone to stalling, particularly from cold starts, and exhibits hesitation or 'kangarooing' (jerky acceleration) in low gears. The issue appears linked to the engine's low-rev combustion characteristics and can be partially mitigated by using super unleaded fuel or disabling the auto-hold and stop-start systems. Volkswagen has issued software updates with mixed results.",
+      "typical_symptoms": [
+        "Engine stalls unexpectedly, sometimes in traffic or at junctions",
+        "Jerky or hesitant acceleration when pulling away in first or second gear",
+        "Kangarooing sensation (lurching forward and back) from cold start",
+        "Engine feels unresponsive unless over-revved",
+        "Issue improves when using super unleaded fuel"
+      ],
+      "affected_years": [
+        2017,
+        2018,
+        2019,
+        2021
+      ],
+      "estimated_repair_cost_gbp_range": null,
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Volkswagen Tiguan (2016 – 2023) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/volkswagen/tiguan/2016/"
+        }
+      ]
+    },
+    {
+      "title": "Infotainment system failures and software glitches",
+      "description": "Multiple owners have reported infotainment system failures, including touchscreen unresponsiveness, sat-nav boot-up failures, map data inaccuracies, and display configuration changes. Some failures have occurred after routine servicing, and repairs can cost nearly £2,000. Software updates have been slow to arrive, and some dealers have offered only partial warranty cover once the vehicle is out of the initial warranty period.",
+      "typical_symptoms": [
+        "Touchscreen becomes unresponsive or freezes",
+        "Sat-nav fails to boot up or continually searches for data",
+        "Map data shows incorrect location or direction of travel",
+        "Infotainment system fails to power on after service",
+        "Auto sensor functions for headlights and wipers stop working",
+        "Display configuration changes unexpectedly on start-up"
+      ],
+      "affected_years": [
+        2016,
+        2017,
+        2018,
+        2021
+      ],
+      "estimated_repair_cost_gbp_range": [
+        1000,
+        2000
+      ],
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Volkswagen Tiguan (2016 – 2023) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/volkswagen/tiguan/2016/"
+        }
+      ]
+    },
+    {
+      "title": "Autonomous Emergency Braking system spurious activation",
+      "description": "Some Tiguans have experienced involuntary and sudden activation of the Autonomous Emergency Braking system with no vehicles or obstacles in sight. Incidents have been recorded on dash cam and have occurred on country roads, particularly on right-hand bends. This poses a genuine safety risk and has led to owners attempting to reject vehicles.",
+      "typical_symptoms": [
+        "Vehicle brakes suddenly and sharply with no other vehicles visible",
+        "Incidents occur on right-hand bends on country roads",
+        "Multiple incidents over extended periods",
+        "No warning or visible reason for braking event"
+      ],
+      "affected_years": [
+        2016,
+        2017
+      ],
+      "estimated_repair_cost_gbp_range": null,
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Volkswagen Tiguan (2016 – 2023) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/volkswagen/tiguan/2016/"
+        }
+      ]
+    },
+    {
+      "title": "Clutch and dual-mass flywheel premature failure",
+      "description": "At least one report of complete clutch and dual-mass flywheel failure at only 17,257 miles on a leased Tiguan. Replacement costs were quoted at over £2,200. This is unusually early for such a failure and suggests potential manufacturing or design issues with some units.",
+      "typical_symptoms": [
+        "Difficulty engaging gears or gear slipping",
+        "Burning smell from the clutch",
+        "Clutch pedal feels soft or spongy",
+        "Loss of drive or inability to move the vehicle"
+      ],
+      "affected_years": null,
+      "estimated_repair_cost_gbp_range": [
+        2000,
+        2500
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Volkswagen Tiguan (2016 – 2023) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/volkswagen/tiguan/2016/"
+        }
+      ]
+    }
+  ],
+  "overall_reliability_note": "The Tiguan is generally a well-built family SUV with a quality interior and good practicality, but early examples (2016–2018) have experienced significant issues with the DQ500 DSG gearbox, 1.5 TSI petrol engines, infotainment systems, and emergency braking systems that buyers should investigate thoroughly before purchase.",
+  "last_updated": "2026-04-27T00:00:00Z",
+  "sources": [
+    {
+      "title": "Volkswagen Tiguan (2016 – 2023) Review | Honest John",
+      "url": "https://www.honestjohn.co.uk/volkswagen/tiguan/2016/"
+    }
+  ],
+  "hero_image": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/VW_Tiguan_1.5_eTSI_R-Line_%28III%29_%E2%80%93_f_18052025.jpg/3840px-VW_Tiguan_1.5_eTSI_R-Line_%28III%29_%E2%80%93_f_18052025.jpg",
+    "width": 5897,
+    "height": 2997,
+    "source_page_url": "https://en.wikipedia.org/wiki/Volkswagen_Tiguan",
+    "artist": null,
+    "license_short": null,
+    "license_url": null
+  }
+}

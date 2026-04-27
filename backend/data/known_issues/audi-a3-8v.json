@@ -1,0 +1,142 @@
+{
+  "make": "Audi",
+  "model": "A3",
+  "generation": "8V",
+  "years": "2012-2020",
+  "top_issues": [
+    {
+      "title": "DQ200 7-speed dry-clutch S tronic transmission failures",
+      "description": "The DQ200 automatic gearbox fitted to many 1.4 TSI and some 1.6 TDI models has a history of premature clutch pack failure, often between 15,000 and 62,500 miles. Failures can occur suddenly without warning, leaving the car unable to engage drive. Repair costs are substantial and may require replacement of the mechatronics unit, clutch pack, and shimming work.",
+      "typical_symptoms": [
+        "Loss of drive or inability to engage gear",
+        "Jerky or hesitant pick-up from a standing start",
+        "Noises from the transmission",
+        "Warning lights on the dashboard"
+      ],
+      "affected_years": [
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017
+      ],
+      "estimated_repair_cost_gbp_range": [
+        2400,
+        7000
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Audi A3 (2012 – 2020) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/audi/a3/2012/"
+        }
+      ]
+    },
+    {
+      "title": "Clutch failure on 1.4 TSI petrol models",
+      "description": "Several owners of 1.4 TSI petrol variants have reported premature clutch failure, sometimes within the first year of ownership or at very low mileage. In one case, a clutch failed twice in rapid succession within months. The cause may be related to the stop-start system or manufacturing defect, but Audi has not consistently acknowledged warranty cover.",
+      "typical_symptoms": [
+        "Difficulty engaging gears",
+        "Slipping sensation when pulling away",
+        "Burning smell from the engine bay",
+        "Judder or shudder when setting off"
+      ],
+      "affected_years": [
+        2014,
+        2016,
+        2017
+      ],
+      "estimated_repair_cost_gbp_range": [
+        1100,
+        2200
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Audi A3 (2012 – 2020) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/audi/a3/2012/"
+        }
+      ]
+    },
+    {
+      "title": "MMI infotainment system failures",
+      "description": "The MMI (Multi Media Interface) unit has been reported to fail prematurely, sometimes just outside the manufacturer's warranty period. Failures include complete loss of function or electronic faults requiring full module replacement. Dealer repair costs are high, and some owners have found independent specialists offer better value.",
+      "typical_symptoms": [
+        "Screen goes blank or unresponsive",
+        "System behaves erratically or 'goes bonkers'",
+        "Loss of DAB radio reception",
+        "No response to touch controls"
+      ],
+      "affected_years": [
+        2014,
+        2015
+      ],
+      "estimated_repair_cost_gbp_range": [
+        1900,
+        2900
+      ],
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Audi A3 (2012 – 2020) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/audi/a3/2012/"
+        }
+      ]
+    },
+    {
+      "title": "Excessive oil consumption on 1.4 TSI engines",
+      "description": "Some 1.4 TSI petrol engines have exhibited abnormally high oil consumption, burning through a full dipstick's worth of oil in as little as 2,500 miles. Audi operates a formal oil consumption test procedure, but owners may face lengthy diagnostic processes and potential out-of-pocket costs if the consumption falls outside warranty thresholds.",
+      "typical_symptoms": [
+        "Low oil level warning on the dashboard",
+        "Blue smoke from the exhaust",
+        "Need to top up oil frequently between services"
+      ],
+      "affected_years": [
+        2014
+      ],
+      "estimated_repair_cost_gbp_range": null,
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Audi A3 (2012 – 2020) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/audi/a3/2012/"
+        }
+      ]
+    },
+    {
+      "title": "Turbo bearing oil feed and return pipe blockages",
+      "description": "Turbochargers on some 2.0 TDI and 1.4 TSI models have failed prematurely due to carbon buildup in the oil feed and return pipes, restricting oil flow to the turbo bearing. When a turbo is replaced under warranty, the pipes are not always replaced, leading to rapid failure of the replacement unit. In one case, a new turbo failed at 52,000 miles.",
+      "typical_symptoms": [
+        "Loss of power or boost",
+        "Turbo warning light on the dashboard",
+        "Excessive smoke from the exhaust",
+        "Loud whining noise from the engine bay"
+      ],
+      "affected_years": [
+        2012,
+        2016
+      ],
+      "estimated_repair_cost_gbp_range": [
+        800,
+        2000
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Audi A3 (2012 – 2020) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/audi/a3/2012/"
+        }
+      ]
+    }
+  ],
+  "overall_reliability_note": "The Audi A3 (2012–2020) is a well-built premium hatchback with good interior quality and refinement, but the DQ200 automatic gearbox and 1.4 TSI petrol engine have shown a pattern of premature failures that can be costly to repair; diesel variants are generally more reliable but require careful maintenance.",
+  "last_updated": "2026-04-27T00:00:00Z",
+  "sources": [
+    {
+      "title": "Audi A3 (2012 – 2020) Review | Honest John",
+      "url": "https://www.honestjohn.co.uk/audi/a3/2012/"
+    }
+  ],
+  "hero_image": null
+}

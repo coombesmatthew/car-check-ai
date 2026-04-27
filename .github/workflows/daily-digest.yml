@@ -1,0 +1,53 @@
+name: Daily Discord digest
+
+# Pings /api/v1/admin/run-daily-digest once per day at 08:00 UTC.
+# In British Summer Time (Mar–Oct) that's 09:00 BST. In GMT it's 08:00 GMT.
+# We accept the seasonal drift rather than wiring TZ-aware cron: a 1-hour
+# shift twice a year doesn't matter for an end-of-day rollup.
+#
+# The backend builds a one-message Discord summary covering the previous
+# UTC day:
+#   - Paid checks + revenue (from Stripe Checkout Session API)
+#   - Free search delta (cumulative counter snapshot day-over-day)
+#   - OneAuto API health (errors per endpoint from api_calls)
+#
+# Like the hourly health check, this workflow only fails if the endpoint
+# itself is unreachable. Discord delivery is the actual signal — keeps
+# CI quiet and avoids double-alerting.
+
+on:
+  schedule:
+    - cron: "0 8 * * *"  # 08:00 UTC daily ≈ 09:00 BST in summer
+  workflow_dispatch:  # manual trigger for testing
+
+permissions:
+  contents: read
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Hit run-daily-digest endpoint
+        env:
+          ADMIN_TOKEN: ${{ secrets.ADMIN_API_TOKEN }}
+        run: |
+          if [ -z "$ADMIN_TOKEN" ]; then
+            echo "::error::ADMIN_API_TOKEN secret not set in this repo"
+            exit 1
+          fi
+
+          response=$(curl -sS -w "\nHTTP_STATUS:%{http_code}" \
+            -X POST \
+            "https://api.vericar.co.uk/api/v1/admin/run-daily-digest?token=${ADMIN_TOKEN}&notify=true")
+
+          http_status=$(echo "$response" | grep "HTTP_STATUS:" | cut -d: -f2)
+          body=$(echo "$response" | sed '$d')
+
+          echo "HTTP $http_status"
+          echo "$body"
+
+          if [ "$http_status" != "200" ]; then
+            echo "::error::Daily digest endpoint returned $http_status"
+            exit 1
+          fi

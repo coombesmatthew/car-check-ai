@@ -1,0 +1,155 @@
+{
+  "make": "Nissan",
+  "model": "Micra",
+  "generation": "K13",
+  "years": "2010-2016",
+  "top_issues": [
+    {
+      "title": "Clutch failure and premature wear on manual variants",
+      "description": "The K13 Micra manual clutch is prone to failure across a wide mileage range, from as low as 1,337 miles to 57,000 miles. Nissan acknowledged a higher than usual number of clutch issues with this generation. Failures include complete burnout, slipping at low throttle, and excessively high bite points. Some owners have required multiple clutch replacements within the warranty period.",
+      "typical_symptoms": [
+        "Clutch slipping under acceleration or at low throttle",
+        "Difficulty engaging gears or very high bite point",
+        "Burning smell from the clutch area",
+        "Clutch warning light on dashboard"
+      ],
+      "affected_years": [
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016
+      ],
+      "estimated_repair_cost_gbp_range": [
+        800,
+        1200
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Nissan Micra (2010 – 2016) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/nissan/micra/2010/"
+        }
+      ]
+    },
+    {
+      "title": "CVT transmission failure and solenoid problems",
+      "description": "The CVT automatic gearbox fitted to some K13 Micras can fail prematurely, with reports of complete transmission failure between 27,000 and 63,000 miles. Nissan has sometimes refused warranty contributions if the car was not serviced at an authorised dealer, citing missed fluid changes. Sticky solenoids can also cause stuttering and loss of power during acceleration and gear changes.",
+      "typical_symptoms": [
+        "Transmission warning light or engine management light illuminated",
+        "Rough running or stuttering when pulling away or changing gear",
+        "Loss of power during acceleration",
+        "Revving excessively without engaging higher gears",
+        "Grating noise when starting"
+      ],
+      "affected_years": [
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015
+      ],
+      "estimated_repair_cost_gbp_range": [
+        1000,
+        6000
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Nissan Micra (2010 – 2016) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/nissan/micra/2010/"
+        }
+      ]
+    },
+    {
+      "title": "Engine rattle between 2,300 and 3,000 rpm",
+      "description": "Some K13 Micras develop a rattling or fluttering noise from the engine when hot, particularly between 2,300 and 3,000 rpm. The rattle can sound like castanets and occurs when applying throttle pressure. The cause may be a failing auxiliary belt pulley, timing chain issue, or inlet manifold swirl flaps. The problem can appear from very low mileage.",
+      "typical_symptoms": [
+        "Rattling or fluttering noise from engine when hot",
+        "Noise occurs between 2,300 and 3,000 rpm",
+        "Noise worsens with throttle application",
+        "Noise briefly occurs when changing gears"
+      ],
+      "affected_years": [
+        2014
+      ],
+      "estimated_repair_cost_gbp_range": null,
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Nissan Micra (2010 – 2016) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/nissan/micra/2010/"
+        }
+      ]
+    },
+    {
+      "title": "Rear suspension arm bush wear and front suspension issues",
+      "description": "The K13 Micra can suffer from premature wear of rear suspension arm bushes, similar to issues seen on the Nissan Note. Front suspension problems including crunching sounds, banging noises, and bush failure have also been reported. These issues can develop relatively early in the car's life and may require multiple repair attempts.",
+      "typical_symptoms": [
+        "Crunching or banging noise from the front suspension",
+        "Noise felt through the floor when pulling away",
+        "Clunking sounds over bumps or during cornering",
+        "Steering rack or suspension component wear"
+      ],
+      "affected_years": [
+        2012,
+        2017
+      ],
+      "estimated_repair_cost_gbp_range": [
+        200,
+        616
+      ],
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Nissan Micra (2010 – 2016) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/nissan/micra/2010/"
+        }
+      ]
+    },
+    {
+      "title": "Manual gearbox cold-weather stiffness and linkage issues",
+      "description": "Some K13 Micras with manual gearboxes develop difficulty changing gear in cold weather, particularly the 3-2 downshift. The problem may be caused by insufficient or contaminated gearbox oil. Gear linkage cable replacement may be attempted but does not always resolve the issue permanently, and the gearbox may require replacement.",
+      "typical_symptoms": [
+        "Difficulty downshifting from 3rd to 2nd gear in cold weather",
+        "Notchy or stiff gearbox operation when cold",
+        "Gearbox becomes stiffer on frosty mornings",
+        "Problem improves as engine warms up"
+      ],
+      "affected_years": [
+        2016
+      ],
+      "estimated_repair_cost_gbp_range": [
+        400,
+        1200
+      ],
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Nissan Micra (2010 – 2016) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/nissan/micra/2010/"
+        }
+      ]
+    }
+  ],
+  "overall_reliability_note": "The K13 Micra is generally a practical and economical small car, but manual clutch failures are a significant and recurring problem across this generation, and CVT automatic variants can suffer costly transmission failures if not serviced at authorised dealers.",
+  "last_updated": "2026-04-27T00:00:00Z",
+  "sources": [
+    {
+      "title": "Nissan Micra (2010 – 2016) Review | Honest John",
+      "url": "https://www.honestjohn.co.uk/nissan/micra/2010/"
+    }
+  ],
+  "hero_image": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/2015_Nissan_Micra_SR_in_Brilliant_Silver%2C_front_right%2C_2024-10-11.jpg/3840px-2015_Nissan_Micra_SR_in_Brilliant_Silver%2C_front_right%2C_2024-10-11.jpg",
+    "width": 3859,
+    "height": 2456,
+    "source_page_url": "https://en.wikipedia.org/wiki/Nissan_Micra",
+    "artist": null,
+    "license_short": null,
+    "license_url": null
+  }
+}

@@ -1,0 +1,150 @@
+{
+  "make": "Peugeot",
+  "model": "208",
+  "generation": "Mk1",
+  "years": "2012–2019",
+  "top_issues": [
+    {
+      "title": "1.2 Puretech engine oil consumption and low oil pressure warnings",
+      "description": "Several owners report rapid oil loss without visible leaks, leading to low oil pressure warnings and engine management lights. In some cases, oil levels drop by over 2 litres between services. The root cause is not always clear, but the issue can progress to engine failure if not addressed promptly. This is particularly concerning because the warning may appear after the car has been topped up, suggesting an ongoing consumption problem rather than a one-off leak.",
+      "typical_symptoms": [
+        "Low oil pressure warning light illuminating during normal driving",
+        "Engine management light on dashboard",
+        "Oil level dropping rapidly despite no visible leaks underneath",
+        "Engine noise or roughness when warning appears"
+      ],
+      "affected_years": [
+        2012,
+        2013,
+        2014,
+        2015,
+        2016
+      ],
+      "estimated_repair_cost_gbp_range": [
+        400,
+        2500
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Peugeot 208 (2012 – 2019) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/peugeot/208/2012/"
+        }
+      ]
+    },
+    {
+      "title": "1.2 Puretech engine failure and metal debris in oil",
+      "description": "A number of owners have experienced complete engine failure on the 1.2 Puretech unit, sometimes at relatively low mileage (18,000 to 55,800 miles). In at least one case, metal filings were found in the oil, suggesting internal engine wear or manufacturing defect. Peugeot has replaced engines under goodwill in some instances, but this is not guaranteed and repairs can be very costly.",
+      "typical_symptoms": [
+        "Engine warning light with message requiring immediate engine repair",
+        "Loss of power or difficulty starting",
+        "Metallic noise from engine",
+        "Engine fails to start or runs very roughly"
+      ],
+      "affected_years": [
+        2012,
+        2013,
+        2014,
+        2015,
+        2016
+      ],
+      "estimated_repair_cost_gbp_range": [
+        1500,
+        3500
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Peugeot 208 (2012 – 2019) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/peugeot/208/2012/"
+        }
+      ]
+    },
+    {
+      "title": "1.6 THP fuel system component failures (injectors and pumps)",
+      "description": "Owners of the 1.6 THP petrol engine have reported sequential failures of fuel system components, including the low-pressure fuel pump, high-pressure injection pump, and fuel injectors. In one documented case, all three types of component failed in succession, and the same problems recurred after repair. This suggests either a systemic issue with fuel quality tolerance or a design weakness in the fuel system.",
+      "typical_symptoms": [
+        "Engine warning light on dashboard",
+        "Difficulty starting or rough idle",
+        "Loss of power during acceleration",
+        "Engine stalling or hesitation"
+      ],
+      "affected_years": [
+        2013
+      ],
+      "estimated_repair_cost_gbp_range": [
+        600,
+        1800
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Peugeot 208 (2012 – 2019) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/peugeot/208/2012/"
+        }
+      ]
+    },
+    {
+      "title": "1.2 Puretech drivetrain juddering on acceleration from standstill",
+      "description": "At least one owner reported very significant juddering from the drivetrain when moving away in first gear, occurring on every journey, particularly in town driving. The cause is not specified in the report, but it could relate to engine management, gearbox software, or clutch engagement issues. This is a quality-of-life issue that may indicate a fault requiring software update or component replacement.",
+      "typical_symptoms": [
+        "Juddering or shaking felt through the car when pulling away from a standstill",
+        "Vibration most noticeable in first gear",
+        "Issue worse in slow-speed town driving",
+        "May be accompanied by engine management light"
+      ],
+      "affected_years": [
+        2014
+      ],
+      "estimated_repair_cost_gbp_range": null,
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Peugeot 208 (2012 – 2019) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/peugeot/208/2012/"
+        }
+      ]
+    },
+    {
+      "title": "1.6 BlueHDI diesel engine runaway and turbo failure",
+      "description": "One owner reported a diesel runaway event (uncontrolled acceleration) that destroyed both the engine and turbocharger. Although this is a rare occurrence, it is catastrophic when it happens and typically requires complete engine replacement. The vehicle had full service history and was only six years old with 50,000 miles, suggesting the fault was not due to neglect.",
+      "typical_symptoms": [
+        "Uncontrolled engine acceleration (diesel runaway)",
+        "Engine noise and vibration",
+        "Loss of braking effectiveness if runaway occurs",
+        "Smoke from engine bay"
+      ],
+      "affected_years": [
+        2015
+      ],
+      "estimated_repair_cost_gbp_range": [
+        2000,
+        4000
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Peugeot 208 (2012 – 2019) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/peugeot/208/2012/"
+        }
+      ]
+    }
+  ],
+  "overall_reliability_note": "The Peugeot 208 is a stylish small hatchback with good equipment in higher trim levels, but the 1.2 Puretech petrol engine has a concerning track record of oil consumption, low oil pressure faults, and premature failure; the 1.6 THP and 1.6 BlueHDI variants have also shown fuel system and engine reliability issues in some cases.",
+  "last_updated": "2026-04-27T00:00:00Z",
+  "sources": [
+    {
+      "title": "Peugeot 208 (2012 – 2019) Review | Honest John",
+      "url": "https://www.honestjohn.co.uk/peugeot/208/2012/"
+    }
+  ],
+  "hero_image": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/Peugeot_208_PureTech_130_EAT8_Allure_GT-Line_%28II%29_%E2%80%93_f_17102021.jpg/3840px-Peugeot_208_PureTech_130_EAT8_Allure_GT-Line_%28II%29_%E2%80%93_f_17102021.jpg",
+    "width": 4554,
+    "height": 2265,
+    "source_page_url": "https://en.wikipedia.org/wiki/Peugeot_208",
+    "artist": null,
+    "license_short": null,
+    "license_url": null
+  }
+}

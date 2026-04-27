@@ -1,0 +1,141 @@
+{
+  "make": "Toyota",
+  "model": "Auris",
+  "generation": "First generation (E150)",
+  "years": "2007-2012",
+  "top_issues": [
+    {
+      "title": "Multi Mode automated manual gearbox control faults",
+      "description": "The Multi Mode automated manual transmission can suffer from erratic behaviour in automatic mode, including unexpected high-revving, failure to change gear smoothly at low speeds, and getting stuck in first gear. Owners report the gearbox sometimes requires switching to manual mode and back to automatic to reset normal operation. This is a control system fault rather than mechanical wear, but it can be unpredictable and potentially unsafe.",
+      "typical_symptoms": [
+        "Engine revving to 8,000 rpm without warning",
+        "Transmission refusing to change up from first gear at low speed",
+        "Shuddering halt when accelerating from a junction",
+        "Neutral light flashing and gearbox refusing to engage",
+        "Problem resolves temporarily after switching to manual mode"
+      ],
+      "affected_years": [
+        2007,
+        2008
+      ],
+      "estimated_repair_cost_gbp_range": [
+        1500,
+        3000
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Toyota Auris (2007 – 2012) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/toyota/auris/2007/"
+        }
+      ]
+    },
+    {
+      "title": "DPF regeneration problems on 2.2-litre diesel engines",
+      "description": "The 2.2-litre diesel Auris can experience difficulties with diesel particulate filter regeneration, leading to overfuelling. This overfuelling can damage piston rings and cylinder bores, which is a serious engine fault. Toyota extended the warranty to five years on affected vehicles to cover this issue, suggesting it was a known problem.",
+      "typical_symptoms": [
+        "DPF warning light on dashboard",
+        "Excessive fuel consumption",
+        "Rough idle or loss of power",
+        "Black smoke from exhaust",
+        "Engine management warning light"
+      ],
+      "affected_years": null,
+      "estimated_repair_cost_gbp_range": [
+        2000,
+        5000
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Toyota Auris (2007 – 2012) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/toyota/auris/2007/"
+        }
+      ]
+    },
+    {
+      "title": "Water ingress into spare wheel well via cabin vent flaps",
+      "description": "The one-way cabin vent flaps located behind the rear bumper sides can fail, allowing water to leak into the spare wheel well. This can lead to rust and corrosion of the spare wheel and surrounding metalwork. Toyota later issued modified flaps to address the problem, but earlier cars are at risk.",
+      "typical_symptoms": [
+        "Water pooling in spare wheel well",
+        "Rust on spare wheel or wheel well",
+        "Musty smell from boot area",
+        "Visible water staining inside boot"
+      ],
+      "affected_years": [
+        2007
+      ],
+      "estimated_repair_cost_gbp_range": [
+        300,
+        400
+      ],
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Toyota Auris (2007 – 2012) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/toyota/auris/2007/"
+        }
+      ]
+    },
+    {
+      "title": "Hybrid battery discharge when vehicle left unused",
+      "description": "Auris HSD hybrid models can suffer from rapid battery discharge if left unused for two to three weeks. The 12-volt auxiliary battery gradually loses its capacity to hold a full charge if the car is not driven regularly. This can leave the vehicle unable to start and may require professional recovery or trickle charging.",
+      "typical_symptoms": [
+        "Vehicle will not start after a period of non-use",
+        "Dim dashboard lights when attempting to start",
+        "Clicking sound when turning the key",
+        "Battery warning light on dashboard"
+      ],
+      "affected_years": null,
+      "estimated_repair_cost_gbp_range": null,
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Toyota Auris (2007 – 2012) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/toyota/auris/2007/"
+        }
+      ]
+    },
+    {
+      "title": "Steering column universal joint wear and failure",
+      "description": "The steering column universal joint can wear and develop a knocking or clunking sound, particularly when driving over rough surfaces or when the steering wheel is moved. This is not a safety-critical fault but requires replacement of the entire steering column, which is a costly repair.",
+      "typical_symptoms": [
+        "Knocking or clunking noise from steering column",
+        "Noise worse over bumpy roads",
+        "Noise when steering wheel is jiggled",
+        "Noise present throughout the steering range"
+      ],
+      "affected_years": [
+        2011
+      ],
+      "estimated_repair_cost_gbp_range": [
+        400,
+        400
+      ],
+      "severity": "low",
+      "source_citations": [
+        {
+          "title": "Toyota Auris (2007 – 2012) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/toyota/auris/2007/"
+        }
+      ]
+    }
+  ],
+  "overall_reliability_note": "The first-generation Auris is generally a reliable family hatchback, but early Multi Mode automated manual variants can suffer from control faults, diesel models require careful DPF management, and hybrid variants need regular use to maintain battery health.",
+  "last_updated": "2026-04-27T00:00:00Z",
+  "sources": [
+    {
+      "title": "Toyota Auris (2007 – 2012) Review | Honest John",
+      "url": "https://www.honestjohn.co.uk/toyota/auris/2007/"
+    }
+  ],
+  "hero_image": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/8/8e/Toyota_Auris_2.0_D-4D_Executive_%28II%29_%E2%80%93_Frontansicht%2C_1._Juni_2013%2C_D%C3%BCsseldorf.jpg",
+    "width": 3438,
+    "height": 1738,
+    "source_page_url": "https://en.wikipedia.org/wiki/Toyota_Auris",
+    "artist": "M 93",
+    "license_short": "CC BY-SA 3.0 de",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0/de/deed.en"
+  }
+}

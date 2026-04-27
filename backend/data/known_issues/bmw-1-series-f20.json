@@ -1,0 +1,152 @@
+{
+  "make": "BMW",
+  "model": "1 Series",
+  "generation": "F20",
+  "years": "2011-2019",
+  "top_issues": [
+    {
+      "title": "Timing chain stretch and tensioner failure",
+      "description": "The N13, N47 and B38 engines in this generation are prone to timing chain stretch, tensioner wear and in some cases complete failure. This can occur relatively early in the car's life, sometimes before 40,000 miles. Failure requires replacement of the timing chain, tensioners and sometimes the oil pump, which is an expensive repair. Early warning signs may be picked up during scheduled servicing, but some owners have missed services and discovered the problem only when the chain has already stretched significantly.",
+      "typical_symptoms": [
+        "Rattling noise from the engine, particularly on cold start or under load",
+        "Engine warning light on dashboard",
+        "Loss of power or rough running",
+        "Noise between 1800 and 2000 revs"
+      ],
+      "affected_years": [
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017
+      ],
+      "estimated_repair_cost_gbp_range": [
+        795,
+        2500
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "BMW 1 Series (2011 – 2019) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/bmw/1-series/2011/"
+        }
+      ]
+    },
+    {
+      "title": "Clutch and dual-mass flywheel premature wear",
+      "description": "Several owners have reported clutch failure and dual-mass flywheel (DMF) problems occurring well before expected, sometimes within the first year of ownership or at very low mileage. In some cases, clutches have failed twice in quick succession. The DMF can fail and cause secondary damage to the clutch, leading to expensive repairs. Some owners have found that warranty claims have been refused by BMW.",
+      "typical_symptoms": [
+        "Difficulty engaging gears or stiff gearchange",
+        "Judder or vibration when pulling away",
+        "Clutch pedal feeling heavy or unresponsive",
+        "Grinding noise when changing gear"
+      ],
+      "affected_years": [
+        2011,
+        2015,
+        2016,
+        2017
+      ],
+      "estimated_repair_cost_gbp_range": [
+        800,
+        1500
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "BMW 1 Series (2011 – 2019) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/bmw/1-series/2011/"
+        }
+      ]
+    },
+    {
+      "title": "Brake fluid contamination and brake system failure",
+      "description": "The brake fluid reservoir cap on early models allowed water ingress, which contaminated the brake fluid and caused corrosion of the DSC (Dynamic Stability Control) hydro unit. In at least one case, this led to complete brake failure with a hard pedal. BMW issued a quality enhancement programme to fit a new cap, but some cars required additional repairs including replacement of the DSC unit and complete system flushing. Brake failure is a serious safety issue.",
+      "typical_symptoms": [
+        "Brake pedal becoming hard or unresponsive",
+        "Warning light on dashboard related to braking system",
+        "Brake fluid appearing discoloured or contaminated"
+      ],
+      "affected_years": [
+        2014
+      ],
+      "estimated_repair_cost_gbp_range": [
+        1500,
+        3000
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "BMW 1 Series (2011 – 2019) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/bmw/1-series/2011/"
+        }
+      ]
+    },
+    {
+      "title": "EGR valve blockage causing jerking and gearbox confusion",
+      "description": "The exhaust gas recirculation (EGR) valve can become blocked, particularly on diesel and turbocharged petrol engines. When blocked, it causes the engine to jerk unexpectedly during normal driving, as if the accelerator is being pressed hard, which confuses the automatic gearbox into kicking down. The problem can occur even when cruise control is engaged and the driver's foot is off the accelerator. This has been reported on relatively low-mileage cars that have been serviced on schedule.",
+      "typical_symptoms": [
+        "Random jerking or surging during acceleration",
+        "Gearbox kicking down unexpectedly",
+        "Engine management warning light",
+        "Erratic behaviour even with cruise control engaged"
+      ],
+      "affected_years": [
+        2017
+      ],
+      "estimated_repair_cost_gbp_range": [
+        300,
+        800
+      ],
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "BMW 1 Series (2011 – 2019) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/bmw/1-series/2011/"
+        }
+      ]
+    },
+    {
+      "title": "iDrive infotainment system faults and screen failure",
+      "description": "The iDrive infotainment system has been reported to suffer from various faults including the screen going blank, the system crashing, and the unit repeatedly turning off and on whilst driving. In some cases, replacement units have been fitted but the problem has recurred. BMW dealers have sometimes blamed external factors such as the owner's smartphone, but the issue persists even when the phone is disconnected or replaced. This is a common problem according to dealers.",
+      "typical_symptoms": [
+        "Infotainment screen going blank or showing only BMW logo",
+        "iDrive unit turning off and on whilst driving",
+        "System freezing or crashing",
+        "Loss of navigation and entertainment functions"
+      ],
+      "affected_years": [
+        2013,
+        2016,
+        2017
+      ],
+      "estimated_repair_cost_gbp_range": null,
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "BMW 1 Series (2011 – 2019) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/bmw/1-series/2011/"
+        }
+      ]
+    }
+  ],
+  "overall_reliability_note": "The 2011–2019 BMW 1 Series is an entertaining and well-equipped car to drive, but owners should be aware of potential timing chain issues on petrol and diesel engines, clutch and dual-mass flywheel wear, and occasional infotainment glitches. Brake fluid contamination affected early models. Diligent servicing and careful inspection of engine noise are advisable before purchase.",
+  "last_updated": "2026-04-27T00:00:00Z",
+  "sources": [
+    {
+      "title": "BMW 1 Series (2011 – 2019) Review | Honest John",
+      "url": "https://www.honestjohn.co.uk/bmw/1-series/2011/"
+    }
+  ],
+  "hero_image": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/e/e1/BMW_118i_Urban_Line_%28F20%29_%E2%80%93_Frontansicht%2C_10._M%C3%A4rz_2012%2C_D%C3%BCsseldorf.jpg",
+    "width": 3275,
+    "height": 1765,
+    "source_page_url": "https://en.wikipedia.org/wiki/BMW_1_Series_(F20)",
+    "artist": "M 93",
+    "license_short": "CC BY-SA 3.0 de",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0/de/deed.en"
+  }
+}

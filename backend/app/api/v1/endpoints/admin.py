@@ -18,6 +18,7 @@ from app.core.db import get_session
 from app.core.logging import logger
 from app.models.api_call import ApiCall
 from app.services.fulfilment import FULFIL_RESULT_CACHE_PREFIX, FulfilmentResult
+from app.services.monitoring.daily_digest import run_daily_digest
 from app.services.monitoring.health_checks import run_health_check
 from app.services.notification.discord import notify_discord
 from app.services.notification.email_sender import send_report_email
@@ -246,4 +247,24 @@ async def run_health_check_endpoint(
     _check_token(token)
 
     report = await run_health_check(notify_on_failure=notify)
+    return report.to_dict()
+
+
+@router.post("/run-daily-digest")
+async def run_daily_digest_endpoint(
+    token: str = Query(..., description="Admin API token"),
+    notify: bool = Query(True, description="Post the digest to Discord (default true)"),
+):
+    """Build and post the previous-day digest to Discord. Designed for daily cron.
+
+    GitHub Actions hits this once per day at ~08:00 UTC (≈ 09:00 BST).
+    Pulls paid checks + revenue from Stripe, free-check delta from a
+    Redis snapshot, and OneAuto error rates from api_calls. Returns the
+    structured report; posts to Discord when notify=true.
+
+    Pass notify=false to dry-run from a curl without spamming the channel.
+    """
+    _check_token(token)
+
+    report = await run_daily_digest(notify=notify)
     return report.to_dict()

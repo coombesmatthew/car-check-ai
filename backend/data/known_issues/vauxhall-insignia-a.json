@@ -1,0 +1,160 @@
+{
+  "make": "Vauxhall",
+  "model": "Insignia",
+  "generation": "A (2008–2017)",
+  "years": "2008–2017",
+  "top_issues": [
+    {
+      "title": "Dual mass flywheel and clutch failures on manual models",
+      "description": "The dual mass flywheel (DMF) and clutch assembly on manual gearbox Insignias, particularly diesel variants, are prone to premature failure. Failures have been reported as early as 13,000 miles and are increasingly common across the generation. The DMF can also wear the bearing of the gearbox's first motion shaft, leading to secondary gearbox damage and costly repairs.",
+      "typical_symptoms": [
+        "Judder or vibration when pulling away from standstill",
+        "Difficulty engaging gears or gear selection becoming notchy",
+        "Whining or grinding noise from the transmission",
+        "Clutch pedal feeling spongy or requiring excessive travel"
+      ],
+      "affected_years": [
+        2008,
+        2009,
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017
+      ],
+      "estimated_repair_cost_gbp_range": [
+        1200,
+        2000
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Vauxhall Insignia (2008 – 2017) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/vauxhall/insignia/2008/"
+        }
+      ]
+    },
+    {
+      "title": "Power steering fluid leaking onto exhaust manifold causing engine fires",
+      "description": "On turbocharged petrol and diesel engines manufactured between 2009 and 2010, the pressurised power steering fluid pipe can crack or leak, allowing fluid to drip onto the hot exhaust manifold or diesel particulate filter. This has caused engine fires across Europe. Vauxhall issued a technical service bulletin (TSB) in October 2011 affecting approximately 6,900 German-built diesel Insignias. The fix involves replacing the power steering pressure pipe and clip.",
+      "typical_symptoms": [
+        "Smell of burning fluid under the bonnet",
+        "Visible fluid leaking near the power steering reservoir",
+        "Smoke or flames from the engine bay",
+        "Power steering fluid level dropping rapidly"
+      ],
+      "affected_years": [
+        2009,
+        2010
+      ],
+      "estimated_repair_cost_gbp_range": [
+        300,
+        600
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Vauxhall Insignia (2008 – 2017) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/vauxhall/insignia/2008/"
+        }
+      ]
+    },
+    {
+      "title": "Diesel particulate filter regeneration problems and blockages",
+      "description": "The DPF regeneration system on 2.0 CDTi diesel engines can fail repeatedly, particularly on vehicles used for short journeys that do not allow the engine to reach sufficient temperature for passive regeneration. Owners report dashboard warnings of 'Engine overheating Turn off immediately' and error code P2428 (Exhaust Gas Temperature Too High). Blocked DPFs can cause severe drivability issues and expensive repairs, especially if the engine is damaged by excessive oil dilution or turbo damage during failed regeneration attempts.",
+      "typical_symptoms": [
+        "Dashboard warning 'Engine overheating Turn off immediately'",
+        "Reduced engine power or 'limp mode' activation",
+        "White or excessive smoke from the exhaust",
+        "Rough running or loss of power under acceleration",
+        "Significant increase in fuel consumption"
+      ],
+      "affected_years": [
+        2009,
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017
+      ],
+      "estimated_repair_cost_gbp_range": [
+        800,
+        2500
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Vauxhall Insignia (2008 – 2017) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/vauxhall/insignia/2008/"
+        }
+      ]
+    },
+    {
+      "title": "Automatic gearbox hesitation and judder on 2.0 CDTi models",
+      "description": "Some 2.0 CDTi automatic Insignias have developed prolonged judder during warm-up and hesitation under acceleration. A software update issued by Vauxhall in November 2012 made the problem worse on some vehicles, causing high idle, rev needle fluctuation, and poor fuel economy. Vauxhall suspended the update nationwide due to complications. The issue has proven difficult for dealers to resolve and may persist even after multiple visits and software revisions.",
+      "typical_symptoms": [
+        "Judder or shaking during engine warm-up",
+        "Hesitation or delay when accelerating",
+        "Hanging in gear or delayed gear changes",
+        "Erratic rev counter needle movement",
+        "Fuel economy dropping significantly below expected figures"
+      ],
+      "affected_years": [
+        2011,
+        2012,
+        2013
+      ],
+      "estimated_repair_cost_gbp_range": null,
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Vauxhall Insignia (2008 – 2017) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/vauxhall/insignia/2008/"
+        }
+      ]
+    },
+    {
+      "title": "Water ingress into boot and electrical system failures",
+      "description": "Water ingress has been reported in the boot area, particularly on the left side, with water entering via the cabin vent situated in the lower side of the boot between the carpet and bumper cover extension. Water ingress can cause cascading electrical failures affecting the instrument cluster, fan and heater controls, tyre pressure monitoring, theft deterrent system, and airbag systems. These faults can be intermittent and difficult to diagnose.",
+      "typical_symptoms": [
+        "Damp smell in the boot or interior",
+        "Instrument cluster powering on and off intermittently",
+        "Fan and heater controls malfunctioning",
+        "Service warning lights appearing for multiple systems (tyre monitor, airbag, theft deterrent)",
+        "Electrical gremlins affecting various vehicle systems"
+      ],
+      "affected_years": null,
+      "estimated_repair_cost_gbp_range": null,
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Vauxhall Insignia (2008 – 2017) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/vauxhall/insignia/2008/"
+        }
+      ]
+    }
+  ],
+  "overall_reliability_note": "The Insignia is a comfortable and practical family car with good fuel economy, but manual diesel variants are prone to early dual mass flywheel failure, early 2009–2010 models carry a fire risk from power steering fluid leaks, and diesel engines require careful maintenance of the DPF regeneration system to avoid costly repairs.",
+  "last_updated": "2026-04-27T00:00:00Z",
+  "sources": [
+    {
+      "title": "Vauxhall Insignia (2008 – 2017) Review | Honest John",
+      "url": "https://www.honestjohn.co.uk/vauxhall/insignia/2008/"
+    }
+  ],
+  "hero_image": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/e/ed/Opel_Insignia_Sports_Tourer_1.5_DIT_Innovation_%28B%29_%E2%80%93_Frontansicht%2C_12._Mai_2017%2C_D%C3%BCsseldorf.jpg",
+    "width": 3458,
+    "height": 1620,
+    "source_page_url": "https://en.wikipedia.org/wiki/Opel_Insignia",
+    "artist": "© M 93",
+    "license_short": "CC BY-SA 3.0 de",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0/de/deed.en"
+  }
+}

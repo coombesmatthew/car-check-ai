@@ -1,0 +1,153 @@
+{
+  "make": "Mercedes-Benz",
+  "model": "C-Class",
+  "generation": "W205",
+  "years": "2014-2021",
+  "top_issues": [
+    {
+      "title": "Infotainment system failures and software glitches",
+      "description": "The Command infotainment system has been reported to develop scrolling lines on the display, lose functionality, fail to read SD cards, and experience Bluetooth phone system failures. Software updates have sometimes resolved issues temporarily, but recurring problems suggest deeper reliability concerns with the system's hardware or firmware.",
+      "typical_symptoms": [
+        "Scrolling lines on the control screen",
+        "Satnav refusing to read SD card",
+        "Loss of infotainment display functionality",
+        "Bluetooth phone system not working",
+        "Multiple warning lights appearing on dashboard"
+      ],
+      "affected_years": [
+        2014,
+        2015,
+        2016,
+        2017
+      ],
+      "estimated_repair_cost_gbp_range": [
+        400,
+        1200
+      ],
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Mercedes-Benz C-Class (2014 – 2021) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/mercedes-benz/c-class/2014/"
+        }
+      ]
+    },
+    {
+      "title": "Blocked fuel tank charcoal filter causing petrol smell",
+      "description": "The charcoal filter in the fuel tank breather system becomes blocked, causing a noticeable petrol smell both inside the cabin and outside the vehicle. This is a known issue on the C-Class and A-Class. Dealers have sometimes charged a diagnosis fee for a problem that should be rectified at no cost.",
+      "typical_symptoms": [
+        "Strong petrol smell inside the cabin",
+        "Petrol smell outside the vehicle",
+        "Smell develops after several months or years of ownership"
+      ],
+      "affected_years": [
+        2015,
+        2016,
+        2019
+      ],
+      "estimated_repair_cost_gbp_range": [
+        200,
+        600
+      ],
+      "severity": "low",
+      "source_citations": [
+        {
+          "title": "Mercedes-Benz C-Class (2014 – 2021) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/mercedes-benz/c-class/2014/"
+        }
+      ]
+    },
+    {
+      "title": "C43 AMG 4Matic tyre noise and clunking on full lock",
+      "description": "The C43 AMG 4Matic exhibits tyre chuntering, skipping, and clunking noises when turning at full lock or limited lock, particularly at low speed. Mercedes has acknowledged this as a characteristic of the car and offered all-weather tyres as a partial solution. The root cause appears to be related to the 4Matic centre differential or steering knuckle engineering, particularly on right-hand-drive cars.",
+      "typical_symptoms": [
+        "Loud chuntering or skipping noise from front tyres on lock",
+        "Tyre noise when manoeuvring at low speed",
+        "Tyre folding over on full lock",
+        "Crabbing motion when turning at less than full lock"
+      ],
+      "affected_years": [
+        2016,
+        2017,
+        2019
+      ],
+      "estimated_repair_cost_gbp_range": [
+        400,
+        1500
+      ],
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Mercedes-Benz C-Class (2014 – 2021) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/mercedes-benz/c-class/2014/"
+        }
+      ]
+    },
+    {
+      "title": "Automatic gearbox failures on 1.6 Bluetec diesel models",
+      "description": "The Renault-engined 1.6 Bluetec diesel with automatic gearbox has experienced multiple gearbox failures, often accompanied by turbocharger failure and power loss. Some vehicles have required gearbox replacement more than once during ownership, with extended periods off the road for repairs.",
+      "typical_symptoms": [
+        "Power loss while driving",
+        "Gearbox warning light or limp-home mode",
+        "Turbocharger failure",
+        "Start-stop function causing power loss when pulling away"
+      ],
+      "affected_years": [
+        2015,
+        2016,
+        2017
+      ],
+      "estimated_repair_cost_gbp_range": [
+        1500,
+        3500
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Mercedes-Benz C-Class (2014 – 2021) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/mercedes-benz/c-class/2014/"
+        }
+      ]
+    },
+    {
+      "title": "Electric power steering motor failure requiring full rack replacement",
+      "description": "The electric steering motor can fail, and because it is integrated into the steering rack assembly, Mercedes dealers recommend replacing the entire rack rather than the motor alone. This is a costly repair, though Mercedes-Benz UK has offered to cover 50 per cent of the cost in some cases.",
+      "typical_symptoms": [
+        "Loss of power steering assistance",
+        "Steering becomes heavy or unresponsive",
+        "Steering warning light on dashboard"
+      ],
+      "affected_years": [
+        2016
+      ],
+      "estimated_repair_cost_gbp_range": [
+        1100,
+        2200
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Mercedes-Benz C-Class (2014 – 2021) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/mercedes-benz/c-class/2014/"
+        }
+      ]
+    }
+  ],
+  "overall_reliability_note": "The W205 C-Class is generally well-refined and comfortable, but early models (2014–2016) have shown quality issues with infotainment systems and electrical components, whilst diesel variants with automatic gearboxes can be unreliable; the 4Matic system on the C43 AMG exhibits tyre noise on lock that Mercedes acknowledges as a characteristic rather than a fault.",
+  "last_updated": "2026-04-27T00:00:00Z",
+  "sources": [
+    {
+      "title": "Mercedes-Benz C-Class (2014 – 2021) Review | Honest John",
+      "url": "https://www.honestjohn.co.uk/mercedes-benz/c-class/2014/"
+    }
+  ],
+  "hero_image": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/5/52/Mercedes-Benz_C_200_Avantgarde_%28W_205%29_%E2%80%93_Frontansicht%2C_26._April_2014%2C_D%C3%BCsseldorf.jpg",
+    "width": 3418,
+    "height": 1711,
+    "source_page_url": "https://en.wikipedia.org/wiki/Mercedes-Benz_C-Class_(W205)",
+    "artist": "M 93",
+    "license_short": "CC BY-SA 3.0 de",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0/de/deed.en"
+  }
+}

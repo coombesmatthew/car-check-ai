@@ -1,0 +1,170 @@
+{
+  "make": "Volkswagen",
+  "model": "Golf",
+  "generation": "Mk6",
+  "years": "2008-2012",
+  "top_issues": [
+    {
+      "title": "7-speed DSG dry clutch failures and mechatronics faults",
+      "description": "The 7-speed dry clutch DSG gearbox fitted to many 2008–2012 Golfs is prone to clutch pack wear, mechatronics unit failure, and loss of drive. Problems range from juddering on acceleration and gear slip to complete transmission failure. Repair or replacement of the mechatronics unit or entire gearbox is expensive and often only partially covered by warranty.",
+      "typical_symptoms": [
+        "Juddering or jerking when pulling away or changing gear",
+        "Loss of drive or slipping into neutral",
+        "Flashing spanner warning light on dashboard",
+        "Difficulty moving off on hills or inclines",
+        "Clunking or thudding when changing gear"
+      ],
+      "affected_years": [
+        2008,
+        2009,
+        2010,
+        2011,
+        2012
+      ],
+      "estimated_repair_cost_gbp_range": [
+        1500,
+        6000
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Volkswagen Golf (2008 – 2012) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/volkswagen/golf/2008/"
+        }
+      ]
+    },
+    {
+      "title": "Timing chain stretch and failure on 1.4 TSI engines",
+      "description": "The 1.4 TSI petrol engine, particularly the Twincharger variant, is prone to timing chain stretch, slip, and premature failure. The chain tensioner can also fail. Once the chain slips, valve-to-piston contact occurs, causing severe engine damage. Many owners report failure well before 50,000 miles despite regular servicing.",
+      "typical_symptoms": [
+        "Rattling or tinking noise from the engine, especially on cold start or acceleration",
+        "Engine will not start after running normally",
+        "Loss of compression",
+        "Engine management warning light",
+        "Misfire or rough running"
+      ],
+      "affected_years": [
+        2008,
+        2009,
+        2010,
+        2011,
+        2012
+      ],
+      "estimated_repair_cost_gbp_range": [
+        1500,
+        6000
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Volkswagen Golf (2008 – 2012) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/volkswagen/golf/2008/"
+        }
+      ]
+    },
+    {
+      "title": "EGR valve and cooler failures on 1.6 TDI diesel engines",
+      "description": "The 1.6 TDI diesel engine (EA189) is prone to EGR valve and cooler failure, particularly when used for frequent short runs from cold. The EGR cooler can clog or leak. Problems are compounded by the EA189 NOx emissions software update, which has triggered EGR failures in previously trouble-free cars. Repair costs are substantial and warranty cover is often limited.",
+      "typical_symptoms": [
+        "Engine management or glow plug warning light on dashboard",
+        "Loss of power or limp-home mode",
+        "Difficult starting, especially in cold weather",
+        "Increased fuel consumption",
+        "Coolant or oil leaks from the EGR area"
+      ],
+      "affected_years": [
+        2008,
+        2009,
+        2010,
+        2011,
+        2012
+      ],
+      "estimated_repair_cost_gbp_range": [
+        300,
+        1600
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Volkswagen Golf (2008 – 2012) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/volkswagen/golf/2008/"
+        }
+      ]
+    },
+    {
+      "title": "DPF blockage and regeneration issues on diesel variants",
+      "description": "Diesel Golfs, particularly the 1.6 TDI, can suffer from diesel particulate filter blockage, especially if driven mainly on short runs. The DPF may fail to regenerate properly, triggering warning lights and loss of power. Forced regeneration by a dealer is often needed, though some filters require replacement.",
+      "typical_symptoms": [
+        "DPF warning light on dashboard",
+        "Loss of power or limp-home mode",
+        "Increased fuel consumption",
+        "Excessive smoke from exhaust",
+        "Engine management light"
+      ],
+      "affected_years": [
+        2008,
+        2009,
+        2010,
+        2011,
+        2012
+      ],
+      "estimated_repair_cost_gbp_range": [
+        0,
+        2500
+      ],
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Volkswagen Golf (2008 – 2012) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/volkswagen/golf/2008/"
+        }
+      ]
+    },
+    {
+      "title": "Piston and piston ring failure on 1.4 TSI engines",
+      "description": "Some 1.4 TSI engines, particularly the 160 PS Twincharger variant, suffer from piston crown burn-out and piston ring cracking. This leads to loss of compression and severe engine damage. The fault appears to affect a specific production batch and can occur at relatively low mileage.",
+      "typical_symptoms": [
+        "Loss of compression in one or more cylinders",
+        "Engine management warning light",
+        "Rough running or misfire",
+        "Reduced power",
+        "Engine will not start or starts with difficulty"
+      ],
+      "affected_years": [
+        2008,
+        2009,
+        2010,
+        2011,
+        2012
+      ],
+      "estimated_repair_cost_gbp_range": [
+        2000,
+        6000
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Volkswagen Golf (2008 – 2012) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/volkswagen/golf/2008/"
+        }
+      ]
+    }
+  ],
+  "overall_reliability_note": "The 2008–2012 Golf is a well-built and comfortable hatchback, but the 7-speed DSG gearbox, 1.4 TSI timing chain, 1.6 TDI EGR system, and certain petrol engine pistons are known weak points that can result in costly repairs outside warranty.",
+  "last_updated": "2026-04-27T00:00:00Z",
+  "sources": [
+    {
+      "title": "Volkswagen Golf (2008 – 2012) Review | Honest John",
+      "url": "https://www.honestjohn.co.uk/volkswagen/golf/2008/"
+    }
+  ],
+  "hero_image": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/9/9c/VW_Golf_%28VI%29_front_20110115.jpg",
+    "width": 2434,
+    "height": 1332,
+    "source_page_url": "https://en.wikipedia.org/wiki/Volkswagen_Golf_Mk6",
+    "artist": "M 93",
+    "license_short": "Attribution",
+    "license_url": null
+  }
+}

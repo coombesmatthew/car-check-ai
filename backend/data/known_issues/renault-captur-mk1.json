@@ -1,0 +1,149 @@
+{
+  "make": "Renault",
+  "model": "Captur",
+  "generation": "Mk1",
+  "years": "2013-2019",
+  "top_issues": [
+    {
+      "title": "Infotainment system failures and software incompatibility",
+      "description": "The Captur's infotainment system is prone to screen failures, particularly when paired with newer smartphones via Bluetooth. Software updates and compatibility issues with modern devices (such as iPhone 8 and later) can cause the system to freeze or lose functionality entirely. Dealers have struggled to resolve these issues permanently, sometimes requiring multiple visits and component replacements.",
+      "typical_symptoms": [
+        "Infotainment screen freezing or going blank",
+        "Loss of satellite navigation functionality",
+        "Buttons on infotainment unit becoming unresponsive",
+        "Screen failures when connecting smartphone via Bluetooth",
+        "Unable to update software or SD card",
+        "Loss of time signal display"
+      ],
+      "affected_years": [
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2019
+      ],
+      "estimated_repair_cost_gbp_range": null,
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Renault Captur (2013 – 2019) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/renault/captur/2013/"
+        }
+      ]
+    },
+    {
+      "title": "Front strut top bearing failure at low mileage",
+      "description": "The front strut top bearing can fail prematurely, sometimes within the first 10,000 miles. This is a suspension component that supports the weight of the vehicle and allows the wheel to turn. Early failure suggests a design or manufacturing weakness that affects handling and safety.",
+      "typical_symptoms": [
+        "Clunking noise from the front suspension when turning",
+        "Knocking sound when going over bumps",
+        "Uneven tyre wear",
+        "Steering feels loose or vague"
+      ],
+      "affected_years": [
+        2014
+      ],
+      "estimated_repair_cost_gbp_range": [
+        300,
+        600
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Renault Captur (2013 – 2019) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/renault/captur/2013/"
+        }
+      ]
+    },
+    {
+      "title": "EDC automatic gearbox transmission failures",
+      "description": "The EDC (Efficient Dual Clutch) automatic gearbox has been reported to fail suddenly, sometimes within the first few hundred miles of ownership. When failure occurs, the entire transmission unit typically requires replacement, which is a costly repair. This affects the 1.5 dCi diesel and some petrol variants with automatic transmission.",
+      "typical_symptoms": [
+        "Gearbox warning light on dashboard",
+        "Loss of drive or inability to select gears",
+        "Sudden transmission failure with no prior warning",
+        "Gearchange sticking when engine is hot"
+      ],
+      "affected_years": [
+        2016
+      ],
+      "estimated_repair_cost_gbp_range": [
+        2000,
+        3500
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Renault Captur (2013 – 2019) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/renault/captur/2013/"
+        }
+      ]
+    },
+    {
+      "title": "Scuttle drain blockage causing interior water ingress",
+      "description": "The scuttle vent well drains (the drainage channels beneath the windscreen) can become blocked, allowing water to accumulate and flood the passenger footwell. This can cause damage to electrical components and create an unpleasant damp smell inside the cabin. Repairs can be unexpectedly expensive if the blockage is deep within the pipe system.",
+      "typical_symptoms": [
+        "Water pooling on the passenger-side floor",
+        "Damp smell inside the cabin",
+        "Wet carpets or floor mats",
+        "Visible water staining on interior trim"
+      ],
+      "affected_years": [
+        2016
+      ],
+      "estimated_repair_cost_gbp_range": [
+        200,
+        400
+      ],
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Renault Captur (2013 – 2019) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/renault/captur/2013/"
+        }
+      ]
+    },
+    {
+      "title": "Clutch slave cylinder leaks causing premature clutch wear",
+      "description": "The clutch slave cylinder can develop leaks, allowing hydraulic fluid to escape. This reduces pressure in the clutch system and causes the clutch to slip, making the car difficult to drive and requiring premature clutch replacement. The issue has been reported on cars with very low mileage, suggesting a manufacturing defect.",
+      "typical_symptoms": [
+        "Clutch slipping under acceleration",
+        "Difficulty pulling away from a standstill",
+        "Engine revving without corresponding acceleration",
+        "Fluid leak visible beneath the car",
+        "Soft or spongy clutch pedal feel"
+      ],
+      "affected_years": null,
+      "estimated_repair_cost_gbp_range": [
+        600,
+        1200
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Renault Captur (2013 – 2019) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/renault/captur/2013/"
+        }
+      ]
+    }
+  ],
+  "overall_reliability_note": "The Renault Captur is a practical small SUV with good fuel economy and a spacious interior, but early examples can suffer from infotainment glitches, suspension bearing failures, and automatic gearbox problems that require expensive repairs.",
+  "last_updated": "2026-04-27T00:00:00Z",
+  "sources": [
+    {
+      "title": "Renault Captur (2013 – 2019) Review | Honest John",
+      "url": "https://www.honestjohn.co.uk/renault/captur/2013/"
+    }
+  ],
+  "hero_image": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/2024_Renault_Captur_II_Automesse_Ludwigsburg_2024_IMG_1506.jpg/3840px-2024_Renault_Captur_II_Automesse_Ludwigsburg_2024_IMG_1506.jpg",
+    "width": 5221,
+    "height": 2951,
+    "source_page_url": "https://en.wikipedia.org/wiki/Renault_Captur",
+    "artist": null,
+    "license_short": null,
+    "license_url": null
+  }
+}

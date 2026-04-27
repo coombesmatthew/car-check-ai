@@ -1,0 +1,169 @@
+{
+  "make": "BMW",
+  "model": "1 Series",
+  "generation": "E87/E81/E82/E88",
+  "years": "2004-2011",
+  "top_issues": [
+    {
+      "title": "Timing chain failures on N47 diesel engines",
+      "description": "The N47 diesel engine, introduced in March 2007, has a timing chain at the back of the engine with a known weakness in the tensioner design. Timing chain failures have been reported from around 40,000 miles onwards, sometimes with no warning. When the chain fails, it can cause catastrophic engine damage. BMW has issued a recall for inspection and replacement of the timing chain tensioner and chain itself on cars with modest mileage and full service history, but out-of-warranty repairs can cost £2,000–£2,500.",
+      "typical_symptoms": [
+        "Rattling noise from the engine, especially on cold start or at idle",
+        "Loss of power whilst driving",
+        "Engine seizure or sudden shutdown",
+        "No warning light before failure"
+      ],
+      "affected_years": [
+        2007,
+        2008,
+        2009,
+        2010,
+        2011
+      ],
+      "estimated_repair_cost_gbp_range": [
+        2000,
+        2500
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "BMW 1 Series (2004 – 2011) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/bmw/1-series/2004/"
+        }
+      ]
+    },
+    {
+      "title": "Timing chain and tensioner problems on N43 petrol engines",
+      "description": "The N43 petrol engine fitted to 116i and 118i models can suffer timing chain tensioner failure, which allows the chain to jump a cog or stretch. Early cars (2004–2006) are particularly at risk. In some cases the plastic timing chain guide has broken up, with fragments blocking the oil strainer and starving the engine of oil, leading to seizure. Repair typically requires a new chain tensioner and anti-skipping bracket on early models, but can escalate to full engine replacement if damage is severe.",
+      "typical_symptoms": [
+        "Rattling noise from the engine",
+        "Loss of power or engine seizure",
+        "No warning light before failure",
+        "Compression loss in one or more cylinders"
+      ],
+      "affected_years": [
+        2004,
+        2005,
+        2006,
+        2007,
+        2008,
+        2009,
+        2010
+      ],
+      "estimated_repair_cost_gbp_range": [
+        2400,
+        7000
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "BMW 1 Series (2004 – 2011) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/bmw/1-series/2004/"
+        }
+      ]
+    },
+    {
+      "title": "Dual mass flywheel and clutch failures on manual diesel models",
+      "description": "Manual diesel variants, particularly the 118d and 120d, have experienced repeated dual mass flywheel (DMF) and clutch failures. Some cars have required replacement five times or more. The problem manifests as clutch judder. BMW initially offers a software upgrade to increase idle revs; if that fails, the DMF and clutch are replaced with a new design on warranty cars. Out-of-warranty repairs are expensive.",
+      "typical_symptoms": [
+        "Judder or vibration when pulling away from a standstill",
+        "Difficulty engaging gears smoothly",
+        "Burning smell from the clutch area"
+      ],
+      "affected_years": [
+        2007,
+        2008,
+        2009,
+        2010,
+        2011
+      ],
+      "estimated_repair_cost_gbp_range": [
+        800,
+        1500
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "BMW 1 Series (2004 – 2011) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/bmw/1-series/2004/"
+        }
+      ]
+    },
+    {
+      "title": "Coil pack and fuel injector failures on 4-cylinder petrol engines",
+      "description": "From 2007 onwards, 4-cylinder petrol engines (particularly the N43) have suffered repeated coil pack and fuel injector failures. Multiple injectors can fail simultaneously, and diagnostics may not pinpoint which injector is faulty. Replacement of all six injectors is often recommended even if only one or two have failed. Some cars have required four new injectors plus a new ECU.",
+      "typical_symptoms": [
+        "Engine misfiring or rough idle",
+        "Loss of power or hesitation under acceleration",
+        "Check engine warning light",
+        "Difficulty starting"
+      ],
+      "affected_years": [
+        2007,
+        2008,
+        2009,
+        2010,
+        2011
+      ],
+      "estimated_repair_cost_gbp_range": [
+        1000,
+        2000
+      ],
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "BMW 1 Series (2004 – 2011) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/bmw/1-series/2004/"
+        }
+      ]
+    },
+    {
+      "title": "Catalytic converter failure on 118i N42B20 engine",
+      "description": "The 118i with the N42B20 engine has two catalytic converters: one integrated into the exhaust manifold (OEM only, very expensive) and one under the car. If the manifold converter breaks up, fragments damage the second converter, resulting in a very high repair bill at BMW dealers. Independent specialists and aftermarket solutions are available at a fraction of the cost.",
+      "typical_symptoms": [
+        "Check engine warning light",
+        "Loss of power",
+        "Rattling noise from the exhaust",
+        "Failed emissions test"
+      ],
+      "affected_years": [
+        2004,
+        2005,
+        2006,
+        2007,
+        2008,
+        2009,
+        2010,
+        2011
+      ],
+      "estimated_repair_cost_gbp_range": [
+        400,
+        1700
+      ],
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "BMW 1 Series (2004 – 2011) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/bmw/1-series/2004/"
+        }
+      ]
+    }
+  ],
+  "overall_reliability_note": "The BMW 1 Series (2004–2011) is well-engineered and enjoyable to drive, but diesel variants with the N47 engine and petrol models with the N43 engine have significant timing chain and tensioner issues that can lead to costly repairs or engine failure. Manual diesel models are prone to repeated dual mass flywheel failures. Regular servicing with frequent oil changes (every 10,000 miles maximum) is essential, particularly for diesel engines.",
+  "last_updated": "2026-04-27T00:00:00Z",
+  "sources": [
+    {
+      "title": "BMW 1 Series (2004 – 2011) Review | Honest John",
+      "url": "https://www.honestjohn.co.uk/bmw/1-series/2004/"
+    }
+  ],
+  "hero_image": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/9/94/BMW_E87_front_20080417.jpg",
+    "width": 1212,
+    "height": 843,
+    "source_page_url": "https://en.wikipedia.org/wiki/BMW_1_Series_(E87)",
+    "artist": "Rudolf Stricker",
+    "license_short": "CC BY-SA 3.0",
+    "license_url": "http://creativecommons.org/licenses/by-sa/3.0/"
+  }
+}

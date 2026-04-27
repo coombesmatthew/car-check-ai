@@ -1,0 +1,149 @@
+{
+  "make": "Honda",
+  "model": "CR-V",
+  "generation": "Mk4",
+  "years": "2012-2018",
+  "top_issues": [
+    {
+      "title": "Clutch and dual-mass flywheel failure on manual variants",
+      "description": "Manual CR-V models, particularly the 1.6 i-DTEC and 2.2 i-DTEC, have experienced premature clutch failure and dual-mass flywheel (DMF) problems. Some owners report failure as early as 10,000 miles, whilst others see issues at 18,000 or 37,000 miles. Honda has attributed some failures to driver error or moisture on the clutch plate, which it has labelled a 'characteristic' of the car rather than a defect. Replacement costs are substantial and the problem can recur shortly after repair.",
+      "typical_symptoms": [
+        "Judder when pulling away from cold start",
+        "Clutch slipping or burning smell",
+        "Difficulty engaging gears",
+        "Repeated clutch failure within a few thousand miles of replacement"
+      ],
+      "affected_years": [
+        2012,
+        2013,
+        2014,
+        2015,
+        2017
+      ],
+      "estimated_repair_cost_gbp_range": [
+        2000,
+        2400
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Honda CR-V (2012 – 2018) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/honda/cr-v/2012/"
+        }
+      ]
+    },
+    {
+      "title": "DPF blockage and regeneration failure on 1.6 i-DTEC diesel",
+      "description": "The 1.6 i-DTEC diesel engine is prone to diesel particulate filter (DPF) sooting and regeneration failure, particularly in cars used for frequent short journeys or low-mileage driving. Owners report DPF warning lights appearing within the first few thousand miles, and forced regeneration by dealers does not always resolve the issue permanently. Some cars have required complete DPF replacement under warranty, whilst others have seen the fault return shortly after repair.",
+      "typical_symptoms": [
+        "DPF warning light on dashboard",
+        "Engine management light illuminated",
+        "Reduced engine performance or limp mode",
+        "DPF light reappearing days or weeks after dealer service"
+      ],
+      "affected_years": [
+        2015,
+        2016
+      ],
+      "estimated_repair_cost_gbp_range": [
+        800,
+        2500
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Honda CR-V (2012 – 2018) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/honda/cr-v/2012/"
+        }
+      ]
+    },
+    {
+      "title": "Electrical and engine management faults on 2016 models",
+      "description": "Several 2016 CR-V models have developed intermittent electrical and engine management issues, including glow plug failures, Body Control Module (BCM) power drain, and PGM-FI warning lights. Some cars have required multiple visits to dealerships for diagnosis and repair, with issues sometimes recurring after work has been completed. These faults appear to be related to how the car was driven by the previous owner or manufacturing inconsistencies.",
+      "typical_symptoms": [
+        "Engine management light on dashboard",
+        "Intermittent cutting out or stalling",
+        "Glow plug warning light",
+        "Battery draining when car is switched off",
+        "Difficulty starting"
+      ],
+      "affected_years": [
+        2016
+      ],
+      "estimated_repair_cost_gbp_range": [
+        300,
+        1200
+      ],
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Honda CR-V (2012 – 2018) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/honda/cr-v/2012/"
+        }
+      ]
+    },
+    {
+      "title": "Fuel system contamination and high-pressure pump failure",
+      "description": "Some CR-V models have developed fuel system problems including metal swarf contamination and high-pressure fuel pump failure. These issues typically require replacement of multiple fuel system components including the fuel pump, injectors, fuel rail, and high-pressure pipes. Costs can be substantial. Contamination may result from misfuelling or use of low-quality diesel, but some failures appear to occur on properly maintained vehicles.",
+      "typical_symptoms": [
+        "Engine management light on dashboard",
+        "Rough running or misfiring",
+        "Loss of power",
+        "Difficulty starting"
+      ],
+      "affected_years": [
+        2014,
+        2015,
+        2016
+      ],
+      "estimated_repair_cost_gbp_range": [
+        5290,
+        6000
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Honda CR-V (2012 – 2018) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/honda/cr-v/2012/"
+        }
+      ]
+    },
+    {
+      "title": "Excessive oil consumption on 1.6 i-DTEC diesel engines",
+      "description": "Some 1.6 i-DTEC diesel CR-V models have exhibited abnormally high oil consumption, burning through a litre of oil every 800–900 miles. Honda has stated this falls within 'normal tolerances' for the engine, particularly during active DPF regeneration cycles. The issue appears linked to short-journey driving patterns that trigger frequent regeneration, and may worsen if the engine is switched off mid-regeneration.",
+      "typical_symptoms": [
+        "Oil warning light on dashboard",
+        "Low oil level on dipstick check",
+        "No visible oil leaks underneath the car"
+      ],
+      "affected_years": [
+        2018
+      ],
+      "estimated_repair_cost_gbp_range": null,
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Honda CR-V (2012 – 2018) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/honda/cr-v/2012/"
+        }
+      ]
+    }
+  ],
+  "overall_reliability_note": "The Honda CR-V is generally a reliable and practical family SUV, but the 1.6 i-DTEC diesel engine has shown susceptibility to clutch failure on manuals, DPF regeneration problems on short-run drivers, and occasional electrical faults on 2016 models; the older 2.2 i-DTEC and 2.0 petrol engines are best avoided.",
+  "last_updated": "2026-04-27T00:00:00Z",
+  "sources": [
+    {
+      "title": "Honda CR-V (2012 – 2018) Review | Honest John",
+      "url": "https://www.honestjohn.co.uk/honda/cr-v/2012/"
+    }
+  ],
+  "hero_image": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/4/4a/Honda_CR-V_2.2_i-DTEC_Lifestyle_%28IV%29_%E2%80%93_Frontansicht%2C_25._Januar_2014%2C_D%C3%BCsseldorf.jpg",
+    "width": 3418,
+    "height": 1893,
+    "source_page_url": "https://en.wikipedia.org/wiki/Honda_CR-V_(fourth_generation)",
+    "artist": "M 93",
+    "license_short": "CC BY-SA 3.0 de",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0/de/deed.en"
+  }
+}

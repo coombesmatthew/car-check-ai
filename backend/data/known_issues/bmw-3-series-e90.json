@@ -1,0 +1,165 @@
+{
+  "make": "BMW",
+  "model": "3 Series",
+  "generation": "E90/E91/E92/E93",
+  "years": "2005-2011",
+  "top_issues": [
+    {
+      "title": "N47 diesel timing chain tensioner wear and failure",
+      "description": "The N47 2.0-litre diesel engine (fitted from September 2007 onwards) uses a timing chain at the rear of the engine with tensioners prone to wearing. Timing chain failures can occur from around 5 years old and 90,000 miles onwards, particularly on cars subject to extended oil change intervals. A stretched or failed timing chain can cause severe engine damage and is costly to repair. BMW recommends oil changes every 10,000 miles maximum from 50,000 miles onwards to help prevent this issue.",
+      "typical_symptoms": [
+        "Rattling or scraping noise from the engine on cold start or acceleration",
+        "Engine management warning light",
+        "Loss of power or limp mode",
+        "Rough idle"
+      ],
+      "affected_years": [
+        2007,
+        2008,
+        2009,
+        2010,
+        2011
+      ],
+      "estimated_repair_cost_gbp_range": [
+        1200,
+        3655
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "BMW 3 Series (2005 – 2011) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/bmw/3-series/2005/"
+        }
+      ]
+    },
+    {
+      "title": "Petrol engine coil pack and fuel injector failures",
+      "description": "Coil pack and fuel injector failures are common on N43 4-cylinder and N53 6-cylinder petrol engines from 2007 onwards. Multiple coils and injectors can fail within a short period, sometimes requiring replacement of the entire set. Using low-quality petrol with inadequate detergent content can accelerate injector blockage. BMW recommends using Shell V-Power fuel to help prevent this issue.",
+      "typical_symptoms": [
+        "Engine management warning light",
+        "Misfiring or rough running",
+        "Juddering or hesitation during acceleration",
+        "Difficulty starting"
+      ],
+      "affected_years": [
+        2007,
+        2008,
+        2009,
+        2010,
+        2011
+      ],
+      "estimated_repair_cost_gbp_range": [
+        600,
+        2000
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "BMW 3 Series (2005 – 2011) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/bmw/3-series/2005/"
+        }
+      ]
+    },
+    {
+      "title": "High-pressure fuel pump failures on petrol engines",
+      "description": "High-pressure fuel pump (HPFP) failures are well documented on N52, N53 and N55 petrol engines, particularly the 330i and 335i models. These failures occur across multiple countries and fuel types, suggesting a design issue rather than fuel quality. A failed HPFP will prevent the engine from running and requires replacement of the pump assembly.",
+      "typical_symptoms": [
+        "Engine will not start or starts then stalls immediately",
+        "Loss of power whilst driving",
+        "Engine management warning light"
+      ],
+      "affected_years": [
+        2006,
+        2007,
+        2008,
+        2009,
+        2010,
+        2011
+      ],
+      "estimated_repair_cost_gbp_range": [
+        800,
+        2000
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "BMW 3 Series (2005 – 2011) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/bmw/3-series/2005/"
+        }
+      ]
+    },
+    {
+      "title": "Diesel particulate filter blockage and turbo damage",
+      "description": "Diesel particulate filters (DPF) on N47 and N57 diesel engines are prone to blockage, particularly on cars driven repeatedly over short distances from cold. A blocked DPF increases back pressure and can prevent the turbo from turning, leading to overheating and turbo failure. DPF failures typically occur between 80,000 and 120,000 miles. Continued driving with a blocked DPF warning can cause catastrophic turbo damage.",
+      "typical_symptoms": [
+        "DPF warning light on dashboard",
+        "Reduced power or limp mode",
+        "Increased fuel consumption",
+        "Black sooty exhaust"
+      ],
+      "affected_years": [
+        2006,
+        2007,
+        2008,
+        2009,
+        2010,
+        2011
+      ],
+      "estimated_repair_cost_gbp_range": [
+        1000,
+        2500
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "BMW 3 Series (2005 – 2011) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/bmw/3-series/2005/"
+        }
+      ]
+    },
+    {
+      "title": "ABS and ESP module sensor failures",
+      "description": "The Teves Mk 60 ABS/ESP module contains a boost pressure sensor (G201) that corrodes and fails, typically in cars aged 3 to 5 years old. A failed sensor triggers an ESP warning light and requires replacement of the entire ABS control unit at significant cost. Some cars can be repaired using a specialist ABS repair kit at lower cost. Bosch ABS systems do not suffer from this issue.",
+      "typical_symptoms": [
+        "ESP or ABS warning light on dashboard",
+        "Warning light may not cause MoT failure but indicates underlying fault"
+      ],
+      "affected_years": [
+        2005,
+        2006,
+        2007,
+        2008,
+        2009,
+        2010
+      ],
+      "estimated_repair_cost_gbp_range": [
+        144,
+        2000
+      ],
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "BMW 3 Series (2005 – 2011) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/bmw/3-series/2005/"
+        }
+      ]
+    }
+  ],
+  "overall_reliability_note": "The E90/E91/E92/E93 BMW 3 Series is generally well-engineered but suffers from specific engine and electrical issues. N47 diesel engines require diligent maintenance and early oil changes to avoid timing chain failure. Petrol engines are prone to coil pack and injector problems, particularly with poor-quality fuel. Diesel variants require careful DPF management on short-distance driving. Independent specialist repair can often be more economical than BMW dealer pricing.",
+  "last_updated": "2026-04-27T00:00:00Z",
+  "sources": [
+    {
+      "title": "BMW 3 Series (2005 – 2011) Review | Honest John",
+      "url": "https://www.honestjohn.co.uk/bmw/3-series/2005/"
+    }
+  ],
+  "hero_image": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/a/a2/2005-2008_BMW_320i_%28E90%29_sedan_%282011-07-17%29_01.jpg",
+    "width": 3797,
+    "height": 1822,
+    "source_page_url": "https://en.wikipedia.org/wiki/BMW_3_Series_(E90)",
+    "artist": "OSX",
+    "license_short": "Public domain",
+    "license_url": null
+  }
+}

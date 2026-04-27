@@ -1,0 +1,167 @@
+{
+  "make": "Ford",
+  "model": "Fiesta",
+  "generation": "Mk7",
+  "years": "2008–2013",
+  "top_issues": [
+    {
+      "title": "Diesel injector failure and fuel-in-oil contamination",
+      "description": "Diesel variants (1.4 TDCI and 1.6 TDCI) are prone to injector failure, which can occur from around 60,000 miles onwards. Faulty injectors or injector seals allow fuel to contaminate the engine oil, triggering warning lights and loss of power. Replacement of all four injectors typically costs £1,200, and the problem is common enough that it appears repeatedly in owner reports.",
+      "typical_symptoms": [
+        "Fuel-in-oil warning light on dashboard",
+        "Loss of power or engine hesitation when warm",
+        "Engine entering limp-home mode with cog and exclamation mark warning light",
+        "Rough idle or stuttering at motorway speeds"
+      ],
+      "affected_years": [
+        2008,
+        2009,
+        2010,
+        2011,
+        2012,
+        2013
+      ],
+      "estimated_repair_cost_gbp_range": [
+        1000,
+        1200
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Ford Fiesta (2008 – 2013) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/ford/fiesta/2008/"
+        }
+      ]
+    },
+    {
+      "title": "Petrol engine spark plug failure causing catastrophic engine damage",
+      "description": "Petrol engines (particularly 1.25-litre variants) can suffer spark plug failure, which in some cases has destroyed the engine entirely. The issue appears linked to owners missing the scheduled spark plug replacement at the third service (37,500 miles). A single failed spark plug can cause an exhaust valve to burn out, resulting in engine damage that costs over £1,200 to repair.",
+      "typical_symptoms": [
+        "Engine warning light or no warning before failure",
+        "Loss of power",
+        "Rough running or misfiring",
+        "Engine damage discovered during repair"
+      ],
+      "affected_years": [
+        2008,
+        2009,
+        2010,
+        2011,
+        2012,
+        2013
+      ],
+      "estimated_repair_cost_gbp_range": [
+        1200,
+        2000
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Ford Fiesta (2008 – 2013) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/ford/fiesta/2008/"
+        }
+      ]
+    },
+    {
+      "title": "Front suspension arm snapping and rear subframe bush deterioration",
+      "description": "The front lower suspension arms can snap unexpectedly, as reported on a 2010 model at just 32,000 miles. Additionally, from around 50,000 to 60,000 miles, the rear subframe rubber bushes deteriorate, leading to MoT advisories. Both issues affect the car's structural integrity and handling safety.",
+      "typical_symptoms": [
+        "Clunking or knocking from the front suspension",
+        "Uneven tyre wear",
+        "Pulling to one side when braking or accelerating",
+        "MoT advisory for subframe bush wear"
+      ],
+      "affected_years": [
+        2008,
+        2009,
+        2010,
+        2011,
+        2012,
+        2013
+      ],
+      "estimated_repair_cost_gbp_range": [
+        300,
+        800
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Ford Fiesta (2008 – 2013) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/ford/fiesta/2008/"
+        }
+      ]
+    },
+    {
+      "title": "Power steering clunkiness and CV joint bearing wear",
+      "description": "Many owners report notchy or clunky power steering, particularly between 10 and 30 mph. The problem is caused by dry bearings in the upper CV joint beneath the electric power steering motor, which lose lubrication due to heat. Whilst the issue can be resolved by removing and re-greasing the joint, it requires specialist knowledge and is not a simple dealer fix.",
+      "typical_symptoms": [
+        "Notchy or clunky steering feel at low speeds",
+        "Steering stiffness between 10 and 30 mph",
+        "Creaking or knocking from the steering column"
+      ],
+      "affected_years": [
+        2008,
+        2009,
+        2010,
+        2011,
+        2012,
+        2013
+      ],
+      "estimated_repair_cost_gbp_range": [
+        70,
+        300
+      ],
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Ford Fiesta (2008 – 2013) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/ford/fiesta/2008/"
+        }
+      ]
+    },
+    {
+      "title": "Automatic transmission failures (Powershift and torque converter)",
+      "description": "Both the Powershift dry-clutch automatic and the 4-speed torque converter automatic can fail prematurely. Powershift units suffer from dry clutch pack failure, whilst torque converter automatics lose power and require engine restart to recover. Repairs are costly and the problem has been widespread enough to trigger a consumer protection order in Thailand.",
+      "typical_symptoms": [
+        "Loss of power whilst driving",
+        "Need to stop, switch off engine, and restart to regain power",
+        "Judder or hesitation when pulling away",
+        "Transmission warning light"
+      ],
+      "affected_years": [
+        2010,
+        2011,
+        2012,
+        2013
+      ],
+      "estimated_repair_cost_gbp_range": [
+        1290,
+        1500
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Ford Fiesta (2008 – 2013) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/ford/fiesta/2008/"
+        }
+      ]
+    }
+  ],
+  "overall_reliability_note": "The Fiesta is generally well-built with a good reputation, but diesel variants require careful attention to injector condition and fuel quality, petrol engines demand timely spark plug replacement, and automatic transmissions can be costly to repair.",
+  "last_updated": "2026-04-27T00:00:00Z",
+  "sources": [
+    {
+      "title": "Ford Fiesta (2008 – 2013) Review | Honest John",
+      "url": "https://www.honestjohn.co.uk/ford/fiesta/2008/"
+    }
+  ],
+  "hero_image": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/2017_Ford_Fiesta_Zetec_1.1_Front.jpg/3840px-2017_Ford_Fiesta_Zetec_1.1_Front.jpg",
+    "width": 4807,
+    "height": 2685,
+    "source_page_url": "https://en.wikipedia.org/wiki/Ford_Fiesta_(seventh_generation)",
+    "artist": null,
+    "license_short": null,
+    "license_url": null
+  }
+}

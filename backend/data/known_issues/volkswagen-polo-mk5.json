@@ -1,0 +1,181 @@
+{
+  "make": "Volkswagen",
+  "model": "Polo",
+  "generation": "Mk5",
+  "years": "2009-2017",
+  "top_issues": [
+    {
+      "title": "Timing chain failure and stretching on 1.2 TSI engines",
+      "description": "The 1.2 TSI petrol engine (EA111 and early EA211) is prone to timing chain stretch, slippage, and complete failure, often causing valve damage and engine ruin. This affects cars from 2009 onwards and can occur anywhere from 21,000 to 95,000 miles. The problem appears linked to variable quality of chain links and weak oil pressure starving the tensioner.",
+      "typical_symptoms": [
+        "Rattling noise on cold start-up",
+        "Loss of power or sluggish acceleration",
+        "Engine management light illuminated",
+        "Misfire on one or more cylinders",
+        "Engine failure requiring full replacement"
+      ],
+      "affected_years": [
+        2009,
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015
+      ],
+      "estimated_repair_cost_gbp_range": [
+        1500,
+        5000
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Volkswagen Polo (2009 – 2017) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/volkswagen/polo/2009/"
+        }
+      ]
+    },
+    {
+      "title": "DPF blockage and EGR failure on diesel engines",
+      "description": "Diesel Polos (1.2 TDI, 1.4 TDI, 1.6 TDI) are unsuitable for repeated short journeys from cold. The DPF clogs and the EGR system blocks when the car is not driven far enough to reach regeneration temperature. Volkswagen has acknowledged this unsuitability in official notices. The problem worsens after the NOx emissions fix.",
+      "typical_symptoms": [
+        "Engine management light or DPF warning light on",
+        "Loss of power, especially on hills",
+        "Rough running and black smoke from exhaust",
+        "Engine stalling or cutting out at low speed",
+        "Difficulty starting after the car has been parked"
+      ],
+      "affected_years": [
+        2009,
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017
+      ],
+      "estimated_repair_cost_gbp_range": [
+        800,
+        2500
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Volkswagen Polo (2009 – 2017) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/volkswagen/polo/2009/"
+        }
+      ]
+    },
+    {
+      "title": "DQ200 7-speed dry clutch DSG gearbox mechatronics failure",
+      "description": "The DQ200 automatic gearbox fitted to many Polos suffers from mechatronics unit failure, often between 30,000 and 55,000 miles. The gearbox may stick in a gear, hesitate, judder, or refuse to shift. Repairs are expensive and often fall outside warranty. The dry clutch pack can also fail prematurely.",
+      "typical_symptoms": [
+        "Gearbox sticking in one gear",
+        "Hesitation or juddering when changing gear",
+        "Loss of drive or refusal to engage a gear",
+        "Erratic behaviour in slow-moving traffic",
+        "Warning light on dashboard"
+      ],
+      "affected_years": [
+        2009,
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016
+      ],
+      "estimated_repair_cost_gbp_range": [
+        1500,
+        3000
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Volkswagen Polo (2009 – 2017) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/volkswagen/polo/2009/"
+        }
+      ]
+    },
+    {
+      "title": "Premature front brake disc warping and wear",
+      "description": "Front brake discs warp prematurely, often within 15,000 to 18,000 miles or 15 to 18 months of ownership. Replacement discs may also warp quickly. The problem may be caused by material from brake pads adhering to the disc surface or by poor component quality. Dealers sometimes blame driving style and refuse warranty claims.",
+      "typical_symptoms": [
+        "Pulsing or juddering sensation when braking",
+        "Brake warning light on dashboard",
+        "Uneven brake pad wear",
+        "Noise or grinding when braking"
+      ],
+      "affected_years": [
+        2009,
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015
+      ],
+      "estimated_repair_cost_gbp_range": [
+        150,
+        500
+      ],
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Volkswagen Polo (2009 – 2017) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/volkswagen/polo/2009/"
+        }
+      ]
+    },
+    {
+      "title": "Excessive oil consumption on 1.2 TSI and 1.4 TSI engines",
+      "description": "Some 1.2 TSI and 1.4 TSI petrol engines consume oil at an alarming rate, burning a litre every 300 to 1,200 miles. The problem is caused by worn or defective piston rings. Even after piston ring replacement or engine replacement, the issue can persist. Volkswagen has occasionally bought back affected cars.",
+      "typical_symptoms": [
+        "Oil level dropping rapidly between services",
+        "Blue smoke from the exhaust",
+        "Engine running rough or misfiring",
+        "Oil warning light on dashboard"
+      ],
+      "affected_years": [
+        2009,
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015
+      ],
+      "estimated_repair_cost_gbp_range": [
+        1500,
+        3500
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Volkswagen Polo (2009 – 2017) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/volkswagen/polo/2009/"
+        }
+      ]
+    }
+  ],
+  "overall_reliability_note": "The Polo is a well-built small hatchback with a solid reputation, but the 2009–2017 generation suffers from significant engine and gearbox issues that can be costly to repair, particularly timing chain failure on TSI petrol engines, DPF blockage on diesels unsuitable for short journeys, and mechatronics failure on the DSG automatic.",
+  "last_updated": "2026-04-27T00:00:00Z",
+  "sources": [
+    {
+      "title": "Volkswagen Polo (2009 – 2017) Review | Honest John",
+      "url": "https://www.honestjohn.co.uk/volkswagen/polo/2009/"
+    }
+  ],
+  "hero_image": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/2011_Volkswagen_Polo_S_60_1.2_Front.jpg/3840px-2011_Volkswagen_Polo_S_60_1.2_Front.jpg",
+    "width": 4717,
+    "height": 2566,
+    "source_page_url": "https://en.wikipedia.org/wiki/Volkswagen_Polo_Mk5",
+    "artist": null,
+    "license_short": null,
+    "license_url": null
+  }
+}

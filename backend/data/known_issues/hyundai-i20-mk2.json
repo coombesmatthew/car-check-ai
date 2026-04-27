@@ -1,0 +1,97 @@
+{
+  "make": "Hyundai",
+  "model": "i20",
+  "generation": "Mk2",
+  "years": "2014-2020",
+  "top_issues": [
+    {
+      "title": "Clutch juddering and premature wear",
+      "description": "Multiple owners have reported clutch juddering when pulling away in first and reverse gear, often accompanied by hesitation and power loss. In some cases, clutches have failed or required replacement multiple times within the first 30,000 miles, with investigations revealing flywheel defects and improper engagement between clutch components. This suggests a potential manufacturing issue with the clutch assembly or flywheel on affected vehicles.",
+      "typical_symptoms": [
+        "Juddering or shuddering when setting off in first or reverse gear",
+        "Hesitation or intermittent power loss during acceleration",
+        "Clutch slipping or loss of drive",
+        "Flat spot between first and second gear"
+      ],
+      "affected_years": [
+        2016,
+        2017,
+        2019
+      ],
+      "estimated_repair_cost_gbp_range": [
+        800,
+        1500
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Hyundai i20 (2014 – 2020) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/hyundai/i20/2014/"
+        }
+      ]
+    },
+    {
+      "title": "Excessive oil consumption",
+      "description": "At least one owner reported abnormally high oil consumption of approximately 1 litre per 1000 miles, which is well above the normal range for a small petrol engine. This level of consumption suggests possible internal engine wear, piston ring issues, or valve seal problems that may require significant remedial work.",
+      "typical_symptoms": [
+        "Oil level dropping rapidly between services",
+        "Blue smoke from exhaust on acceleration",
+        "Engine warning light on dashboard"
+      ],
+      "affected_years": [
+        2016
+      ],
+      "estimated_repair_cost_gbp_range": [
+        800,
+        2500
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Hyundai i20 (2014 – 2020) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/hyundai/i20/2014/"
+        }
+      ]
+    },
+    {
+      "title": "Corroded brake discs",
+      "description": "At least one owner reported corrosion on both front and rear brake discs, which can affect braking performance and appearance. Whilst surface corrosion is common in the UK climate, significant corrosion may indicate inadequate protective coating or storage conditions and could require disc replacement.",
+      "typical_symptoms": [
+        "Visible rust or brown discolouration on brake discs",
+        "Brake juddering or pulsation when braking",
+        "Reduced braking efficiency"
+      ],
+      "affected_years": [
+        2016
+      ],
+      "estimated_repair_cost_gbp_range": [
+        200,
+        500
+      ],
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Hyundai i20 (2014 – 2020) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/hyundai/i20/2014/"
+        }
+      ]
+    }
+  ],
+  "overall_reliability_note": "The Hyundai i20 is generally a practical and well-built small hatchback with good value, but some examples have experienced clutch problems and excessive oil consumption that warrant careful inspection before purchase.",
+  "last_updated": "2026-04-27T00:00:00Z",
+  "sources": [
+    {
+      "title": "Hyundai i20 (2014 – 2020) Review | Honest John",
+      "url": "https://www.honestjohn.co.uk/hyundai/i20/2014/"
+    }
+  ],
+  "hero_image": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Hyundai_i20_%28III%2C_Facelift%29_%E2%80%93_f_11102025.jpg/3840px-Hyundai_i20_%28III%2C_Facelift%29_%E2%80%93_f_11102025.jpg",
+    "width": 4073,
+    "height": 2042,
+    "source_page_url": "https://en.wikipedia.org/wiki/Hyundai_i20",
+    "artist": null,
+    "license_short": null,
+    "license_url": null
+  }
+}

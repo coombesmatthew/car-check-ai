@@ -1,0 +1,165 @@
+{
+  "make": "Vauxhall",
+  "model": "Corsa",
+  "generation": "D",
+  "years": "2006-2014",
+  "top_issues": [
+    {
+      "title": "DPF blockages and oil dilution on 1.3 CDTi diesel",
+      "description": "The 1.3 CDTi diesel engine (a Fiat Multijet unit) fitted with a diesel particulate filter is prone to incomplete regeneration. When the DPF does not regenerate properly, excess diesel fuel seeps into the engine sump, raising oil levels until the engine runs on contaminated oil and can self-destruct. Additionally, the DPF itself frequently becomes blocked and requires replacement, sometimes after multiple failed regeneration attempts. Regular sump oil checks are essential.",
+      "typical_symptoms": [
+        "DPF warning light coming on frequently (every 150–200 miles in some cases)",
+        "Engine management light appearing and disappearing on motorway driving",
+        "Sump oil level rising above maximum mark",
+        "Difficulty starting or rough running",
+        "Loss of power or sluggish acceleration"
+      ],
+      "affected_years": [
+        2007,
+        2008,
+        2009,
+        2010,
+        2011,
+        2012,
+        2013,
+        2014
+      ],
+      "estimated_repair_cost_gbp_range": [
+        800,
+        2500
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Vauxhall Corsa (2006 – 2014) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/vauxhall/corsa/2006/"
+        }
+      ]
+    },
+    {
+      "title": "ECU failures due to water ingress from blocked vent wells",
+      "description": "The engine control unit (ECU) on several Corsa models is vulnerable to water damage from blocked bulkhead vent wells or poor screen drain design. When the vent well becomes flooded or rainwater drains directly onto the ECU, corrosion and electrical failure occur. Replacement is expensive and Vauxhall may not cover the cost if the car has been independently serviced. Checking vent well drainage before purchase is advisable.",
+      "typical_symptoms": [
+        "Engine management light illuminated",
+        "Engine running roughly or misfiring",
+        "Difficulty starting",
+        "Complete loss of engine control",
+        "Visible water or dampness in the engine bay near the ECU"
+      ],
+      "affected_years": [
+        2007,
+        2008,
+        2009,
+        2013
+      ],
+      "estimated_repair_cost_gbp_range": [
+        950,
+        1200
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Vauxhall Corsa (2006 – 2014) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/vauxhall/corsa/2006/"
+        }
+      ]
+    },
+    {
+      "title": "Front coil spring failures",
+      "description": "Multiple reports of front coil springs breaking on Corsa D models, sometimes at very low mileage (as low as 1,200 miles) and across different model years. Broken springs are a safety issue that will cause an MoT failure and require replacement. The problem appears to affect both driver and passenger sides, occasionally on the same vehicle within a few years.",
+      "typical_symptoms": [
+        "Clunking or knocking noise from the front suspension",
+        "Vehicle sitting lower on one side",
+        "Uneven tyre wear",
+        "Difficulty handling or pulling to one side",
+        "MoT failure for suspension defect"
+      ],
+      "affected_years": [
+        2008,
+        2009,
+        2010,
+        2012,
+        2013
+      ],
+      "estimated_repair_cost_gbp_range": [
+        300,
+        600
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Vauxhall Corsa (2006 – 2014) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/vauxhall/corsa/2006/"
+        }
+      ]
+    },
+    {
+      "title": "Automatic gearbox issues on 1.4 torque converter models",
+      "description": "The 1.4 automatic (torque converter) gearbox suffers from multiple faults including shift quadrant locking in Park, transmission fluid leaks, and intermittent refusal to move out of Park. Some vehicles have required gearbox replacement multiple times within warranty. The Easytronic automated manual transmission also has reported issues with speedometer signal loss causing the gearbox to default to 4th gear.",
+      "typical_symptoms": [
+        "Gearbox stuck in Park and unable to shift",
+        "Transmission fluid leaks underneath the car",
+        "Juddering or hesitation when pulling away",
+        "Engine management light with gearbox-related fault codes",
+        "Loss of power or sluggish acceleration",
+        "Intermittent cutting out whilst driving"
+      ],
+      "affected_years": [
+        2008,
+        2010,
+        2012,
+        2013,
+        2014
+      ],
+      "estimated_repair_cost_gbp_range": [
+        530,
+        3000
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Vauxhall Corsa (2006 – 2014) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/vauxhall/corsa/2006/"
+        }
+      ]
+    },
+    {
+      "title": "Heater control knob spindle failure",
+      "description": "The heater control knob spindle can shear off, rendering the heating system inoperable. Repair requires extensive dismantling of the dashboard and is disproportionately expensive for what is a relatively simple component failure. This is worth checking during a pre-purchase inspection as the cost to rectify is high relative to the fault.",
+      "typical_symptoms": [
+        "Heater control knob loose or detached",
+        "Unable to adjust heater temperature or fan speed",
+        "Knob spinning freely without engaging the mechanism"
+      ],
+      "affected_years": null,
+      "estimated_repair_cost_gbp_range": [
+        800,
+        1000
+      ],
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Vauxhall Corsa (2006 – 2014) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/vauxhall/corsa/2006/"
+        }
+      ]
+    }
+  ],
+  "overall_reliability_note": "The Corsa D is a solid small hatchback with decent handling, but diesel variants require diligent DPF maintenance and the automatic gearbox can be costly to repair; water ingress issues affecting the ECU and front suspension coil spring failures are also recurring concerns.",
+  "last_updated": "2026-04-27T00:00:00Z",
+  "sources": [
+    {
+      "title": "Vauxhall Corsa (2006 – 2014) Review | Honest John",
+      "url": "https://www.honestjohn.co.uk/vauxhall/corsa/2006/"
+    }
+  ],
+  "hero_image": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Opel_Corsa-e_at_IAA_2019_IMG_0738.jpg/3840px-Opel_Corsa-e_at_IAA_2019_IMG_0738.jpg",
+    "width": 4517,
+    "height": 2789,
+    "source_page_url": "https://en.wikipedia.org/wiki/Opel_Corsa",
+    "artist": null,
+    "license_short": null,
+    "license_url": null
+  }
+}

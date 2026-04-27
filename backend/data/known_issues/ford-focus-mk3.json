@@ -1,0 +1,161 @@
+{
+  "make": "Ford",
+  "model": "Focus",
+  "generation": "Mk3",
+  "years": "2011-2014",
+  "top_issues": [
+    {
+      "title": "Clutch and dual-mass flywheel failure on 1.0 EcoBoost and 1.6 diesel engines",
+      "description": "Early clutch wear and failure of the dual-mass flywheel (DMF) is a widespread issue affecting 1.0 EcoBoost and 1.6 diesel variants, often occurring between 5,000 and 50,000 miles. The root cause is frequently a faulty clutch slave cylinder that leaks hydraulic fluid, contaminating the clutch plates and DMF. Repair costs are substantial and warranty coverage is often disputed by Ford.",
+      "typical_symptoms": [
+        "Clutch judder or shudder when pulling away from rest",
+        "Burning smell from the engine bay",
+        "Difficulty engaging gears, especially 2nd gear when warm",
+        "Loss of drive or slipping sensation during acceleration",
+        "Grinding or knocking noise from the transmission area"
+      ],
+      "affected_years": [
+        2011,
+        2012,
+        2013,
+        2014
+      ],
+      "estimated_repair_cost_gbp_range": [
+        600,
+        1700
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Ford Focus (2011 – 2014) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/ford/focus/2011/"
+        }
+      ]
+    },
+    {
+      "title": "1.0 EcoBoost engine coolant system failure and degas pipe cracking",
+      "description": "The plastic degas pipe connecting the turbo to the expansion tank is prone to cracking or splitting, particularly on early 2012 and 2013 models. This causes coolant loss, engine overheating, and in severe cases, complete engine failure with cracked cylinder heads. The original black-union pipe was later replaced with a modified white-union version, but failures have continued even after the recall modification.",
+      "typical_symptoms": [
+        "Coolant loss visible under the engine or in the engine bay",
+        "Engine overheating warning light on dashboard",
+        "White smoke or steam from under the bonnet",
+        "Loss of power and 'service now' warning light",
+        "Coolant in the oil or oil in the coolant system"
+      ],
+      "affected_years": [
+        2012,
+        2013
+      ],
+      "estimated_repair_cost_gbp_range": [
+        800,
+        5500
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Ford Focus (2011 – 2014) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/ford/focus/2011/"
+        }
+      ]
+    },
+    {
+      "title": "Powershift automatic transmission judder and clutch pack failure",
+      "description": "The six-speed dry-clutch Powershift automatic transmission is prone to juddering, especially when pulling away from rest or changing from 1st to 2nd gear. The dry clutch pack can fail prematurely, and transmission fluid leaks can contaminate the clutches. Ford has issued multiple software updates and clutch replacements, but problems often recur. Transmission fluid must be changed every three years to prevent excessive wear.",
+      "typical_symptoms": [
+        "Juddering or jerking sensation when accelerating from standstill",
+        "Delay in gear changes or hesitation between gears",
+        "Grinding or rattling noise from the transmission",
+        "Transmission Control Module (TCM) failure warning light",
+        "Car entering limp mode or loss of drive"
+      ],
+      "affected_years": [
+        2011,
+        2012,
+        2013,
+        2014
+      ],
+      "estimated_repair_cost_gbp_range": [
+        1300,
+        3500
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Ford Focus (2011 – 2014) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/ford/focus/2011/"
+        }
+      ]
+    },
+    {
+      "title": "Clutch slave cylinder leakage on 1.6 diesel engines",
+      "description": "The clutch slave cylinder on 1.6 diesel variants (DV6C engine) is prone to internal leakage, allowing hydraulic fluid to contaminate the clutch plates and dual-mass flywheel. This leads to premature clutch wear, DMF damage, and eventual failure. The problem often goes undiagnosed initially, with symptoms mistaken for driver error or normal wear.",
+      "typical_symptoms": [
+        "Sticking or spongy clutch pedal",
+        "Difficulty engaging gears or grinding when selecting gears",
+        "Clutch slip during acceleration",
+        "Burning smell from the clutch area",
+        "Visible hydraulic fluid leakage near the transmission bell housing"
+      ],
+      "affected_years": [
+        2011,
+        2012,
+        2013
+      ],
+      "estimated_repair_cost_gbp_range": [
+        600,
+        1200
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Ford Focus (2011 – 2014) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/ford/focus/2011/"
+        }
+      ]
+    },
+    {
+      "title": "Heater matrix and coolant system leaks",
+      "description": "Heater matrix failures and coolant leaks from various seals and unions are common, particularly on 1.0 EcoBoost models. Leaks can occur from the heater matrix itself, the union between the matrix and engine coolant pipe, or from seals behind the timing cover. Repair often requires extensive engine dismantling and can be costly.",
+      "typical_symptoms": [
+        "Sweet-smelling coolant odour inside the cabin",
+        "Wet carpets or puddles in the passenger footwell",
+        "Coolant loss without visible external leaks",
+        "Fogging of windows",
+        "Scalding hot water dripping into the footwell"
+      ],
+      "affected_years": [
+        2011,
+        2012,
+        2013
+      ],
+      "estimated_repair_cost_gbp_range": [
+        700,
+        3200
+      ],
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Ford Focus (2011 – 2014) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/ford/focus/2011/"
+        }
+      ]
+    }
+  ],
+  "overall_reliability_note": "The 2011–2014 Focus is generally practical and comfortable, but early examples are plagued by clutch and dual-mass flywheel failures, particularly on 1.0 EcoBoost and 1.6 diesel engines, and the Powershift automatic transmission is unreliable with recurring judder and clutch pack problems. Coolant system issues on 1.0 EcoBoost models can lead to catastrophic engine failure.",
+  "last_updated": "2026-04-24T00:00:00Z",
+  "sources": [
+    {
+      "title": "Ford Focus (2011 – 2014) Review | Honest John",
+      "url": "https://www.honestjohn.co.uk/ford/focus/2011/"
+    }
+  ],
+  "hero_image": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/0/05/Ford_Focus_Trend_%28III%29_%E2%80%93_Frontansicht%2C_17._September_2011%2C_Ratingen.jpg",
+    "width": 2472,
+    "height": 1380,
+    "source_page_url": "https://en.wikipedia.org/wiki/Ford_Focus_(third_generation)",
+    "artist": "M 93",
+    "license_short": "CC BY-SA 3.0 de",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0/de/deed.en"
+  }
+}

@@ -1,0 +1,159 @@
+{
+  "make": "Nissan",
+  "model": "Juke",
+  "generation": "F15",
+  "years": "2010-2019",
+  "top_issues": [
+    {
+      "title": "CVT automatic gearbox failure",
+      "description": "The CVT (continuously variable transmission) fitted to automatic Jukes is prone to failure across a wide mileage range, from as low as 8,886 miles to over 80,000 miles. Failures typically occur within or shortly after the warranty period, and replacement costs are substantial. Nissan's response to warranty claims has been inconsistent, with some owners receiving full cover, others partial contribution, and many receiving nothing.",
+      "typical_symptoms": [
+        "Juddering or shuddering when accelerating or decelerating",
+        "Difficulty engaging drive or reverse, or refusal to engage",
+        "Unusual noises from the transmission (clunking, grinding, or whining)",
+        "Loss of drive whilst moving",
+        "Warning lights on the dashboard"
+      ],
+      "affected_years": [
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018
+      ],
+      "estimated_repair_cost_gbp_range": [
+        3500,
+        7000
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Nissan Juke (2010 – 2019) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/nissan/juke/2010/"
+        }
+      ]
+    },
+    {
+      "title": "Cylinder head and head gasket failure",
+      "description": "Several Jukes, particularly 1.6-litre petrol models, have suffered cylinder head or head gasket failure at relatively low mileage. Problems include cylinder misfires, orange warning lights, and coolant leaks. Repairs have been slow, with some dealers requiring authorisation from Nissan and parts sourced from Japan, causing extended downtime. Some owners have reported the issue recurring after repair.",
+      "typical_symptoms": [
+        "Orange engine management warning light",
+        "Cylinder misfire or rough running",
+        "Loss of coolant or white smoke from the exhaust",
+        "Overheating",
+        "Reduced power"
+      ],
+      "affected_years": [
+        2010,
+        2011,
+        2012,
+        2013
+      ],
+      "estimated_repair_cost_gbp_range": [
+        800,
+        2000
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Nissan Juke (2010 – 2019) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/nissan/juke/2010/"
+        }
+      ]
+    },
+    {
+      "title": "Timing chain and engine rattle on 1.2 DIG-T petrol",
+      "description": "The 1.2-litre turbocharged petrol engine (DIG-T) has been subject to timing chain rattle and failure, sometimes at low mileage. A technical service bulletin (TSB) was issued by Nissan regarding incorrect pistons fitted during manufacture. Owners have reported rattling noises, low oil levels, and in some cases complete engine failure requiring replacement. Warranty claims have been disputed or only partially covered.",
+      "typical_symptoms": [
+        "Rattling noise from the engine, especially on cold start or at idle",
+        "Engine management warning light",
+        "Low oil level warning",
+        "Juddering or loss of power",
+        "Engine overheating"
+      ],
+      "affected_years": [
+        2014,
+        2015,
+        2016,
+        2017
+      ],
+      "estimated_repair_cost_gbp_range": [
+        2000,
+        8500
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Nissan Juke (2010 – 2019) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/nissan/juke/2010/"
+        }
+      ]
+    },
+    {
+      "title": "Front brake disc wear and corrosion",
+      "description": "Front brake discs on the Juke can wear at an unusually high rate, sometimes requiring replacement as early as 8,000 to 18,000 miles. Rear brake discs have also been reported to corrode rapidly, even at low mileage. Uneven wear and severe ridging have been documented, suggesting a potential design or manufacturing issue with the brake system.",
+      "typical_symptoms": [
+        "Brake warning light on the dashboard",
+        "Squealing or grinding noise when braking",
+        "Reduced braking performance or longer stopping distances",
+        "Visible corrosion or pitting on the disc surface",
+        "Vibration through the brake pedal"
+      ],
+      "affected_years": [
+        2012,
+        2015,
+        2016
+      ],
+      "estimated_repair_cost_gbp_range": [
+        300,
+        800
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Nissan Juke (2010 – 2019) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/nissan/juke/2010/"
+        }
+      ]
+    },
+    {
+      "title": "Diesel particulate filter (DPF) blockage on 1.5 dCi",
+      "description": "The 1.5-litre diesel engine's DPF has been prone to blockage despite owners undertaking regular longer journeys. Some owners have had multiple DPF replacements within a short period. Nissan dealers have not always offered DPF cleaning as an alternative to replacement, resulting in expensive repair bills. A TSB was issued for some 2015 models involving DPF replacement and engine management remapping.",
+      "typical_symptoms": [
+        "Engine management warning light",
+        "Reduced power or limp-home mode",
+        "Increased fuel consumption",
+        "Excessive smoke from the exhaust",
+        "Difficulty starting the engine"
+      ],
+      "affected_years": [
+        2013,
+        2015
+      ],
+      "estimated_repair_cost_gbp_range": [
+        1200,
+        1800
+      ],
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Nissan Juke (2010 – 2019) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/nissan/juke/2010/"
+        }
+      ]
+    }
+  ],
+  "overall_reliability_note": "The Nissan Juke is a popular compact crossover with bold styling and low purchase prices, but it has a significant track record of CVT automatic gearbox failures, cylinder head problems on petrol engines, and brake disc wear issues that can prove costly to repair, particularly outside the warranty period.",
+  "last_updated": "2026-04-27T00:00:00Z",
+  "sources": [
+    {
+      "title": "Nissan Juke (2010 – 2019) Review | Honest John",
+      "url": "https://www.honestjohn.co.uk/nissan/juke/2010/"
+    }
+  ],
+  "hero_image": null
+}

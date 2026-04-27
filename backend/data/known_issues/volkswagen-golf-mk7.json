@@ -1,0 +1,160 @@
+{
+  "make": "Volkswagen",
+  "model": "Golf",
+  "generation": "Mk7 (2012–2020)",
+  "years": "2012-2020",
+  "top_issues": [
+    {
+      "title": "DQ200 DSG gearbox mechatronics failure",
+      "description": "The 7-speed dry-clutch DQ200 automatic gearbox fitted to many TSI and TDI models is prone to mechatronics unit failure, typically between 16,000 and 42,000 miles. When it fails, the gearbox loses drive or refuses to select gears. Repair costs are substantial and Volkswagen's goodwill support has been inconsistent.",
+      "typical_symptoms": [
+        "Loss of drive or inability to select gears",
+        "Gearbox error message on dashboard",
+        "Car stuck in neutral or one gear",
+        "Hesitation or jerking on take-off",
+        "Limp-home mode activation"
+      ],
+      "affected_years": [
+        2013,
+        2014,
+        2015,
+        2016
+      ],
+      "estimated_repair_cost_gbp_range": [
+        1500,
+        3000
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Volkswagen Golf (2012 – 2020) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/volkswagen/golf/2012/"
+        }
+      ]
+    },
+    {
+      "title": "Leaking and failing shock absorbers (dampers)",
+      "description": "Front and rear dampers on many Golfs develop oil leaks or fail prematurely, often within the first few years or before 50,000 miles. The problem is particularly common on models with sports suspension. Dealers have sometimes claimed this is a characteristic of driving style rather than a defect, and warranty support has been limited.",
+      "typical_symptoms": [
+        "Oil weeping or misting visible on damper body",
+        "Rattling noise from rear suspension over bumps",
+        "Poor ride quality or excessive bounce",
+        "Visible oil stains on wheel or suspension arm"
+      ],
+      "affected_years": [
+        2013,
+        2014,
+        2015,
+        2016
+      ],
+      "estimated_repair_cost_gbp_range": [
+        250,
+        650
+      ],
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Volkswagen Golf (2012 – 2020) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/volkswagen/golf/2012/"
+        }
+      ]
+    },
+    {
+      "title": "Electromechanical parking brake malfunction",
+      "description": "The electronic parking brake can fail to release, release unexpectedly, or seize on. Some owners report the car rolling away on hills when the brake fails to hold, whilst others experience the brake refusing to disengage when trying to drive away. The fault is often intermittent and difficult for dealers to diagnose.",
+      "typical_symptoms": [
+        "Brake fails to release when trying to drive away",
+        "Brake releases unexpectedly when parked",
+        "Car rolls forward or backward on a slope",
+        "Red warning light on dashboard",
+        "Whirring sound absent when brake is applied"
+      ],
+      "affected_years": [
+        2013,
+        2014,
+        2015,
+        2016
+      ],
+      "estimated_repair_cost_gbp_range": [
+        200,
+        600
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Volkswagen Golf (2012 – 2020) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/volkswagen/golf/2012/"
+        }
+      ]
+    },
+    {
+      "title": "Adaptive cruise control (ACC) sensor faults and autonomous braking",
+      "description": "The ACC radar sensor can fail, become misaligned, or trigger unwanted emergency braking. Some owners report the car braking hard for no reason, whilst others experience the system disabling without warning. Recalibration is expensive and not always covered by warranty. The sensor is also vulnerable to theft.",
+      "typical_symptoms": [
+        "ACC disabled warning message",
+        "Sudden hard braking with no obstacle ahead",
+        "ACC sensor stolen or missing",
+        "No forward view message displayed",
+        "ACC system fails to engage or disengage"
+      ],
+      "affected_years": [
+        2013,
+        2014,
+        2015,
+        2016
+      ],
+      "estimated_repair_cost_gbp_range": [
+        350,
+        650
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Volkswagen Golf (2012 – 2020) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/volkswagen/golf/2012/"
+        }
+      ]
+    },
+    {
+      "title": "Infotainment system (MMI) failure",
+      "description": "The infotainment system can fail to power on or off, lose radio and sat-nav functionality, or become completely unresponsive. Dealers have reported being unable to fix the problem, with Volkswagen stating that replacement units do not resolve the issue and no software update is available.",
+      "typical_symptoms": [
+        "Infotainment screen will not turn on or off",
+        "Radio, sat-nav, or phone integration stops working",
+        "Loss of access to vehicle menus",
+        "Screen goes blank or freezes",
+        "No response to button presses on head unit"
+      ],
+      "affected_years": [
+        2015,
+        2016,
+        2017
+      ],
+      "estimated_repair_cost_gbp_range": null,
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Volkswagen Golf (2012 – 2020) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/volkswagen/golf/2012/"
+        }
+      ]
+    }
+  ],
+  "overall_reliability_note": "The Mk7 Golf is generally a solid and well-built family hatchback, but the DQ200 DSG gearbox, electromechanical parking brake, and ACC system have proven troublesome on many examples, particularly early production cars from 2013–2016. Diesel variants require careful maintenance to avoid DPF and turbo issues, and damper leaks are common.",
+  "last_updated": "2026-04-27T00:00:00Z",
+  "sources": [
+    {
+      "title": "Volkswagen Golf (2012 – 2020) Review | Honest John",
+      "url": "https://www.honestjohn.co.uk/volkswagen/golf/2012/"
+    }
+  ],
+  "hero_image": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/2013_Volkswagen_Golf_SE_BlueMotion_Technology_1.4_Front.jpg/3840px-2013_Volkswagen_Golf_SE_BlueMotion_Technology_1.4_Front.jpg",
+    "width": 4986,
+    "height": 2561,
+    "source_page_url": "https://en.wikipedia.org/wiki/Volkswagen_Golf_Mk7",
+    "artist": null,
+    "license_short": null,
+    "license_url": null
+  }
+}

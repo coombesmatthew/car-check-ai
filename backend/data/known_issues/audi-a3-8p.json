@@ -1,0 +1,130 @@
+{
+  "make": "Audi",
+  "model": "A3",
+  "generation": "8P",
+  "years": "2003–2008",
+  "top_issues": [
+    {
+      "title": "Radiator leaks leading to head gasket and cylinder head failure",
+      "description": "Radiator leaks are a common problem on this generation, typically appearing after around 18 months of ownership. If left unaddressed, coolant loss can cause head gasket failure and, in severe cases, damage to the cylinder head itself. This is a significant issue because the repair costs escalate rapidly if the head is damaged.",
+      "typical_symptoms": [
+        "Coolant loss or low expansion tank level",
+        "Sweet smell from engine bay",
+        "White steam from under bonnet when hot",
+        "Overheating warning light on dashboard",
+        "Milky appearance in engine oil (sign of coolant mixing)"
+      ],
+      "affected_years": null,
+      "estimated_repair_cost_gbp_range": [
+        400,
+        2500
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Audi A3 (2003 – 2008) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/audi/a3/2003/"
+        }
+      ]
+    },
+    {
+      "title": "Dual mass flywheel and clutch failure around 40,000 miles",
+      "description": "Dual mass flywheel and clutch problems are known to occur after around 40,000 miles on this model. Early failures are covered under Audi's three-year warranty as a known issue, but cars outside warranty face significant repair bills. The problem affects both manual and DSG-equipped variants.",
+      "typical_symptoms": [
+        "Judder or vibration when pulling away from standstill",
+        "Rattling noise from engine bay at idle or low revs",
+        "Difficulty engaging gears smoothly",
+        "Clutch pedal feeling spongy or unresponsive",
+        "Grinding noise when changing gear"
+      ],
+      "affected_years": null,
+      "estimated_repair_cost_gbp_range": [
+        800,
+        1500
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Audi A3 (2003 – 2008) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/audi/a3/2003/"
+        }
+      ]
+    },
+    {
+      "title": "Timing belt failure on 2.0 TDI diesel between 60,000 and 70,000 miles",
+      "description": "On 2.0 TDI diesel engines, timing belts can fail prematurely between 60,000 and 70,000 miles due to tensioner failure, despite Audi's recommendation for a 112,000-mile service interval. A failed timing belt can cause catastrophic engine damage. It is advisable to replace the belt, tensioner and all pulleys at 60,000 miles or four years, whichever comes first.",
+      "typical_symptoms": [
+        "Rattling noise from front of engine",
+        "Engine will not start or starts with difficulty",
+        "Loss of power or rough running",
+        "Check engine warning light"
+      ],
+      "affected_years": null,
+      "estimated_repair_cost_gbp_range": [
+        600,
+        1200
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Audi A3 (2003 – 2008) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/audi/a3/2003/"
+        }
+      ]
+    },
+    {
+      "title": "Air conditioning compressor failure (Zexel or Valeo units)",
+      "description": "Failure of Zexel or Valeo air conditioning compressors is common on this model, typically occurring one to two years after the warranty expires. Audi dealers may quote over £1,300 for a complete replacement including condenser and expansion valve, though some goodwill contributions of around £300 are occasionally offered. Independent specialists can fit a replacement Sanden compressor for significantly less.",
+      "typical_symptoms": [
+        "Air conditioning blows warm air",
+        "Compressor makes grinding or squealing noise",
+        "Refrigerant leaking from compressor",
+        "Air conditioning system stops working entirely"
+      ],
+      "affected_years": null,
+      "estimated_repair_cost_gbp_range": [
+        400,
+        1300
+      ],
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Audi A3 (2003 – 2008) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/audi/a3/2003/"
+        }
+      ]
+    },
+    {
+      "title": "DSG mechatronic unit problems causing jerky take-off and loss of drive",
+      "description": "DSG and S-tronic automatic gearboxes can develop mechatronic unit faults that cause an initial delay when setting off followed by a sudden surge, or in severe cases, complete loss of drive. Replacement of the mechatronic unit is the usual cure, though this is an expensive repair. Some cars have also experienced all four wheels locking and complete loss of gear function.",
+      "typical_symptoms": [
+        "Jerky or hesitant take-off from standstill",
+        "Sudden surge of power after initial delay",
+        "Transmission fault light on dashboard",
+        "All gear indicator lights flashing",
+        "Complete loss of drive or inability to select gears"
+      ],
+      "affected_years": null,
+      "estimated_repair_cost_gbp_range": [
+        1500,
+        3000
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Audi A3 (2003 – 2008) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/audi/a3/2003/"
+        }
+      ]
+    }
+  ],
+  "overall_reliability_note": "A classy hatchback with a quality interior, but owners should be aware of specific weaknesses: radiator leaks can lead to serious engine damage, dual mass flywheels fail early, diesel timing belts require earlier replacement than Audi recommends, and air conditioning and DSG gearbox repairs can be costly.",
+  "last_updated": "2026-04-27T00:00:00Z",
+  "sources": [
+    {
+      "title": "Audi A3 (2003 – 2008) Review | Honest John",
+      "url": "https://www.honestjohn.co.uk/audi/a3/2003/"
+    }
+  ],
+  "hero_image": null
+}

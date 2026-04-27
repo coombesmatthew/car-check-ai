@@ -1,0 +1,143 @@
+{
+  "make": "Volkswagen",
+  "model": "Passat",
+  "generation": "B8",
+  "years": "2014–2022",
+  "top_issues": [
+    {
+      "title": "DQ200 7-speed DSG gearbox mechatronics failure and emergency mode",
+      "description": "The DQ200 7-speed dry-clutch DSG fitted to some Passat models can enter emergency mode or fail to change gear smoothly, particularly on lower-mileage examples. Repairs typically involve replacement of the clutch pack, mechatronics unit, and reprogramming, but some units continue to fail even after these interventions and require full gearbox replacement.",
+      "typical_symptoms": [
+        "Judder felt when changing from 2nd to 3rd gear",
+        "Gearbox stuck in a single gear with engine revving high",
+        "Emergency mode warning on dashboard",
+        "Inability to shift up despite high engine revs"
+      ],
+      "affected_years": [
+        2017
+      ],
+      "estimated_repair_cost_gbp_range": [
+        1500,
+        3500
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Volkswagen Passat (2014 – 2022) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/volkswagen/passat/2014/"
+        }
+      ]
+    },
+    {
+      "title": "Rear brake disc corrosion and premature wear",
+      "description": "Several owners have reported rear brake discs becoming heavily corroded and pads wearing to 90–95% within 14,000 to 36,000 miles. This is particularly problematic on models fitted with the electromechanical parking brake and autohold function, which may place additional load on the rear brakes.",
+      "typical_symptoms": [
+        "Brake warning light on dashboard",
+        "Visible rust and corrosion on rear brake discs",
+        "Brake pads worn to near-minimum thickness",
+        "Reduced braking performance or longer stopping distances"
+      ],
+      "affected_years": [
+        2016,
+        2017
+      ],
+      "estimated_repair_cost_gbp_range": [
+        400,
+        800
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Volkswagen Passat (2014 – 2022) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/volkswagen/passat/2014/"
+        }
+      ]
+    },
+    {
+      "title": "Autohold brake system failure to release",
+      "description": "The autohold brake function has been reported to fail on some Passats, particularly 2015 models, refusing to release the brakes on multiple occasions during a single journey. The fault is believed to stem from a multifunction brake light switch that controls the brake lights, autohold function, and DSG transmission engagement signal.",
+      "typical_symptoms": [
+        "Brakes remain held after releasing the brake pedal",
+        "Autohold function does not disengage when expected",
+        "Multiple failures within a single journey",
+        "Fault may occur intermittently and be difficult for technicians to reproduce"
+      ],
+      "affected_years": [
+        2015
+      ],
+      "estimated_repair_cost_gbp_range": [
+        300,
+        600
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Volkswagen Passat (2014 – 2022) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/volkswagen/passat/2014/"
+        }
+      ]
+    },
+    {
+      "title": "Infotainment system software instability",
+      "description": "The on-board entertainment and navigation system has been reported to suffer from persistent software glitches including volume control freezing on silent, compass malfunction, and navigation display becoming unresponsive. Software updates from dealers have not always resolved these issues.",
+      "typical_symptoms": [
+        "Volume control stuck on silent and unresponsive to adjustment",
+        "Compass display showing incorrect or no information",
+        "Navigation screen freezing or becoming unresponsive",
+        "Issues persist even after dealer software updates"
+      ],
+      "affected_years": [
+        2016
+      ],
+      "estimated_repair_cost_gbp_range": null,
+      "severity": "low",
+      "source_citations": [
+        {
+          "title": "Volkswagen Passat (2014 – 2022) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/volkswagen/passat/2014/"
+        }
+      ]
+    },
+    {
+      "title": "Engine resonance hum between 2100 and 2300 rpm",
+      "description": "Some 2.0-litre diesel Passat models have exhibited an obtrusive humming noise between 2100 and 2300 rpm, particularly noticeable in higher gears at motorway speeds. The issue has been traced to engine noise frequency coinciding with the natural vibration frequency of the air-conditioning pipe, requiring pipe replacement to resolve.",
+      "typical_symptoms": [
+        "Audible hum or resonance noise from engine bay",
+        "Noise most noticeable between 2100 and 2300 rpm",
+        "Particularly pronounced in 3rd, 4th, and 5th gears",
+        "Noise coincides with typical motorway cruising speeds"
+      ],
+      "affected_years": [
+        2017
+      ],
+      "estimated_repair_cost_gbp_range": [
+        200,
+        400
+      ],
+      "severity": "low",
+      "source_citations": [
+        {
+          "title": "Volkswagen Passat (2014 – 2022) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/volkswagen/passat/2014/"
+        }
+      ]
+    }
+  ],
+  "overall_reliability_note": "The Passat is generally a solid, well-built saloon with strong performance and spacious interior, but buyers should be aware of potential DSG gearbox issues on lower-mileage examples, rear brake corrosion problems, and occasional autohold brake failures on earlier model years.",
+  "last_updated": "2026-04-27T00:00:00Z",
+  "sources": [
+    {
+      "title": "Volkswagen Passat (2014 – 2022) Review | Honest John",
+      "url": "https://www.honestjohn.co.uk/volkswagen/passat/2014/"
+    }
+  ],
+  "hero_image": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/2017_Volkswagen_Passat_SE_Business_TDi_BM_2.0.jpg/3840px-2017_Volkswagen_Passat_SE_Business_TDi_BM_2.0.jpg",
+    "width": 5293,
+    "height": 2490,
+    "source_page_url": "https://en.wikipedia.org/wiki/Volkswagen_Passat_(B8)",
+    "artist": null,
+    "license_short": null,
+    "license_url": null
+  }
+}

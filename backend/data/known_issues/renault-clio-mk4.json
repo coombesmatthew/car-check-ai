@@ -1,0 +1,144 @@
+{
+  "make": "Renault",
+  "model": "Clio",
+  "generation": "Mk4",
+  "years": "2012-2019",
+  "top_issues": [
+    {
+      "title": "Timing chain tensioner failure on 0.9 TCe petrol engine",
+      "description": "The timing chain tensioner on the 0.9-litre TCe petrol engine can fail prematurely, allowing the chain to move excessively and damage the crankcase. This typically requires a complete engine replacement. Multiple owners have reported failures between 36,500 and 64,000 miles, and one dealer reported seeing five cases of this fault.",
+      "typical_symptoms": [
+        "Rattling noise from the engine on cold start",
+        "Loss of power or rough running",
+        "Engine warning light on dashboard",
+        "Severe damage discovered during service"
+      ],
+      "affected_years": [
+        2013,
+        2014
+      ],
+      "estimated_repair_cost_gbp_range": [
+        2500,
+        4500
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Renault Clio (2012 – 2019) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/renault/clio/2012/"
+        }
+      ]
+    },
+    {
+      "title": "TPMS valve sensor repeated failures",
+      "description": "The tyre pressure monitoring system (TPMS) valve sensors are prone to developing slow leaks and failing repeatedly on affected cars. Some owners have experienced three to four failures within warranty periods. After warranty expiry, corrosion at the valve port holes on alloy wheels can make replacement costly, as new wheels may be required.",
+      "typical_symptoms": [
+        "TPMS warning light illuminating on dashboard",
+        "Slow tyre pressure loss",
+        "Repeated sensor failures despite replacements",
+        "Corrosion visible around valve stems on alloy wheels"
+      ],
+      "affected_years": [
+        2014,
+        2015
+      ],
+      "estimated_repair_cost_gbp_range": [
+        150,
+        1000
+      ],
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Renault Clio (2012 – 2019) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/renault/clio/2012/"
+        }
+      ]
+    },
+    {
+      "title": "0.9 TCe petrol engine cold-start stuttering and turbo lag",
+      "description": "Some owners of the 0.9-litre TCe petrol engine report stuttering and hesitation when starting from cold, with jerky acceleration even when the engine is warm. The turbocharger engagement can feel abrupt, making smooth acceleration difficult at junctions and roundabouts. Renault dealers have reported no software updates are available to address the issue.",
+      "typical_symptoms": [
+        "Stuttering or hesitation on cold start",
+        "Jerky acceleration from standstill",
+        "Abrupt turbo engagement feeling like a light switch",
+        "Difficulty controlling smooth acceleration at low speeds"
+      ],
+      "affected_years": [
+        2014
+      ],
+      "estimated_repair_cost_gbp_range": null,
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Renault Clio (2012 – 2019) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/renault/clio/2012/"
+        }
+      ]
+    },
+    {
+      "title": "Clutch judder and potential gearbox issues",
+      "description": "Some owners have reported juddering from the clutch, particularly on manual gearbox models, which may indicate a worn release bearing or clutch plate wear. In at least one case, a car with very low mileage required gearbox replacement, suggesting potential manufacturing defects in early examples.",
+      "typical_symptoms": [
+        "Juddering sensation when engaging the clutch",
+        "Jerking when reversing or pulling away",
+        "Difficulty engaging gears smoothly",
+        "Vibration felt through the pedal"
+      ],
+      "affected_years": [
+        2014,
+        2017
+      ],
+      "estimated_repair_cost_gbp_range": [
+        500,
+        1500
+      ],
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Renault Clio (2012 – 2019) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/renault/clio/2012/"
+        }
+      ]
+    },
+    {
+      "title": "Air conditioning compressor failure",
+      "description": "Air conditioning systems have failed on some Clio models, with Renault acknowledging manufacturing faults in certain cases. Even when Renault has accepted responsibility, repair parts can take several months to arrive, leaving owners without air conditioning for extended periods.",
+      "typical_symptoms": [
+        "Air conditioning stops blowing cold air",
+        "No cooling from the climate control system",
+        "Compressor not engaging"
+      ],
+      "affected_years": [
+        2013
+      ],
+      "estimated_repair_cost_gbp_range": [
+        400,
+        1200
+      ],
+      "severity": "low",
+      "source_citations": [
+        {
+          "title": "Renault Clio (2012 – 2019) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/renault/clio/2012/"
+        }
+      ]
+    }
+  ],
+  "overall_reliability_note": "The fourth-generation Clio is generally a capable and well-equipped small hatchback, but early petrol models with the 0.9 TCe engine have shown a concerning pattern of timing chain tensioner failures that can result in catastrophic engine damage, and TPMS sensor faults are common on 2014–2015 examples.",
+  "last_updated": "2026-04-27T00:00:00Z",
+  "sources": [
+    {
+      "title": "Renault Clio (2012 – 2019) Review | Honest John",
+      "url": "https://www.honestjohn.co.uk/renault/clio/2012/"
+    }
+  ],
+  "hero_image": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Renault_Clio_%28V%2C_Facelift%29_%E2%80%93_f_02092025.jpg/3840px-Renault_Clio_%28V%2C_Facelift%29_%E2%80%93_f_02092025.jpg",
+    "width": 4013,
+    "height": 2282,
+    "source_page_url": "https://en.wikipedia.org/wiki/Renault_Clio",
+    "artist": null,
+    "license_short": null,
+    "license_url": null
+  }
+}

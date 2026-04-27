@@ -1,0 +1,137 @@
+{
+  "make": "Vauxhall",
+  "model": "Astra",
+  "generation": "K",
+  "years": "2015-2021",
+  "top_issues": [
+    {
+      "title": "Engine piston failure on 1.4T petrol variants",
+      "description": "Several owners of the 1.4-litre turbocharged petrol engine have reported piston failure, sometimes resulting in complete engine replacement under warranty. The issue has occurred on fully serviced vehicles at relatively low mileages (29,000–66,000 miles), suggesting a potential manufacturing defect rather than maintenance-related wear. Affected owners have experienced extended downtime whilst dealers arrange engine replacement.",
+      "typical_symptoms": [
+        "Engine misfire warning light",
+        "Loss of power or rough running",
+        "Metallic knocking from engine",
+        "Engine overheating on longer journeys"
+      ],
+      "affected_years": [
+        2016,
+        2017,
+        2018
+      ],
+      "estimated_repair_cost_gbp_range": [
+        3500,
+        5500
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Vauxhall Astra (2015 – 2021) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/vauxhall/astra/2015/"
+        }
+      ]
+    },
+    {
+      "title": "Clutch failure and repeated clutch replacement on 1.4T petrol",
+      "description": "One owner of a 2017 Astra 1.4T petrol with a six-speed manual gearbox experienced clutch failure at only 7,000 miles, followed by nine further clutch failures between February and May 2019 despite repeated warranty replacements of the clutch, flywheel and slave cylinder. The vehicle was eventually returned to the supplying dealer for investigation. This suggests a systemic issue with either the clutch specification, gearbox compatibility or engine characteristics on certain examples.",
+      "typical_symptoms": [
+        "Clutch pedal feeling spongy or soft",
+        "Difficulty engaging gears",
+        "Slipping when pulling away or under load",
+        "Burning smell from clutch area"
+      ],
+      "affected_years": [
+        2017,
+        2018,
+        2019
+      ],
+      "estimated_repair_cost_gbp_range": [
+        800,
+        1500
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Vauxhall Astra (2015 – 2021) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/vauxhall/astra/2015/"
+        }
+      ]
+    },
+    {
+      "title": "Water ingress into front door bottoms on uphill parking",
+      "description": "Owners have reported that when the Astra is parked facing uphill, significant quantities of water collect in the front door bottoms due to insufficient drainage design. This can lead to corrosion, electrical faults and interior damage if not addressed. The issue appears to be a design flaw rather than a maintenance problem.",
+      "typical_symptoms": [
+        "Water pooling visible inside door bottoms",
+        "Musty or damp smell from interior",
+        "Electrical gremlins or window regulator failure",
+        "Rust or corrosion on door internals"
+      ],
+      "affected_years": null,
+      "estimated_repair_cost_gbp_range": null,
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Vauxhall Astra (2015 – 2021) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/vauxhall/astra/2015/"
+        }
+      ]
+    },
+    {
+      "title": "Sticky clutch pedal on 1.6 CDTI diesel variants",
+      "description": "At least one owner of a 2017 Astra 1.6 CDTI reported the clutch pedal sticking down and requiring manual lifting. Vauxhall acknowledged this as a known fault affecting a small number of cars within a specific gearbox number range. Owners should check whether their vehicle falls within the affected batch.",
+      "typical_symptoms": [
+        "Clutch pedal remaining depressed after releasing",
+        "Requiring manual effort to raise pedal",
+        "Difficulty disengaging clutch fully"
+      ],
+      "affected_years": [
+        2017
+      ],
+      "estimated_repair_cost_gbp_range": [
+        200,
+        600
+      ],
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Vauxhall Astra (2015 – 2021) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/vauxhall/astra/2015/"
+        }
+      ]
+    },
+    {
+      "title": "Spurious dashboard warning lights and false low-oil messages",
+      "description": "Multiple owners have reported dashboard warning lights illuminating repeatedly without a genuine fault, with dealer fault codes clearing only for the lights to reappear. Additionally, some 1.6 CDTI diesel owners have experienced persistent low-oil-level warnings despite the oil being at the correct level, possibly indicating a malfunction in the diesel post-injection system or oil-level sensor rather than an actual oil shortage.",
+      "typical_symptoms": [
+        "Warning lights appearing and disappearing intermittently",
+        "Low oil level warning despite oil being full",
+        "Fault codes clearing but warnings returning",
+        "Message appearing multiple times per journey"
+      ],
+      "affected_years": [
+        2016,
+        2017,
+        2019
+      ],
+      "estimated_repair_cost_gbp_range": [
+        150,
+        500
+      ],
+      "severity": "low",
+      "source_citations": [
+        {
+          "title": "Vauxhall Astra (2015 – 2021) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/vauxhall/astra/2015/"
+        }
+      ]
+    }
+  ],
+  "overall_reliability_note": "The Vauxhall Astra K is a solid, practical family car that offers good value as a used purchase, but the 1.4-litre turbocharged petrol engine has shown a concerning pattern of piston failures and the manual gearbox clutch can be problematic on certain examples; diesel variants are generally more reliable but require careful attention to emissions software updates.",
+  "last_updated": "2026-04-27T00:00:00Z",
+  "sources": [
+    {
+      "title": "Vauxhall Astra (2015 – 2021) Review | Honest John",
+      "url": "https://www.honestjohn.co.uk/vauxhall/astra/2015/"
+    }
+  ],
+  "hero_image": null
+}

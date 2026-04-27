@@ -1,0 +1,143 @@
+{
+  "make": "Toyota",
+  "model": "Yaris",
+  "generation": "XP130 (third generation)",
+  "years": "2011-2020",
+  "top_issues": [
+    {
+      "title": "DPF regeneration problems on 1.4 D-4D diesel variants",
+      "description": "The 1.4 D-4D diesel engine is prone to diesel particulate filter (DPF) regeneration issues, particularly when the car is not driven hard enough or when incorrect oil grades are used. Multiple owners have reported warning lights returning shortly after dealer regeneration, and some have needed forced regeneration at relatively low mileage. Using the wrong oil specification (such as ACEA C2 instead of the required 0W30) can exacerbate the problem.",
+      "typical_symptoms": [
+        "Engine management warning light on dashboard",
+        "Reduced fuel economy",
+        "Difficulty starting or rough idle",
+        "Warning light returning within weeks of dealer service"
+      ],
+      "affected_years": [
+        2011,
+        2012,
+        2015,
+        2016
+      ],
+      "estimated_repair_cost_gbp_range": [
+        275,
+        800
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Toyota Yaris (2011 – 2020) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/toyota/yaris/2011/"
+        }
+      ]
+    },
+    {
+      "title": "Engine failures on early 1.4 D-4D models",
+      "description": "Some early 2011 model year 1.4 D-4D engines have suffered complete failure, producing white smoke and requiring short engine replacement. At least one owner experienced two separate engine failures within 38 months of ownership. This is a rare but catastrophic issue that suggests a potential manufacturing defect in certain early production units.",
+      "typical_symptoms": [
+        "White smoke from exhaust",
+        "Loss of power",
+        "Engine will not start or runs very roughly",
+        "Severe overheating"
+      ],
+      "affected_years": [
+        2011
+      ],
+      "estimated_repair_cost_gbp_range": [
+        2000,
+        4000
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Toyota Yaris (2011 – 2020) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/toyota/yaris/2011/"
+        }
+      ]
+    },
+    {
+      "title": "CVT gearbox and clutch issues",
+      "description": "The Multidrive S CVT automatic gearbox has been reported to exhibit unexpected downshifting and upshifting at constant speed, though some instances have not recurred. Additionally, clutch thrust bearing failure has been reported on manual transmission models at relatively low mileage, requiring full clutch replacement.",
+      "typical_symptoms": [
+        "Unexpected gear changes at constant speed",
+        "Difficulty engaging gears or grinding noise",
+        "Clutch pedal feels spongy or has excessive travel",
+        "Difficulty starting from a standstill"
+      ],
+      "affected_years": [
+        2012,
+        2016
+      ],
+      "estimated_repair_cost_gbp_range": [
+        1000,
+        1500
+      ],
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Toyota Yaris (2011 – 2020) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/toyota/yaris/2011/"
+        }
+      ]
+    },
+    {
+      "title": "Hot starting difficulty on 1.3 CVT models",
+      "description": "Some 1.3 CVT models have exhibited difficulty starting when the engine is warm, particularly after short drives followed by a brief rest period. The engine may require multiple attempts to turn over before firing, which can indicate a fuel system or ignition timing issue.",
+      "typical_symptoms": [
+        "Engine cranks slowly or reluctantly when warm",
+        "Multiple attempts needed to start after short journey",
+        "Problem occurs after 10+ miles of driving and 30 minutes rest",
+        "Eventually starts but with noticeable delay"
+      ],
+      "affected_years": [
+        2016
+      ],
+      "estimated_repair_cost_gbp_range": null,
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Toyota Yaris (2011 – 2020) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/toyota/yaris/2011/"
+        }
+      ]
+    },
+    {
+      "title": "Central locking and keyless entry malfunctions",
+      "description": "Some models have experienced intermittent central locking failures where doors unlock or lock randomly and inconsistently, accompanied by audible clicking sounds from the locking mechanism. Keyless entry systems have also been reported to malfunction. These issues can be difficult for dealers to diagnose and replicate.",
+      "typical_symptoms": [
+        "Doors lock or unlock randomly without input",
+        "Clicking sounds from door locks",
+        "Keyless entry system unresponsive",
+        "Some doors lock whilst others unlock simultaneously"
+      ],
+      "affected_years": [
+        2012
+      ],
+      "estimated_repair_cost_gbp_range": null,
+      "severity": "low",
+      "source_citations": [
+        {
+          "title": "Toyota Yaris (2011 – 2020) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/toyota/yaris/2011/"
+        }
+      ]
+    }
+  ],
+  "overall_reliability_note": "The Yaris has a strong reputation for reliability overall, but 1.4 D-4D diesel variants require careful maintenance and proper oil specification to avoid DPF problems, and early 2011 models should be checked carefully for any history of engine issues.",
+  "last_updated": "2026-04-27T00:00:00Z",
+  "sources": [
+    {
+      "title": "Toyota Yaris (2011 – 2020) Review | Honest John",
+      "url": "https://www.honestjohn.co.uk/toyota/yaris/2011/"
+    }
+  ],
+  "hero_image": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/8/85/2017_Toyota_Yaris_L_5-door%2C_front_right%2C_08-25-2024.jpg",
+    "width": 4730,
+    "height": 3590,
+    "source_page_url": "https://en.wikipedia.org/wiki/Toyota_Vitz",
+    "artist": "MercurySable99",
+    "license_short": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+  }
+}

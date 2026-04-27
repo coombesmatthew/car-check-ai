@@ -1,0 +1,131 @@
+{
+  "make": "Vauxhall",
+  "model": "Corsa",
+  "generation": "2014–2019",
+  "years": "2014-2019",
+  "top_issues": [
+    {
+      "title": "Low Speed Pre-Ignition (LSPI) detonation on 1.0T petrol engines",
+      "description": "Some 1.0-litre turbocharged petrol engines have suffered from LSPI, a form of engine knock that can cause severe internal damage. Vauxhall has replaced affected engines, but owners report that replacement units have also failed, suggesting possible block damage that may not be fully repaired during exchange.",
+      "typical_symptoms": [
+        "Knocking or pinging noise from engine under light acceleration",
+        "Engine management warning light",
+        "Loss of power or engine failure",
+        "Repeated faults after dealer repairs"
+      ],
+      "affected_years": [
+        2016
+      ],
+      "estimated_repair_cost_gbp_range": [
+        2000,
+        4000
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Vauxhall Corsa (2014 – 2019) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/vauxhall/corsa/2014/"
+        }
+      ]
+    },
+    {
+      "title": "Timing chain failure on 1.3 CDTI diesel engines",
+      "description": "At least one report of a timing chain failing at 60,000 miles on a 1.3-litre diesel engine. Timing chain failure is a serious issue that can cause catastrophic engine damage if not caught early. Maintenance history is important, as poor servicing can accelerate wear.",
+      "typical_symptoms": [
+        "Rattling noise from front of engine, especially on cold start",
+        "Engine management warning light",
+        "Loss of power",
+        "Engine will not start"
+      ],
+      "affected_years": [
+        2015
+      ],
+      "estimated_repair_cost_gbp_range": [
+        1500,
+        3500
+      ],
+      "severity": "high",
+      "source_citations": [
+        {
+          "title": "Vauxhall Corsa (2014 – 2019) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/vauxhall/corsa/2014/"
+        }
+      ]
+    },
+    {
+      "title": "Coil pack failures on petrol engines",
+      "description": "Multiple reports of coil packs failing prematurely, with some owners experiencing repeat failures within a few years. Coil pack failure causes misfires and poor running, and replacement is straightforward but can happen more than once on the same vehicle.",
+      "typical_symptoms": [
+        "Engine management warning light",
+        "Rough idle or hesitation under acceleration",
+        "Reduced fuel economy",
+        "Difficulty starting"
+      ],
+      "affected_years": [
+        2015
+      ],
+      "estimated_repair_cost_gbp_range": [
+        200,
+        400
+      ],
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Vauxhall Corsa (2014 – 2019) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/vauxhall/corsa/2014/"
+        }
+      ]
+    },
+    {
+      "title": "Automatic gearbox entering limp mode intermittently",
+      "description": "Some 1.4-litre torque converter automatic gearboxes have entered limp mode without a stored fault code, making diagnosis difficult. The fault clears when the engine is restarted, but can recur unpredictably. Dealers have struggled to identify the root cause.",
+      "typical_symptoms": [
+        "Yellow spanner warning light on dashboard",
+        "Severe loss of power or car will barely move",
+        "Fault clears after engine restart",
+        "Intermittent nature makes diagnosis difficult"
+      ],
+      "affected_years": [
+        2014
+      ],
+      "estimated_repair_cost_gbp_range": null,
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Vauxhall Corsa (2014 – 2019) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/vauxhall/corsa/2014/"
+        }
+      ]
+    },
+    {
+      "title": "Vibration from doors, dashboard and hatchback on early models",
+      "description": "At least one pre-registered 2017 model suffered persistent vibrations from the doors, dashboard and hatchback that could not be resolved despite multiple dealer repairs including door replacement and dashboard removal. Vauxhall declined to replace the vehicle and stated the vibration was a characteristic of the model.",
+      "typical_symptoms": [
+        "Noticeable vibration felt through doors when driving",
+        "Rattling or buzzing from dashboard",
+        "Vibration from hatchback area",
+        "Vibration persists after dealer repairs"
+      ],
+      "affected_years": [
+        2017
+      ],
+      "estimated_repair_cost_gbp_range": null,
+      "severity": "medium",
+      "source_citations": [
+        {
+          "title": "Vauxhall Corsa (2014 – 2019) Review | Honest John",
+          "url": "https://www.honestjohn.co.uk/vauxhall/corsa/2014/"
+        }
+      ]
+    }
+  ],
+  "overall_reliability_note": "The 2014–2019 Corsa is generally a competent small hatchback with an improved interior and good refinement, but buyers should be aware of potential engine issues on early 1.0T petrol models, timing chain concerns on diesel variants, and occasional gearbox faults on automatic versions.",
+  "last_updated": "2026-04-27T00:00:00Z",
+  "sources": [
+    {
+      "title": "Vauxhall Corsa (2014 – 2019) Review | Honest John",
+      "url": "https://www.honestjohn.co.uk/vauxhall/corsa/2014/"
+    }
+  ],
+  "hero_image": null
+}
