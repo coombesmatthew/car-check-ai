@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from threading import Lock
+from typing import Any
 
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
@@ -15,7 +16,17 @@ from app.schemas.scraping import (
     ContentPipelineRequest,
     ContentPipelineResponse,
 )
-from app.services.known_issues.models import KnownIssuesRecord
+# Optional import — the known-issues feature is being built in parallel
+# (services + data files land together). Wrap in try/except so the app
+# still boots when only this file's integration is committed; the
+# /known-issues endpoints just return 503 until the rest lands.
+try:
+    from app.services.known_issues.models import KnownIssuesRecord
+    KNOWN_ISSUES_AVAILABLE = True
+except ImportError:
+    KnownIssuesRecord = None  # type: ignore
+    KNOWN_ISSUES_AVAILABLE = False
+    logger.warning("known_issues module not available — /known-issues endpoints disabled")
 from app.services.scraping.gumtree_client import GumtreeClient
 from app.services.scraping.content_pipeline import ContentPipeline
 
@@ -29,7 +40,7 @@ router = APIRouter()
 
 _DATA_DIR = Path(__file__).resolve().parents[4] / "data" / "known_issues"
 _CACHE_LOCK = Lock()
-_CACHE: dict[str, KnownIssuesRecord] = {}  # slug -> record
+_CACHE: dict[str, Any] = {}  # slug -> record
 _CACHE_MTIME: float = 0.0
 
 
@@ -49,11 +60,17 @@ def _ensure_cache_fresh() -> None:
                 continue
         if _CACHE and latest <= _CACHE_MTIME:
             return  # cache is fresh
-        new_cache: dict[str, KnownIssuesRecord] = {}
+        new_cache: dict[str, Any] = {}
         for path in _DATA_DIR.glob("*.json"):
             if path.name.startswith("_"):
                 continue
             try:
+                # Narrow the Optional[KnownIssuesRecord] type for Pyright.
+                # We never reach here when the module isn't loaded (gated by
+                # KNOWN_ISSUES_AVAILABLE in the calling endpoints), but the
+                # static checker doesn't know that without an explicit guard.
+                if KnownIssuesRecord is None:
+                    return
                 record = KnownIssuesRecord.model_validate_json(path.read_text())
                 new_cache[path.stem] = record  # filename stem is the slug
             except Exception as e:  # noqa: BLE001 — log and skip malformed files
@@ -86,6 +103,8 @@ def _parse_year_range(years: str) -> tuple[int, int] | None:
 @router.get("/known-issues/resolve")
 async def resolve_known_issues_slug(make: str, model: str, year: int):
     """Map (make, model, year) → known-issues page slug. 404 if no match."""
+    if not KNOWN_ISSUES_AVAILABLE:
+        raise HTTPException(status_code=503, detail="Known-issues service not yet deployed")
     _ensure_cache_fresh()
     make_l = make.lower()
     model_l = model.lower()
@@ -113,6 +132,8 @@ async def resolve_known_issues_slug(make: str, model: str, year: int):
 @router.get("/known-issues/siblings")
 async def list_known_issues_siblings(make: str, exclude: str | None = None):
     """Up to 4 same-make sibling slugs (sorted alphabetically), excluding the given slug."""
+    if not KNOWN_ISSUES_AVAILABLE:
+        raise HTTPException(status_code=503, detail="Known-issues service not yet deployed")
     _ensure_cache_fresh()
     make_l = make.lower()
     siblings: list[dict] = []
