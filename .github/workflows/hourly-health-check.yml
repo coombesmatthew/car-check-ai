@@ -1,0 +1,55 @@
+name: Hourly health check
+
+# Pings /api/v1/admin/run-health-check every hour. The backend then:
+#   - Hits each critical OneAuto endpoint in sandbox (free, no billing)
+#   - Computes live-traffic error rates from api_calls (free, passive)
+#   - Posts a Discord 🚨 if anything is unhealthy
+#
+# This workflow only fails the GitHub run if the endpoint itself is
+# unreachable — the actual alerting is done by the backend via Discord.
+# Keeps the workflow deliberately quiet so we don't get spammed by the
+# CI surface AND Discord for every blip.
+
+on:
+  schedule:
+    - cron: "13 * * * *"  # 13 minutes past each hour — avoids the noisy top-of-hour
+  workflow_dispatch:  # manual trigger for testing
+
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Hit health-check endpoint
+        env:
+          ADMIN_TOKEN: ${{ secrets.ADMIN_API_TOKEN }}
+        run: |
+          if [ -z "$ADMIN_TOKEN" ]; then
+            echo "::error::ADMIN_API_TOKEN secret not set in this repo"
+            exit 1
+          fi
+
+          response=$(curl -sS -w "\nHTTP_STATUS:%{http_code}" \
+            -X POST \
+            "https://api.vericar.co.uk/api/v1/admin/run-health-check?token=${ADMIN_TOKEN}&notify=true")
+
+          http_status=$(echo "$response" | grep "HTTP_STATUS:" | cut -d: -f2)
+          body=$(echo "$response" | sed '$d')
+
+          echo "HTTP $http_status"
+          echo "$body"
+
+          if [ "$http_status" != "200" ]; then
+            echo "::error::Health check endpoint returned $http_status"
+            exit 1
+          fi
+
+          # Read the healthy boolean from the JSON body. If false, the
+          # backend has already pinged Discord — we just log a warning so
+          # the GitHub run shows yellow without spamming on every blip.
+          if echo "$body" | grep -q '"healthy":false'; then
+            echo "::warning::Backend reports unhealthy state — see Discord for detail"
+          fi

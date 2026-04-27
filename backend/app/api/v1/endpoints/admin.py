@@ -18,6 +18,7 @@ from app.core.db import get_session
 from app.core.logging import logger
 from app.models.api_call import ApiCall
 from app.services.fulfilment import FULFIL_RESULT_CACHE_PREFIX, FulfilmentResult
+from app.services.monitoring.health_checks import run_health_check
 from app.services.notification.discord import notify_discord
 from app.services.notification.email_sender import send_report_email
 from app.services.payment.stripe_service import retrieve_session
@@ -150,3 +151,25 @@ async def recent_fulfilments(
         "session_count": len(sessions),
         "sessions": sorted(sessions.values(), key=lambda x: x["last_call"], reverse=True),
     }
+
+
+@router.post("/run-health-check")
+async def run_health_check_endpoint(
+    token: str = Query(..., description="Admin API token"),
+    notify: bool = Query(True, description="Ping Discord on failure (default true)"),
+):
+    """Run sandbox heartbeats + live-traffic analysis. Designed for hourly cron.
+
+    External cron (GitHub Actions / cron-job.org / UptimeRobot) hits this
+    endpoint every ~60 min. Returns a structured report; if `notify=true`,
+    posts a Discord alert when anything is unhealthy. The endpoint always
+    returns 200 with the report — the cron decides what to do based on
+    `healthy: true/false` in the JSON.
+
+    Sandbox calls don't bill against the live OneAuto credit, so this
+    monitor is free regardless of how often it runs.
+    """
+    _check_token(token)
+
+    report = await run_health_check(notify_on_failure=notify)
+    return report.to_dict()
