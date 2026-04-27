@@ -99,10 +99,21 @@ async def fulfil_report(session_id: str) -> FulfilmentResult:
         session_id=session_id,
     )
 
-    logger.info(
-        f"{tier.upper()} report fulfilled for {registration} "
-        f"(ref: {report_ref}, session: {session_id}, email: {email_sent})"
-    )
+    if email_sent:
+        logger.info(
+            f"{tier.upper()} report fulfilled for {registration} "
+            f"(ref: {report_ref}, session: {session_id}, email: True)"
+        )
+    else:
+        # Loud, grep-able tag so future failures get caught fast. Customer paid
+        # but email didn't land — needs a manual resend via /admin/resend-email.
+        logger.error(
+            f"EMAIL_DELIVERY_FAILURE | {tier.upper()} report fulfilled for "
+            f"{registration} (ref: {report_ref}, session: {session_id}, "
+            f"to: {email}) — send_report_email returned False, see preceding "
+            f"log line for upstream cause. Use POST /api/v1/admin/resend-email"
+            f"?session_id={session_id}&token=..."
+        )
 
     return FulfilmentResult(
         registration=registration,

@@ -73,6 +73,10 @@ class Settings(BaseSettings):
     # Monitoring
     SENTRY_DSN: str = ""
 
+    # Admin endpoints — re-send emails, view recent fulfilments etc.
+    # Set to a long random string in Railway. Empty disables admin endpoints.
+    ADMIN_API_TOKEN: str = ""
+
     class Config:
         env_file = ".env"
         case_sensitive = True

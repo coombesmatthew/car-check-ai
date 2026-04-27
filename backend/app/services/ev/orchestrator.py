@@ -553,7 +553,11 @@ class EVOrchestrator:
             result["charging_costs"] = self._calculate_charging_costs_from_ppm(ppm_raw)
 
         # --- Derive battery health from ClearWatt ---
-        result["battery_health"] = self._derive_battery_health(clearwatt_raw)
+        # Only attach a battery_health object when ClearWatt actually returned
+        # data — otherwise we'd ship a stub with all-None fields that breaks
+        # downstream consumers (e.g. email template arithmetic).
+        if clearwatt_raw:
+            result["battery_health"] = self._derive_battery_health(clearwatt_raw)
 
         return result
 

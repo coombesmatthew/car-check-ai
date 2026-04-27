@@ -399,7 +399,7 @@
           <!-- ==================== EV SECTIONS ==================== -->
 
           <!-- Battery Health -->
-          {% if battery_health %}
+          {% if battery_health and battery_health.score is not none %}
           <tr>
             <td style="padding: 24px 32px; border-bottom: 1px solid #e2e8f0;">
               <h2 style="margin: 0 0 12px 0; color: #1e293b; font-size: 15px; font-weight: 600; border-bottom: 2px solid #059669; padding-bottom: 6px;">
