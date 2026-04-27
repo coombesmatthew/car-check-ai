@@ -157,6 +157,11 @@ async def recent_fulfilments(
 async def ghost_paid_sessions(
     token: str = Query(..., description="Admin API token"),
     hours: int = Query(168, ge=1, le=720, description="Look-back window (default 7 days)"),
+    min_amount_pence: int = Query(
+        100,
+        ge=0,
+        description="Skip sessions below this amount. Default 100 (£1) — filters out 100%-off TESTABC123 promo sessions. Pass 0 to see all.",
+    ),
 ):
     """List paid Stripe sessions in the look-back window with NO cached
     fulfilment in Redis — i.e. the customer paid but we never delivered.
@@ -164,6 +169,10 @@ async def ghost_paid_sessions(
     Use this after replaying failed Stripe webhook events to spot any
     customer whose payment succeeded but whose report never landed
     (Stewart-style ghosts). Each entry shows the curl-able resend URL.
+
+    By default skips sessions with amount_total < £1 to filter out internal
+    test sessions using the TESTABC123 100%-off promo. Pass min_amount_pence=0
+    to include those.
     """
     _check_token(token)
 
@@ -176,6 +185,7 @@ async def ghost_paid_sessions(
     cutoff_unix = int(cutoff.timestamp())
 
     ghosts: list[dict] = []
+    excluded_test_count = 0
     try:
         # Iterate paid checkout sessions in the window
         sessions = stripe_lib.checkout.Session.list(
@@ -189,12 +199,16 @@ async def ghost_paid_sessions(
             cached = await cache.get(FULFIL_RESULT_CACHE_PREFIX, s.id)
             if cached:
                 continue
+            amount = s.amount_total or 0
+            if amount < min_amount_pence:
+                excluded_test_count += 1
+                continue
             metadata = s.metadata or {}
             ghosts.append({
                 "session_id": s.id,
                 "registration": metadata.get("registration"),
                 "tier": metadata.get("tier"),
-                "amount_total_pence": s.amount_total,
+                "amount_total_pence": amount,
                 "created": datetime.utcfromtimestamp(s.created).isoformat() + "Z",
                 "resend_url": (
                     f"POST /api/v1/admin/resend-email?session_id={s.id}&token=…"
@@ -206,7 +220,9 @@ async def ghost_paid_sessions(
 
     return {
         "hours": hours,
+        "min_amount_pence": min_amount_pence,
         "ghost_count": len(ghosts),
+        "excluded_below_threshold": excluded_test_count,
         "ghosts": ghosts,
     }
 
