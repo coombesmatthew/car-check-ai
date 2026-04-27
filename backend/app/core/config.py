@@ -46,6 +46,11 @@ class Settings(BaseSettings):
     # Stripe
     STRIPE_SECRET_KEY: str = ""
     STRIPE_WEBHOOK_SECRET: str = ""
+    # Flip on once Stripe Dashboard → Settings → Public details has a Terms
+    # of service URL set. Without that URL, Stripe rejects checkout creation
+    # with HTTP 400 if consent_collection is configured. Default off so a
+    # missing dashboard setting can never block payments.
+    STRIPE_TOS_CONSENT_ENABLED: bool = False
 
     # Email
     RESEND_API_KEY: str = ""

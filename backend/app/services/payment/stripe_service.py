@@ -124,12 +124,17 @@ def create_checkout_session(
         # Use a 100%-off code for internal end-to-end testing; same mechanism
         # powers future launch/referral discounts.
         allow_promotion_codes=True,
-        # Forces customer to tick "I agree to the Terms of Service" before
-        # paying. Required so the Experian-attribution clauses in our T&Cs
-        # are explicitly agreed at point of sale (Experian Requirement 5).
-        # Stripe pulls the ToS URL from Dashboard → Settings → Public details
-        # → Terms of service URL — must be set to https://vericar.co.uk/terms.
-        consent_collection={"terms_of_service": "required"},
+        # ToS consent collection is gated behind STRIPE_TOS_CONSENT_ENABLED so
+        # we can flip it on once the Chairman sets the ToS URL in the Stripe
+        # dashboard (Settings → Public details → Terms of service URL =
+        # https://vericar.co.uk/terms). Without that URL, Stripe rejects the
+        # checkout creation outright (HTTP 400) — see incident 2026-04-27.
+        # Re-enable by setting STRIPE_TOS_CONSENT_ENABLED=true in Railway.
+        **(
+            {"consent_collection": {"terms_of_service": "required"}}
+            if settings.STRIPE_TOS_CONSENT_ENABLED
+            else {}
+        ),
     )
     if email:
         session_kwargs["customer_email"] = email
