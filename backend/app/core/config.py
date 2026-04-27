@@ -77,6 +77,12 @@ class Settings(BaseSettings):
     # Set to a long random string in Railway. Empty disables admin endpoints.
     ADMIN_API_TOKEN: str = ""
 
+    # Discord webhook for critical operational alerts (email failures,
+    # new payments, etc). Empty disables all Discord notifications.
+    # GDPR: never send PII like customer emails or names — only operational
+    # identifiers (registration, session_id, report_ref, tier).
+    DISCORD_WEBHOOK_URL: str = ""
+
     class Config:
         env_file = ".env"
         case_sensitive = True

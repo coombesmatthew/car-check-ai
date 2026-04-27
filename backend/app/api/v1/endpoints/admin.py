@@ -18,6 +18,7 @@ from app.core.db import get_session
 from app.core.logging import logger
 from app.models.api_call import ApiCall
 from app.services.fulfilment import FULFIL_RESULT_CACHE_PREFIX, FulfilmentResult
+from app.services.notification.discord import notify_discord
 from app.services.notification.email_sender import send_report_email
 from app.services.payment.stripe_service import retrieve_session
 
@@ -79,6 +80,13 @@ async def resend_email(
             status_code=502,
             detail="send_report_email returned False — check Railway logs for the upstream error",
         )
+
+    # Discord ping closes the loop publicly so anyone watching the channel
+    # knows the prior alert was actioned. GDPR: no PII, just identifiers.
+    await notify_discord(
+        f"✅ **Email resent** — Reg: `{result.registration}` · "
+        f"Ref: `{result.report_ref}` · Session: `{session_id}`"
+    )
 
     return {
         "session_id": session_id,

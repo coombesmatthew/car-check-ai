@@ -27,6 +27,7 @@ from app.core.cache import cache
 from app.core.logging import logger
 from app.services.check.orchestrator import CheckOrchestrator
 from app.services.ev.orchestrator import EVOrchestrator
+from app.services.notification.discord import alert_email_failure, alert_payment_received
 from app.services.notification.email_sender import send_report_email
 from app.services.payment.stripe_service import retrieve_session
 
@@ -104,6 +105,13 @@ async def fulfil_report(session_id: str) -> FulfilmentResult:
             f"{tier.upper()} report fulfilled for {registration} "
             f"(ref: {report_ref}, session: {session_id}, email: True)"
         )
+        # Discord celebratory ping. GDPR-safe: tier/reg/ref/session_id only.
+        await alert_payment_received(
+            tier=tier,
+            registration=registration,
+            report_ref=report_ref,
+            session_id=session_id,
+        )
     else:
         # Loud, grep-able tag so future failures get caught fast. Customer paid
         # but email didn't land — needs a manual resend via /admin/resend-email.
@@ -113,6 +121,15 @@ async def fulfil_report(session_id: str) -> FulfilmentResult:
             f"to: {email}) — send_report_email returned False, see preceding "
             f"log line for upstream cause. Use POST /api/v1/admin/resend-email"
             f"?session_id={session_id}&token=..."
+        )
+        # Discord 🚨 ping for immediate human attention. GDPR-safe — does not
+        # include the customer's email address.
+        await alert_email_failure(
+            tier=tier,
+            registration=registration,
+            report_ref=report_ref,
+            session_id=session_id,
+            reason="send_report_email returned False — see preceding log line",
         )
 
     return FulfilmentResult(
