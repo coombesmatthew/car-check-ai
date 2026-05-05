@@ -13,13 +13,15 @@ point SANDBOX_BASE_URL at the live URL — the code is identical.
 """
 from __future__ import annotations
 
+import hashlib
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from typing import Any
 
 import httpx
 from sqlalchemy import func, select
 
+from app.core.cache import cache
 from app.core.config import settings
 from app.core.db import get_session
 from app.core.logging import logger
@@ -63,9 +65,14 @@ SANDBOX_ENDPOINTS: list[dict[str, Any]] = [
     {
         "name": "Brego valuation",
         "path": "/brego/currentandfuturevaluationsfromvrm/v2",
-        "params": {
+        # Brego requires forecast_date + miles_per_annum (production sends both —
+        # see oneauto_client.get_valuation). forecast_date is today, computed at
+        # call-time so it stays correct in long-running processes.
+        "params": lambda: {
             "vehicle_registration_mark": TEST_VRM,
             "current_mileage": TEST_MILEAGE,
+            "forecast_date": date.today().isoformat(),
+            "miles_per_annum": 12000,
         },
     },
     {
@@ -124,10 +131,12 @@ async def _ping_sandbox_endpoint(
     client: httpx.AsyncClient, ep: dict[str, Any]
 ) -> EndpointResult:
     """Hit one sandbox endpoint. 200 = healthy. Anything else = unhealthy."""
+    raw_params = ep["params"]
+    params = raw_params() if callable(raw_params) else raw_params
     try:
         resp = await client.get(
             f"{SANDBOX_BASE_URL}{ep['path']}",
-            params=ep["params"],
+            params=params,
             headers={"x-api-key": settings.ONEAUTO_API_KEY},
         )
         # Sandbox typically returns 200 even for canned data. Non-200 means
@@ -179,7 +188,8 @@ async def check_live_traffic_health() -> list[dict[str, Any]]:
 
     Free signal — we only see what real customers triggered, no new paid calls.
     """
-    cutoff = datetime.utcnow() - timedelta(minutes=LIVE_WINDOW_MINUTES)
+    # ApiCall.created_at is naive UTC (server_default=now()), so compare with naive UTC.
+    cutoff = datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(minutes=LIVE_WINDOW_MINUTES)
     alerts: list[dict[str, Any]] = []
 
     async with get_session() as session:
@@ -217,7 +227,7 @@ async def check_live_traffic_health() -> list[dict[str, Any]]:
 
 async def run_health_check(notify_on_failure: bool = True) -> HealthReport:
     """Top-level: run sandbox + live-traffic checks, ping Discord on failure."""
-    report = HealthReport(timestamp=datetime.utcnow().isoformat())
+    report = HealthReport(timestamp=datetime.now(timezone.utc).isoformat())
     report.sandbox_results = await check_sandbox_endpoints()
     report.live_traffic_alerts = await check_live_traffic_health()
 
@@ -229,8 +239,46 @@ async def run_health_check(notify_on_failure: bool = True) -> HealthReport:
     return report
 
 
+# If the same failure persists, suppress identical alerts for this long.
+# 12h = ping at 09:00, suppress, ping again at 21:00 if still broken — enough
+# to stay aware without spamming the digest channel every cron tick.
+_ALERT_DEDUPE_TTL_SECONDS = 12 * 3600
+
+
+def _alert_fingerprint(report: HealthReport) -> str:
+    """Stable hash of the failure shape so repeat alerts can be deduped.
+
+    Hashes (path, status_code) for failed sandbox endpoints + endpoint name for
+    live-traffic alerts. Excludes timestamps and free-text error bodies so a
+    persistent failure produces the same fingerprint every cron tick.
+    """
+    parts: list[str] = []
+    for r in sorted(report.sandbox_results, key=lambda x: x.path):
+        if not r.healthy:
+            parts.append(f"sandbox:{r.path}:{r.status_code}")
+    for a in sorted(report.live_traffic_alerts, key=lambda x: x["endpoint"]):
+        parts.append(f"live:{a['endpoint']}")
+    return hashlib.sha256("|".join(parts).encode()).hexdigest()[:16]
+
+
 async def _notify_discord(report: HealthReport) -> None:
-    """Build and post a Discord alert summarising what's broken."""
+    """Build and post a Discord alert summarising what's broken.
+
+    Deduplicates: identical failure shapes within the TTL window are silent.
+    The first transition into a failure state always pings; persistent failures
+    re-ping once the TTL expires.
+    """
+    fingerprint = _alert_fingerprint(report)
+    is_first = await cache.set_nx(
+        "health_alert", fingerprint, "1", ttl=_ALERT_DEDUPE_TTL_SECONDS
+    )
+    if not is_first:
+        logger.info(
+            f"Health check still failing (fingerprint={fingerprint}); "
+            "Discord alert suppressed by dedupe"
+        )
+        return
+
     lines = ["🚨 **Health check failed** — see below"]
 
     failed_sandbox = [r for r in report.sandbox_results if not r.healthy]
