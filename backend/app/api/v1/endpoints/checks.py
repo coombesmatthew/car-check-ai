@@ -9,6 +9,7 @@ from app.schemas.check import FreeCheckRequest, FreeCheckResponse
 from app.services.check.orchestrator import CheckOrchestrator
 from app.services.notification.analytics import track_event
 from app.services.payment.stripe_service import create_checkout_session, verify_webhook_signature
+from app.services.data.sample_reports import available_variants, get_sample_report
 from app.services.fulfilment import (
     fulfil_report_idempotent,
     get_fulfilment_status,
@@ -158,6 +159,31 @@ async def trigger_basic_fulfilment(session_id: str):
     return {"status": "accepted", "session_id": session_id}
 
 
+_SAMPLE_VARIANTS = {"clean", "risks", "ev"}
+
+
+@router.get("/sample")
+async def sample_report(variant: str = "clean"):
+    """Public sample report — no payment required.
+
+    Returns a fully-populated ReportDataResponse from a static fixture so
+    visitors can see exactly what a paid report looks like before buying.
+    Variants: clean (real scrubbed MINI), risks (synth flagged BMW), ev (EV).
+    """
+    if variant not in _SAMPLE_VARIANTS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unknown variant. Use one of: {sorted(_SAMPLE_VARIANTS)}",
+        )
+    data = get_sample_report(variant)
+    if data is None:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Sample '{variant}' not yet available. Available: {available_variants()}",
+        )
+    return data
+
+
 @router.get("/report/data")
 async def report_data(session_id: str):
     """Return the full fulfilment payload as JSON so the Next.js /report
@@ -188,6 +214,12 @@ async def report_data(session_id: str):
         "tier": "ev" if is_ev else "car",
         "is_ev": is_ev,
         "check_data": check,
+        # Server-verified purchase context for client-side conversion tracking
+        # (GA4 / Google Ads / PostHog purchase event). May be None on legacy
+        # cached entries from before these fields were captured.
+        "tier_key": result.tier,
+        "amount_pence": result.amount_pence,
+        "currency": result.currency,
     }
 
 

@@ -474,6 +474,21 @@ export async function getReportData(sessionId: string): Promise<ReportDataRespon
   return res.json();
 }
 
+export type SampleVariant = "clean" | "risks" | "ev";
+
+/** Public sample report — no payment required, served from a static fixture. */
+export async function getSampleReport(variant: SampleVariant): Promise<ReportDataResponse> {
+  const res = await fetch(
+    `${API_URL}/api/v1/checks/sample?variant=${encodeURIComponent(variant)}`,
+    { method: "GET" }
+  );
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: `HTTP ${res.status}` }));
+    throw new Error(err.detail || `HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
 /** Poll: returns {ready, result} when fulfilment is done; {ready:false} otherwise. */
 export async function getReportStatus(
   sessionId: string

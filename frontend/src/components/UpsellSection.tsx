@@ -130,6 +130,12 @@ export default function UpsellSection({
             )}
           </button>
           <p className="text-xs text-slate-400 mt-2">One-off payment &middot; No subscription &middot; Instant results</p>
+          <p className="text-xs text-slate-500 mt-3">
+            Want to see what&apos;s in it first?{" "}
+            <a href="/sample-report" className="text-purple-600 font-medium hover:underline">
+              See a sample report →
+            </a>
+          </p>
         </div>
 
         {(error || reportError) && (
