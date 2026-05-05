@@ -1,0 +1,814 @@
+{
+  "registration": "SAMPLE1",
+  "report_ref": "CV-SAMPLE-CLEAN1",
+  "tier": "car",
+  "is_ev": false,
+  "check_data": {
+    "registration": "SAMPLE1",
+    "tier": "premium",
+    "vehicle": {
+      "registration": "SAMPLE1",
+      "make": "MINI",
+      "colour": "BLACK",
+      "fuel_type": "DIESEL",
+      "year_of_manufacture": 2011,
+      "engine_capacity": 1598,
+      "co2_emissions": 105,
+      "euro_status": null,
+      "tax_status": "Taxed",
+      "tax_due_date": "2026-12-01",
+      "mot_status": "Valid",
+      "mot_expiry_date": "2026-09-29",
+      "date_of_last_v5c_issued": "2020-12-15",
+      "marked_for_export": false,
+      "type_approval": "M1",
+      "wheelplan": "2 AXLE RIGID BODY"
+    },
+    "mot_summary": {
+      "total_tests": 14,
+      "total_passes": 11,
+      "total_failures": 3,
+      "registration": "SAMPLE1",
+      "make": "MINI",
+      "model": "MINI",
+      "first_used_date": "2011-04-20",
+      "latest_test": {
+        "date": "2025-09-30",
+        "result": "PASSED",
+        "odometer": "100440",
+        "expiry_date": "2026-09-29"
+      },
+      "current_odometer": "100440",
+      "has_outstanding_recall": "Unknown"
+    },
+    "mot_tests": [
+      {
+        "test_number": 1,
+        "test_id": "SAMPLE-001-93810",
+        "date": "2025-09-30",
+        "result": "PASSED",
+        "odometer": 100440,
+        "odometer_unit": "MI",
+        "expiry_date": "2026-09-29",
+        "advisories": [
+          {
+            "type": "ADVISORY",
+            "text": "Offside Front Tyre worn close to legal limit/worn on edge (5.2.3 (e))"
+          },
+          {
+            "type": "ADVISORY",
+            "text": "Rear Registration plate deteriorated but not likely to be misread (0.1 (b))"
+          },
+          {
+            "type": "ADVISORY",
+            "text": "Offside Rear Direction indicator slightly discoloured (4.4.3 (a))"
+          }
+        ],
+        "failures": [],
+        "dangerous": [],
+        "total_defects": 3
+      },
+      {
+        "test_number": 2,
+        "test_id": "SAMPLE-002-24592",
+        "date": "2024-08-21",
+        "result": "PASSED",
+        "odometer": 98126,
+        "odometer_unit": "MI",
+        "expiry_date": "2025-08-23",
+        "advisories": [
+          {
+            "type": "ADVISORY",
+            "text": "Front Headlamp has a product on the lens but not seriously reducing light output Both front (4.1.4 (b))"
+          },
+          {
+            "type": "ADVISORY",
+            "text": "All direction indicators slightly discoloured (4.4.3 (a))"
+          },
+          {
+            "type": "ADVISORY",
+            "text": "Front Undertray not fully secure (8.1.1 (b) (i))"
+          },
+          {
+            "type": "ADVISORY",
+            "text": "Rear Sub-frame corroded but not seriously weakened (5.3.3 (b) (i))"
+          },
+          {
+            "type": "ADVISORY",
+            "text": "Offside Front Tyre worn close to legal limit/worn on edge (5.2.3 (e))"
+          }
+        ],
+        "failures": [],
+        "dangerous": [],
+        "total_defects": 5
+      },
+      {
+        "test_number": 3,
+        "test_id": "SAMPLE-003-13278",
+        "date": "2023-08-24",
+        "result": "PASSED",
+        "odometer": 90983,
+        "odometer_unit": "MI",
+        "expiry_date": "2024-08-23",
+        "advisories": [],
+        "failures": [],
+        "dangerous": [],
+        "total_defects": 0
+      },
+      {
+        "test_number": 4,
+        "test_id": "SAMPLE-004-46048",
+        "date": "2022-04-22",
+        "result": "PASSED",
+        "odometer": 87509,
+        "odometer_unit": "MI",
+        "expiry_date": "2023-04-21",
+        "advisories": [
+          {
+            "type": "ADVISORY",
+            "text": "Nearside Rear Direction indicator slightly discoloured (4.4.3 (a))"
+          },
+          {
+            "type": "ADVISORY",
+            "text": "Offside Rear Direction indicator slightly discoloured (4.4.3 (a))"
+          }
+        ],
+        "failures": [
+          {
+            "type": "MINOR",
+            "text": "Offside Windscreen wiper blade defective (3.4 (b) (i))"
+          }
+        ],
+        "dangerous": [],
+        "total_defects": 3
+      },
+      {
+        "test_number": 5,
+        "test_id": "SAMPLE-005-42098",
+        "date": "2021-03-08",
+        "result": "PASSED",
+        "odometer": 82540,
+        "odometer_unit": "MI",
+        "expiry_date": "2022-03-08",
+        "advisories": [
+          {
+            "type": "ADVISORY",
+            "text": "Direction indicator slightly discoloured Both rear (4.4.3 (a))"
+          }
+        ],
+        "failures": [],
+        "dangerous": [],
+        "total_defects": 1
+      },
+      {
+        "test_number": 6,
+        "test_id": "SAMPLE-006-39256",
+        "date": "2020-03-03",
+        "result": "PASSED",
+        "odometer": 80034,
+        "odometer_unit": "MI",
+        "expiry_date": "2021-03-08",
+        "advisories": [
+          {
+            "type": "ADVISORY",
+            "text": "N/s/front tyrs bald on edges + close to ware indicator"
+          },
+          {
+            "type": "ADVISORY",
+            "text": "O/s/rear tyre worn to ware indicator"
+          },
+          {
+            "type": "ADVISORY",
+            "text": "N/s/rear tyre close to ware indicator"
+          }
+        ],
+        "failures": [],
+        "dangerous": [],
+        "total_defects": 3
+      },
+      {
+        "test_number": 7,
+        "test_id": "SAMPLE-007-28289",
+        "date": "2020-03-03",
+        "result": "FAILED",
+        "odometer": 80034,
+        "odometer_unit": "MI",
+        "expiry_date": null,
+        "advisories": [
+          {
+            "type": "ADVISORY",
+            "text": "N/s/front tyrs bald on edges + close to ware indicator"
+          },
+          {
+            "type": "ADVISORY",
+            "text": "O/s/rear tyre worn to ware indicator"
+          },
+          {
+            "type": "ADVISORY",
+            "text": "N/s/rear tyre close to ware indicator"
+          }
+        ],
+        "failures": [
+          {
+            "type": "MAJOR",
+            "text": "Offside Front Brake hose excessively deteriorated  Insecure in mounting rubbing on shock absorber (1.1.12 (b) (ii))"
+          }
+        ],
+        "dangerous": [
+          {
+            "type": "DANGEROUS",
+            "text": "Offside Front Tyre has ply or cords exposed (5.2.3 (d) (ii))"
+          }
+        ],
+        "total_defects": 5
+      },
+      {
+        "test_number": 8,
+        "test_id": "SAMPLE-008-23434",
+        "date": "2019-03-09",
+        "result": "PASSED",
+        "odometer": 71440,
+        "odometer_unit": "MI",
+        "expiry_date": "2020-03-08",
+        "advisories": [],
+        "failures": [],
+        "dangerous": [],
+        "total_defects": 0
+      },
+      {
+        "test_number": 9,
+        "test_id": "SAMPLE-009-98696",
+        "date": "2017-07-13",
+        "result": "PASSED",
+        "odometer": 48212,
+        "odometer_unit": "MI",
+        "expiry_date": "2018-07-12",
+        "advisories": [
+          {
+            "type": "ADVISORY",
+            "text": "Front Brake pad(s) wearing thin (3.5.1g)"
+          }
+        ],
+        "failures": [],
+        "dangerous": [],
+        "total_defects": 1
+      },
+      {
+        "test_number": 10,
+        "test_id": "SAMPLE-010-81482",
+        "date": "2017-07-13",
+        "result": "FAILED",
+        "odometer": 48212,
+        "odometer_unit": "MI",
+        "expiry_date": null,
+        "advisories": [
+          {
+            "type": "ADVISORY",
+            "text": "Front Brake pad(s) wearing thin (3.5.1g)"
+          }
+        ],
+        "failures": [
+          {
+            "type": "PRS",
+            "text": "Nearside Stop lamp not working (1.2.1b)"
+          }
+        ],
+        "dangerous": [],
+        "total_defects": 2
+      },
+      {
+        "test_number": 11,
+        "test_id": "SAMPLE-011-21395",
+        "date": "2016-07-12",
+        "result": "PASSED",
+        "odometer": 40599,
+        "odometer_unit": "MI",
+        "expiry_date": "2017-07-11",
+        "advisories": [],
+        "failures": [],
+        "dangerous": [],
+        "total_defects": 0
+      },
+      {
+        "test_number": 12,
+        "test_id": "SAMPLE-012-87397",
+        "date": "2015-04-20",
+        "result": "PASSED",
+        "odometer": 34198,
+        "odometer_unit": "MI",
+        "expiry_date": "2016-04-20",
+        "advisories": [],
+        "failures": [],
+        "dangerous": [],
+        "total_defects": 0
+      },
+      {
+        "test_number": 13,
+        "test_id": "SAMPLE-013-65302",
+        "date": "2014-04-12",
+        "result": "FAILED",
+        "odometer": 21441,
+        "odometer_unit": "MI",
+        "expiry_date": null,
+        "advisories": [
+          {
+            "type": "ADVISORY",
+            "text": "Nearside Front Tyre worn close to the legal limit (4.1.E.1)"
+          },
+          {
+            "type": "ADVISORY",
+            "text": "Offside Front Tyre worn close to the legal limit (4.1.E.1)"
+          },
+          {
+            "type": "ADVISORY",
+            "text": "Nearside Rear Tyre worn close to the legal limit (4.1.E.1)"
+          },
+          {
+            "type": "ADVISORY",
+            "text": "Offside Rear Tyre worn close to the legal limit (4.1.E.1)"
+          }
+        ],
+        "failures": [
+          {
+            "type": "PRS",
+            "text": "Nearside Windscreen wiper does not clear the windscreen effectively (8.2.2)"
+          },
+          {
+            "type": "PRS",
+            "text": "Offside Windscreen wiper does not clear the windscreen effectively (8.2.2)"
+          },
+          {
+            "type": "USER ENTERED",
+            "text": "Nail in offside rear tyre"
+          }
+        ],
+        "dangerous": [],
+        "total_defects": 7
+      },
+      {
+        "test_number": 14,
+        "test_id": "SAMPLE-014-14165",
+        "date": "2014-04-12",
+        "result": "PASSED",
+        "odometer": 21441,
+        "odometer_unit": "MI",
+        "expiry_date": "2015-04-20",
+        "advisories": [
+          {
+            "type": "ADVISORY",
+            "text": "Nearside Front Tyre worn close to the legal limit (4.1.E.1)"
+          },
+          {
+            "type": "ADVISORY",
+            "text": "Offside Front Tyre worn close to the legal limit (4.1.E.1)"
+          },
+          {
+            "type": "ADVISORY",
+            "text": "Nearside Rear Tyre worn close to the legal limit (4.1.E.1)"
+          },
+          {
+            "type": "ADVISORY",
+            "text": "Offside Rear Tyre worn close to the legal limit (4.1.E.1)"
+          }
+        ],
+        "failures": [
+          {
+            "type": "USER ENTERED",
+            "text": "Nail in offside rear tyre"
+          }
+        ],
+        "dangerous": [],
+        "total_defects": 5
+      }
+    ],
+    "clocking_analysis": {
+      "clocked": false,
+      "risk_level": "none",
+      "reason": null,
+      "flags": []
+    },
+    "condition_score": 24,
+    "mileage_timeline": [
+      {
+        "date": "2014-04-12",
+        "miles": 21441,
+        "unit": "MI"
+      },
+      {
+        "date": "2014-04-12",
+        "miles": 21441,
+        "unit": "MI"
+      },
+      {
+        "date": "2015-04-20",
+        "miles": 34198,
+        "unit": "MI"
+      },
+      {
+        "date": "2016-07-12",
+        "miles": 40599,
+        "unit": "MI"
+      },
+      {
+        "date": "2017-07-13",
+        "miles": 48212,
+        "unit": "MI"
+      },
+      {
+        "date": "2017-07-13",
+        "miles": 48212,
+        "unit": "MI"
+      },
+      {
+        "date": "2019-03-09",
+        "miles": 71440,
+        "unit": "MI"
+      },
+      {
+        "date": "2020-03-03",
+        "miles": 80034,
+        "unit": "MI"
+      },
+      {
+        "date": "2020-03-03",
+        "miles": 80034,
+        "unit": "MI"
+      },
+      {
+        "date": "2021-03-08",
+        "miles": 82540,
+        "unit": "MI"
+      },
+      {
+        "date": "2022-04-22",
+        "miles": 87509,
+        "unit": "MI"
+      },
+      {
+        "date": "2023-08-24",
+        "miles": 90983,
+        "unit": "MI"
+      },
+      {
+        "date": "2024-08-21",
+        "miles": 98126,
+        "unit": "MI"
+      },
+      {
+        "date": "2025-09-30",
+        "miles": 100440,
+        "unit": "MI"
+      }
+    ],
+    "failure_patterns": [
+      {
+        "category": "tyre",
+        "occurrences": 17,
+        "concern_level": "high"
+      },
+      {
+        "category": "windscreen",
+        "occurrences": 3,
+        "concern_level": "medium"
+      },
+      {
+        "category": "brake",
+        "occurrences": 3,
+        "concern_level": "medium"
+      }
+    ],
+    "ulez_compliance": {
+      "compliant": false,
+      "status": "non_compliant",
+      "reason": "Diesel vehicle with Euro 5 (estimated from year) \u2014 non-compliant in 8 zones",
+      "euro_standard": 5,
+      "euro_inferred": true,
+      "fuel_type": "DIESEL",
+      "daily_charge": "\u00a312.50/day (London ULEZ) \u00b7 \u00a360+ penalty (Scottish LEZs)",
+      "zones": {
+        "london_ulez": false,
+        "london_lez": true,
+        "birmingham_caz": false,
+        "bristol_caz": false,
+        "bath_caz": true,
+        "bradford_caz": true,
+        "portsmouth_caz": true,
+        "sheffield_caz": true,
+        "tyneside_caz": true,
+        "glasgow_lez": false,
+        "edinburgh_lez": false,
+        "aberdeen_lez": false,
+        "dundee_lez": false,
+        "oxford_zez": false
+      },
+      "zone_details": [
+        {
+          "zone_id": "london_ulez",
+          "name": "London ULEZ",
+          "region": "England",
+          "compliant": false,
+          "charge": "\u00a312.50/day",
+          "cars_affected": true,
+          "zone_type": "daily_charge"
+        },
+        {
+          "zone_id": "london_lez",
+          "name": "London LEZ",
+          "region": "England",
+          "compliant": true,
+          "charge": "No charge",
+          "cars_affected": false,
+          "zone_type": "daily_charge"
+        },
+        {
+          "zone_id": "birmingham_caz",
+          "name": "Birmingham CAZ",
+          "region": "England",
+          "compliant": false,
+          "charge": "\u00a38/day",
+          "cars_affected": true,
+          "zone_type": "daily_charge"
+        },
+        {
+          "zone_id": "bristol_caz",
+          "name": "Bristol CAZ",
+          "region": "England",
+          "compliant": false,
+          "charge": "\u00a39/day",
+          "cars_affected": true,
+          "zone_type": "daily_charge"
+        },
+        {
+          "zone_id": "bath_caz",
+          "name": "Bath CAZ",
+          "region": "England",
+          "compliant": true,
+          "charge": "No charge",
+          "cars_affected": false,
+          "zone_type": "daily_charge"
+        },
+        {
+          "zone_id": "bradford_caz",
+          "name": "Bradford CAZ",
+          "region": "England",
+          "compliant": true,
+          "charge": "No charge",
+          "cars_affected": false,
+          "zone_type": "daily_charge"
+        },
+        {
+          "zone_id": "portsmouth_caz",
+          "name": "Portsmouth CAZ",
+          "region": "England",
+          "compliant": true,
+          "charge": "No charge",
+          "cars_affected": false,
+          "zone_type": "daily_charge"
+        },
+        {
+          "zone_id": "sheffield_caz",
+          "name": "Sheffield CAZ",
+          "region": "England",
+          "compliant": true,
+          "charge": "No charge",
+          "cars_affected": false,
+          "zone_type": "daily_charge"
+        },
+        {
+          "zone_id": "tyneside_caz",
+          "name": "Tyneside CAZ (Newcastle/Gateshead)",
+          "region": "England",
+          "compliant": true,
+          "charge": "No charge",
+          "cars_affected": false,
+          "zone_type": "daily_charge"
+        },
+        {
+          "zone_id": "glasgow_lez",
+          "name": "Glasgow LEZ",
+          "region": "Scotland",
+          "compliant": false,
+          "charge": "\u00a360 first offence (doubles, max \u00a3480)",
+          "cars_affected": true,
+          "zone_type": "penalty"
+        },
+        {
+          "zone_id": "edinburgh_lez",
+          "name": "Edinburgh LEZ",
+          "region": "Scotland",
+          "compliant": false,
+          "charge": "\u00a360 first offence (doubles, max \u00a3480)",
+          "cars_affected": true,
+          "zone_type": "penalty"
+        },
+        {
+          "zone_id": "aberdeen_lez",
+          "name": "Aberdeen LEZ",
+          "region": "Scotland",
+          "compliant": false,
+          "charge": "\u00a360 first offence (doubles, max \u00a3480)",
+          "cars_affected": true,
+          "zone_type": "penalty"
+        },
+        {
+          "zone_id": "dundee_lez",
+          "name": "Dundee LEZ",
+          "region": "Scotland",
+          "compliant": false,
+          "charge": "\u00a360 first offence (doubles, max \u00a3480)",
+          "cars_affected": true,
+          "zone_type": "penalty"
+        },
+        {
+          "zone_id": "oxford_zez",
+          "name": "Oxford ZEZ",
+          "region": "England",
+          "compliant": false,
+          "charge": "\u00a34-\u00a310/day (all non-EVs)",
+          "cars_affected": true,
+          "zone_type": "daily_charge"
+        }
+      ],
+      "total_zones": 14,
+      "compliant_zones": 6,
+      "non_compliant_zones": 8,
+      "charges_apply_zones": 8
+    },
+    "tax_calculation": {
+      "band": "B",
+      "band_range": "101-110 g/km",
+      "co2_emissions": 105,
+      "fuel_type": "DIESEL",
+      "first_year_rate": 20,
+      "annual_rate": 20,
+      "six_month_rate": 10.0,
+      "monthly_total": 20.0,
+      "is_electric": false,
+      "is_diesel": true,
+      "tax_regime": "Pre-April 2017",
+      "year_of_manufacture": 2011
+    },
+    "safety_rating": {
+      "source": "Euro NCAP",
+      "make": "MINI",
+      "model": "MINI",
+      "year_range": "2014-2025",
+      "stars": 4,
+      "adult": 83,
+      "child": 79,
+      "pedestrian": 67,
+      "safety_assist": 56,
+      "overall": 71,
+      "test_year": 2014
+    },
+    "vehicle_stats": {
+      "vehicle_age_years": 15,
+      "year_of_manufacture": 2011,
+      "first_registered": "2011-04",
+      "mot_expiry_date": "2026-09-29",
+      "mot_days_remaining": 155,
+      "mot_status_detail": "Valid for 155 days",
+      "tax_due_date": "2026-12-01",
+      "tax_days_remaining": 218,
+      "tax_status_detail": "Valid for 218 days",
+      "v5c_issued_date": "2020-12-15",
+      "v5c_days_since": 1959,
+      "v5c_insight": "V5C issued ~5 years ago",
+      "estimated_annual_mileage": 6888,
+      "total_recorded_mileage": 100440,
+      "mileage_readings_count": 14,
+      "mileage_assessment": "Average mileage",
+      "total_advisory_items": 27,
+      "total_failure_items": 3,
+      "total_dangerous_items": 1,
+      "total_major_items": 1,
+      "total_minor_items": 1
+    },
+    "finance_check": {
+      "finance_outstanding": false,
+      "record_count": 0,
+      "records": [],
+      "data_source": "Experian"
+    },
+    "stolen_check": {
+      "stolen": false,
+      "reported_date": null,
+      "police_force": null,
+      "reference": null,
+      "data_source": "Experian"
+    },
+    "write_off_check": {
+      "written_off": false,
+      "record_count": 0,
+      "records": [],
+      "data_source": "Experian"
+    },
+    "plate_changes": {
+      "changes_found": false,
+      "record_count": 0,
+      "records": [],
+      "data_source": "Experian"
+    },
+    "valuation": {
+      "private_sale": 2717,
+      "dealer_forecourt": 3190,
+      "trade_in": 1107,
+      "part_exchange": 1496,
+      "valuation_date": "2026-04-27",
+      "mileage_used": 100440,
+      "condition": "Mileage-adjusted",
+      "data_source": "Brego"
+    },
+    "keeper_history": {
+      "keeper_count": 2,
+      "last_change_date": "2020-12-09",
+      "keepers": [
+        {
+          "keeper_number": 2,
+          "start_date": "2020-12-09",
+          "end_date": null,
+          "is_current": true,
+          "start_display": "9 Dec 2020",
+          "end_display": null,
+          "tenure_display": "5 years \u00b7 4 months",
+          "label": "Second Owner"
+        },
+        {
+          "keeper_number": 1,
+          "start_date": "2011-04-20",
+          "end_date": "2020-12-09",
+          "is_current": false,
+          "start_display": "20 Apr 2011",
+          "end_display": "9 Dec 2020",
+          "tenure_display": "9 years \u00b7 7 months",
+          "label": "First Owner"
+        }
+      ],
+      "data_source": "Experian"
+    },
+    "high_risk": {
+      "flagged": false,
+      "records": [],
+      "data_source": "Experian"
+    },
+    "previous_searches": {
+      "search_count": 9,
+      "records": [
+        {
+          "date": "2026-04-23",
+          "business_type": "MOTOR TRADE & OTHER"
+        },
+        {
+          "date": "2026-04-23",
+          "business_type": "MOTOR TRADE & OTHER"
+        },
+        {
+          "date": "2026-04-23",
+          "business_type": "MOTOR TRADE & OTHER"
+        },
+        {
+          "date": "2026-04-23",
+          "business_type": "MOTOR TRADE & OTHER"
+        },
+        {
+          "date": "2026-03-30",
+          "business_type": "MOTOR TRADE & OTHER"
+        },
+        {
+          "date": "2026-03-30",
+          "business_type": "MOTOR TRADE & OTHER"
+        },
+        {
+          "date": "2026-03-30",
+          "business_type": "MOTOR TRADE & OTHER"
+        },
+        {
+          "date": "2026-03-30",
+          "business_type": "MOTOR TRADE & OTHER"
+        },
+        {
+          "date": "2025-08-03",
+          "business_type": "MOTOR TRADE & OTHER"
+        }
+      ],
+      "data_source": "Experian"
+    },
+    "salvage_check": {
+      "salvage_found": false,
+      "records": [],
+      "data_source": "CarGuide"
+    },
+    "import_status": null,
+    "vehicle_images": null,
+    "listing_price": null,
+    "checked_at": "2026-04-27 11:38:06.152347",
+    "data_sources": [
+      "DVLA VES API",
+      "DVSA MOT History API",
+      "Experian via One Auto API"
+    ]
+  },
+  "tier_key": null,
+  "amount_pence": null,
+  "currency": null
+}

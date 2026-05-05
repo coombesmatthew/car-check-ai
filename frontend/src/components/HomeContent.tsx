@@ -353,6 +353,9 @@ export default function HomeContent() {
                   <a href="#search" className="block text-center py-2.5 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors text-sm">
                     Get Premium &mdash; &pound;9.99
                   </a>
+                  <a href="/sample-report" className="block text-center text-xs text-purple-600 hover:underline mt-2.5">
+                    See a sample report →
+                  </a>
                 </div>
               </div>
 
@@ -389,6 +392,9 @@ export default function HomeContent() {
                   <a href="/ev" className="block text-center py-2.5 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 transition-colors text-sm">
                     Get EV Health Check &mdash; &pound;8.99
                   </a>
+                  <a href="/sample-report?variant=ev" className="block text-center text-xs text-emerald-700 hover:underline mt-2.5">
+                    See a sample report →
+                  </a>
                 </div>
 
                 {/* EV Complete tier */}
@@ -414,6 +420,9 @@ export default function HomeContent() {
                   </ul>
                   <a href="/ev" className="block text-center py-2.5 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 transition-colors text-sm">
                     Get EV Complete &mdash; &pound;13.99
+                  </a>
+                  <a href="/sample-report?variant=ev" className="block text-center text-xs text-teal-700 hover:underline mt-2.5">
+                    See a sample report →
                   </a>
                 </div>
               </div>

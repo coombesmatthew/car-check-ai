@@ -8,7 +8,9 @@ export type AnalyticsEvent =
   | "seo_page_viewed"
   | "seo_page_cta_clicked"
   | "seo_sourced_check"
-  | "seo_sourced_paid_conversion";
+  | "seo_sourced_paid_conversion"
+  | "sample_report_viewed"
+  | "sample_report_tab_clicked";
 
 export function track(
   event: AnalyticsEvent,

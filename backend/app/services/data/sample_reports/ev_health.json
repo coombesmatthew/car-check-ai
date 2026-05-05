@@ -1,0 +1,442 @@
+{
+  "registration": "SAMPLE3",
+  "report_ref": "CV-SAMPLE-EV1",
+  "tier": "ev",
+  "is_ev": true,
+  "tier_key": null,
+  "amount_pence": null,
+  "currency": null,
+  "check_data": {
+    "registration": "SAMPLE3",
+    "tier": "ev_complete",
+    "is_electric": true,
+    "ev_type": "BEV",
+    "vehicle": {
+      "registration": "SAMPLE3",
+      "make": "TESLA",
+      "colour": "WHITE",
+      "fuel_type": "ELECTRICITY",
+      "year_of_manufacture": 2022,
+      "engine_capacity": null,
+      "co2_emissions": 0,
+      "euro_status": null,
+      "tax_status": "Taxed",
+      "tax_due_date": "2026-09-01",
+      "mot_status": "Not yet due",
+      "mot_expiry_date": null,
+      "date_of_last_v5c_issued": "2022-09-08",
+      "marked_for_export": false,
+      "type_approval": "M1",
+      "wheelplan": "2 AXLE RIGID BODY"
+    },
+    "mot_summary": {
+      "total_tests": 1,
+      "total_passes": 1,
+      "total_failures": 0,
+      "registration": "SAMPLE3",
+      "make": "TESLA",
+      "model": "MODEL 3 LONG RANGE",
+      "first_used_date": "2022-09-08",
+      "latest_test": {
+        "date": "2025-09-12",
+        "result": "PASSED",
+        "odometer": "31420",
+        "expiry_date": "2026-09-11"
+      },
+      "current_odometer": "31420",
+      "has_outstanding_recall": "No"
+    },
+    "mot_tests": [
+      {
+        "test_number": 1,
+        "test_id": "SAMPLE-EV-001-77342",
+        "date": "2025-09-12",
+        "result": "PASSED",
+        "odometer": 31420,
+        "odometer_unit": "MI",
+        "expiry_date": "2026-09-11",
+        "advisories": [
+          {
+            "type": "ADVISORY",
+            "text": "Front Brake disc lightly corroded \u2014 common on EVs due to regenerative braking (1.1.14 (a) (i))"
+          }
+        ],
+        "failures": [],
+        "dangerous": [],
+        "total_defects": 1
+      }
+    ],
+    "clocking_analysis": {
+      "clocked": false,
+      "risk_level": "none",
+      "reason": null,
+      "flags": []
+    },
+    "condition_score": 92,
+    "mileage_timeline": [
+      {
+        "date": "2025-09-12",
+        "miles": 31420,
+        "unit": "MI"
+      }
+    ],
+    "failure_patterns": [],
+    "ulez_compliance": {
+      "compliant": true,
+      "status": "compliant",
+      "reason": "Electric vehicle \u2014 exempt from all clean air zones",
+      "euro_standard": null,
+      "euro_inferred": false,
+      "fuel_type": "ELECTRICITY",
+      "daily_charge": "\u00a30.00",
+      "zones": {
+        "london": true,
+        "birmingham": true,
+        "bath": true,
+        "bristol": true,
+        "sheffield": true,
+        "tyneside": true,
+        "portsmouth": true,
+        "scotland_lez": true
+      },
+      "zone_details": [
+        {
+          "zone_id": "london",
+          "name": "London ULEZ",
+          "region": "London",
+          "compliant": true,
+          "charge": "\u00a30.00",
+          "cars_affected": true,
+          "zone_type": "ULEZ"
+        },
+        {
+          "zone_id": "birmingham",
+          "name": "Birmingham CAZ",
+          "region": "Birmingham",
+          "compliant": true,
+          "charge": "\u00a30.00",
+          "cars_affected": true,
+          "zone_type": "CAZ Class D"
+        },
+        {
+          "zone_id": "bath",
+          "name": "Bath CAZ",
+          "region": "Bath",
+          "compliant": true,
+          "charge": "\u00a30.00",
+          "cars_affected": false,
+          "zone_type": "CAZ Class C"
+        },
+        {
+          "zone_id": "bristol",
+          "name": "Bristol CAZ",
+          "region": "Bristol",
+          "compliant": true,
+          "charge": "\u00a30.00",
+          "cars_affected": true,
+          "zone_type": "CAZ Class D"
+        },
+        {
+          "zone_id": "sheffield",
+          "name": "Sheffield CAZ",
+          "region": "Sheffield",
+          "compliant": true,
+          "charge": "\u00a30.00",
+          "cars_affected": false,
+          "zone_type": "CAZ Class C"
+        },
+        {
+          "zone_id": "tyneside",
+          "name": "Tyneside CAZ",
+          "region": "Newcastle/Gateshead",
+          "compliant": true,
+          "charge": "\u00a30.00",
+          "cars_affected": false,
+          "zone_type": "CAZ Class C"
+        },
+        {
+          "zone_id": "portsmouth",
+          "name": "Portsmouth CAZ",
+          "region": "Portsmouth",
+          "compliant": true,
+          "charge": "\u00a30.00",
+          "cars_affected": false,
+          "zone_type": "CAZ Class B"
+        },
+        {
+          "zone_id": "scotland_lez",
+          "name": "Scotland LEZ",
+          "region": "Glasgow/Edinburgh/Aberdeen/Dundee",
+          "compliant": true,
+          "charge": "\u00a30.00",
+          "cars_affected": true,
+          "zone_type": "LEZ"
+        }
+      ],
+      "total_zones": 8,
+      "compliant_zones": 8,
+      "non_compliant_zones": 0,
+      "charges_apply_zones": 0
+    },
+    "tax_calculation": {
+      "band": "Electric",
+      "band_range": "0 g/km",
+      "co2_emissions": 0,
+      "fuel_type": "ELECTRICITY",
+      "first_year_rate": 0,
+      "annual_rate": 0,
+      "six_month_rate": 0.0,
+      "monthly_total": 0.0,
+      "is_electric": true,
+      "is_diesel": false,
+      "tax_regime": "Post-April 2017",
+      "year_of_manufacture": 2022
+    },
+    "safety_rating": {
+      "source": "Euro NCAP",
+      "make": "TESLA",
+      "model": "Model 3",
+      "year_range": "2019-2025",
+      "stars": 5,
+      "adult": 96,
+      "child": 86,
+      "pedestrian": 74,
+      "safety_assist": 94,
+      "overall": 88,
+      "test_year": 2019
+    },
+    "vehicle_stats": {
+      "vehicle_age_years": 3,
+      "year_of_manufacture": 2022,
+      "first_registered": "2022-09",
+      "mot_expiry_date": "2026-09-11",
+      "mot_days_remaining": 129,
+      "mot_status_detail": "Valid for 129 days",
+      "tax_due_date": "2026-09-01",
+      "tax_days_remaining": 119,
+      "tax_status_detail": "Valid for 119 days",
+      "v5c_issued_date": "2022-09-08",
+      "v5c_days_since": 1335,
+      "v5c_insight": "V5C issued ~3 years ago",
+      "estimated_annual_mileage": 10472,
+      "total_recorded_mileage": 31420,
+      "mileage_readings_count": 1,
+      "mileage_assessment": "Average mileage",
+      "total_advisory_items": 1,
+      "total_failure_items": 0,
+      "total_dangerous_items": 0,
+      "total_major_items": 0,
+      "total_minor_items": 0
+    },
+    "range_estimate": {
+      "estimated_range_miles": 290,
+      "min_range_now_miles": 270,
+      "max_range_now_miles": 310,
+      "min_range_new_miles": 340,
+      "max_range_new_miles": 380,
+      "official_range_miles": 358,
+      "range_retention_pct": 81.0,
+      "warranty_miles_remaining": 88580,
+      "warranty_months_remaining": 60,
+      "battery_test_available": true,
+      "battery_test_date": "2025-08-14",
+      "battery_test_grade": "A",
+      "battery_capacity_kwh": 82.0,
+      "usable_battery_capacity_kwh": 75.0,
+      "data_source": "ClearWatt"
+    },
+    "range_scenarios": [
+      {
+        "scenario": "Highway Cold (5\u00b0C)",
+        "temperature_c": 5,
+        "estimated_miles": 215,
+        "driving_style": "highway"
+      },
+      {
+        "scenario": "Combined Mild (15\u00b0C)",
+        "temperature_c": 15,
+        "estimated_miles": 290,
+        "driving_style": "combined"
+      },
+      {
+        "scenario": "City Mild (20\u00b0C)",
+        "temperature_c": 20,
+        "estimated_miles": 340,
+        "driving_style": "city"
+      },
+      {
+        "scenario": "Highway Warm (25\u00b0C)",
+        "temperature_c": 25,
+        "estimated_miles": 265,
+        "driving_style": "highway"
+      }
+    ],
+    "battery_health": {
+      "score": 89,
+      "grade": "A",
+      "degradation_estimate_pct": 6.0,
+      "summary": "Battery performing well \u2014 typical degradation for a 3-year-old EV with 31,420 miles. Test grade A confirms healthy cells.",
+      "test_grade": "A",
+      "test_date": "2025-08-14"
+    },
+    "charging_costs": {
+      "home_cost_per_full_charge": 22.5,
+      "rapid_cost_per_full_charge": 56.25,
+      "cost_per_mile_home": 7.8,
+      "cost_per_mile_rapid": 19.4,
+      "cost_per_mile_public": 15.6,
+      "annual_cost_estimate_home": 780.0,
+      "annual_cost_estimate_rapid": 1940.0,
+      "vs_petrol_annual_saving": 1380.0
+    },
+    "ev_specs": {
+      "battery_capacity_kwh": 82.0,
+      "usable_capacity_kwh": 75.0,
+      "battery_type": "Lithium-ion",
+      "battery_chemistry": "NCM",
+      "battery_architecture": "400 V",
+      "battery_weight_kg": 478,
+      "battery_warranty_years": 8,
+      "battery_warranty_miles": 120000,
+      "charge_port": "Type 2",
+      "fast_charge_port": "CCS",
+      "max_dc_charge_kw": 250,
+      "avg_dc_charge_kw": 145,
+      "max_ac_charge_kw": 11,
+      "charge_time_home_mins": 480,
+      "charge_time_rapid_mins": 27,
+      "rapid_charge_speed_mph": 540,
+      "energy_consumption_wh_per_mile": 258.0,
+      "energy_consumption_mi_per_kwh": 3.88,
+      "real_range_miles": 290,
+      "drivetrain": "AWD Dual Motor",
+      "motor_power_kw": 324,
+      "motor_power_bhp": 434,
+      "top_speed_mph": 145,
+      "zero_to_sixty_secs": 4.4,
+      "kerb_weight_kg": 1844,
+      "boot_capacity_litres": 542,
+      "boot_capacity_max_litres": 1132,
+      "frunk_litres": 88,
+      "max_towing_weight_kg": 1000,
+      "data_source": "EV Database"
+    },
+    "lifespan_prediction": {
+      "predicted_remaining_years": 8,
+      "prediction_range": "7-9",
+      "one_year_survival_pct": 99.4,
+      "model_avg_final_miles": 165000,
+      "model_avg_final_age": 12,
+      "manufacturer_avg_final_miles": 152000,
+      "manufacturer_avg_final_age": 11,
+      "pct_still_on_road": 98.2,
+      "initially_registered": 18742,
+      "currently_licensed": 18394,
+      "data_source": "AutoPredict"
+    },
+    "finance_check": {
+      "finance_outstanding": true,
+      "record_count": 1,
+      "records": [
+        {
+          "agreement_type": "Personal Lease",
+          "finance_company": "Tesla Finance",
+          "agreement_date": "2022-09-08",
+          "agreement_term": "48 months",
+          "contact_number": null
+        }
+      ],
+      "data_source": "Experian"
+    },
+    "stolen_check": {
+      "stolen": false,
+      "reported_date": null,
+      "police_force": null,
+      "reference": null,
+      "data_source": "Experian"
+    },
+    "write_off_check": {
+      "written_off": false,
+      "record_count": 0,
+      "records": [],
+      "data_source": "Experian"
+    },
+    "plate_changes": {
+      "changes_found": false,
+      "record_count": 0,
+      "records": [],
+      "data_source": "Experian"
+    },
+    "keeper_history": {
+      "keeper_count": 1,
+      "last_change_date": "2022-09-08",
+      "keepers": [
+        {
+          "keeper_number": 1,
+          "start_date": "2022-09-08",
+          "end_date": null,
+          "is_current": true,
+          "start_display": "8 Sep 2022",
+          "end_display": null,
+          "tenure_display": "3 years \u00b7 7 months",
+          "label": "First Owner"
+        }
+      ],
+      "data_source": "Experian"
+    },
+    "high_risk": {
+      "flagged": false,
+      "records": [],
+      "data_source": "Experian"
+    },
+    "previous_searches": {
+      "search_count": 4,
+      "records": [
+        {
+          "date": "2026-04-25",
+          "business_type": "MOTOR TRADE & OTHER"
+        },
+        {
+          "date": "2026-04-18",
+          "business_type": "MOTOR TRADE & OTHER"
+        },
+        {
+          "date": "2026-03-09",
+          "business_type": "INSURANCE COMPANY"
+        },
+        {
+          "date": "2026-01-22",
+          "business_type": "MOTOR TRADE & OTHER"
+        }
+      ],
+      "data_source": "Experian"
+    },
+    "salvage_check": {
+      "salvage_found": false,
+      "records": [],
+      "data_source": "CarGuide"
+    },
+    "import_status": null,
+    "valuation": {
+      "private_sale": 24750,
+      "dealer_forecourt": 27995,
+      "trade_in": 21800,
+      "part_exchange": 22950,
+      "valuation_date": "2026-05-05",
+      "mileage_used": 31420,
+      "condition": "Mileage-adjusted",
+      "data_source": "Brego"
+    },
+    "vehicle_images": null,
+    "listing_price": null,
+    "checked_at": "2026-05-05T10:00:00",
+    "data_sources": [
+      "DVLA VES API",
+      "DVSA MOT History API",
+      "ClearWatt API",
+      "EV Database",
+      "AutoPredict",
+      "Experian via One Auto API"
+    ]
+  }
+}

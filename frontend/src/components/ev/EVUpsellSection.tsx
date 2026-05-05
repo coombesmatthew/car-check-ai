@@ -151,6 +151,12 @@ export default function EVUpsellSection({ registration }: Props) {
         {error && <p className="mt-3 text-sm text-red-600 text-center">{error}</p>}
 
         <p className="mt-3 text-xs text-slate-400 text-center">Secure payment via Stripe. Report emailed within 60 seconds.</p>
+        <p className="mt-2 text-xs text-slate-500 text-center">
+          Want to see what you&apos;ll get?{" "}
+          <a href="/sample-report?variant=ev" className="text-emerald-700 font-medium hover:underline">
+            See a sample EV report →
+          </a>
+        </p>
         <p className="mt-2 text-xs text-slate-400 text-center">
           By purchasing, you agree to our{" "}
           <a href="/terms" className="underline hover:text-slate-600">Terms of Service</a> and{" "}

@@ -153,6 +153,12 @@ export default function PremiumPreview({ registration }: PremiumPreviewProps) {
           <p className="text-xs text-slate-400 mt-2">
             {error ? <span className="text-red-500">{error}</span> : "One-off payment · No subscription · Instant results"}
           </p>
+          <p className="text-xs text-slate-500 mt-3">
+            Not sure what you&apos;ll get?{" "}
+            <a href="/sample-report" className="text-purple-600 font-medium hover:underline">
+              See a sample report →
+            </a>
+          </p>
         </div>
       </div>
 

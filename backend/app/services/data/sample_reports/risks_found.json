@@ -1,0 +1,608 @@
+{
+  "registration": "SAMPLE2",
+  "report_ref": "CV-SAMPLE-RISKS1",
+  "tier": "car",
+  "is_ev": false,
+  "tier_key": null,
+  "amount_pence": null,
+  "currency": null,
+  "check_data": {
+    "registration": "SAMPLE2",
+    "tier": "premium",
+    "vehicle": {
+      "registration": "SAMPLE2",
+      "make": "BMW",
+      "colour": "GREY",
+      "fuel_type": "DIESEL",
+      "year_of_manufacture": 2017,
+      "engine_capacity": 1995,
+      "co2_emissions": 124,
+      "euro_status": "EURO 6",
+      "tax_status": "Taxed",
+      "tax_due_date": "2026-09-01",
+      "mot_status": "Valid",
+      "mot_expiry_date": "2026-07-12",
+      "date_of_last_v5c_issued": "2022-04-08",
+      "marked_for_export": false,
+      "type_approval": "M1",
+      "wheelplan": "2 AXLE RIGID BODY"
+    },
+    "mot_summary": {
+      "total_tests": 8,
+      "total_passes": 5,
+      "total_failures": 3,
+      "registration": "SAMPLE2",
+      "make": "BMW",
+      "model": "320D M SPORT",
+      "first_used_date": "2017-03-22",
+      "latest_test": {
+        "date": "2025-07-13",
+        "result": "PASSED",
+        "odometer": "98715",
+        "expiry_date": "2026-07-12"
+      },
+      "current_odometer": "98715",
+      "has_outstanding_recall": "Yes"
+    },
+    "mot_tests": [
+      {
+        "test_number": 1,
+        "test_id": "SAMPLE-001-83472",
+        "date": "2025-07-13",
+        "result": "PASSED",
+        "odometer": 98715,
+        "odometer_unit": "MI",
+        "expiry_date": "2026-07-12",
+        "advisories": [
+          {
+            "type": "ADVISORY",
+            "text": "Nearside Front Tyre worn close to legal limit (5.2.3 (e))"
+          },
+          {
+            "type": "ADVISORY",
+            "text": "Offside Rear shock absorber has slight oil seepage but not excessive (5.3.2 (b))"
+          },
+          {
+            "type": "ADVISORY",
+            "text": "Front Brake disc worn, pitted or scored, but not seriously weakened (1.1.14 (a) (ii))"
+          }
+        ],
+        "failures": [],
+        "dangerous": [],
+        "total_defects": 3
+      },
+      {
+        "test_number": 2,
+        "test_id": "SAMPLE-002-91038",
+        "date": "2024-07-09",
+        "result": "FAILED",
+        "odometer": 84210,
+        "odometer_unit": "MI",
+        "expiry_date": null,
+        "advisories": [
+          {
+            "type": "ADVISORY",
+            "text": "Nearside Rear Coil spring corroded (5.3.1 (b) (i))"
+          }
+        ],
+        "failures": [
+          {
+            "type": "MAJOR",
+            "text": "Offside Front Brake pad(s) worn below 1.5 mm (1.1.13 (a) (ii))"
+          },
+          {
+            "type": "MAJOR",
+            "text": "Nearside Headlamp aim too low (4.1.2 (a))"
+          }
+        ],
+        "dangerous": [],
+        "total_defects": 3
+      },
+      {
+        "test_number": 3,
+        "test_id": "SAMPLE-003-11248",
+        "date": "2024-07-22",
+        "result": "PASSED",
+        "odometer": 84290,
+        "odometer_unit": "MI",
+        "expiry_date": "2025-07-21",
+        "advisories": [
+          {
+            "type": "ADVISORY",
+            "text": "Nearside Rear Coil spring corroded (5.3.1 (b) (i))"
+          }
+        ],
+        "failures": [],
+        "dangerous": [],
+        "total_defects": 1
+      },
+      {
+        "test_number": 4,
+        "test_id": "SAMPLE-004-55781",
+        "date": "2023-08-04",
+        "result": "PASSED",
+        "odometer": 71880,
+        "odometer_unit": "MI",
+        "expiry_date": "2024-08-03",
+        "advisories": [
+          {
+            "type": "ADVISORY",
+            "text": "Offside Front Tyre worn close to legal limit (5.2.3 (e))"
+          }
+        ],
+        "failures": [],
+        "dangerous": [],
+        "total_defects": 1
+      },
+      {
+        "test_number": 5,
+        "test_id": "SAMPLE-005-30912",
+        "date": "2022-10-18",
+        "result": "PASSED",
+        "odometer": 58420,
+        "odometer_unit": "MI",
+        "expiry_date": "2023-10-17",
+        "advisories": [],
+        "failures": [],
+        "dangerous": [],
+        "total_defects": 0
+      },
+      {
+        "test_number": 6,
+        "test_id": "SAMPLE-006-77204",
+        "date": "2022-09-02",
+        "result": "FAILED",
+        "odometer": 79132,
+        "odometer_unit": "MI",
+        "expiry_date": null,
+        "advisories": [],
+        "failures": [
+          {
+            "type": "DANGEROUS",
+            "text": "Nearside Front Suspension arm pin or bush excessively worn (5.3.4 (a) (i))"
+          }
+        ],
+        "dangerous": [
+          {
+            "type": "DANGEROUS",
+            "text": "Nearside Front Suspension arm pin or bush excessively worn (5.3.4 (a) (i))"
+          }
+        ],
+        "total_defects": 1
+      },
+      {
+        "test_number": 7,
+        "test_id": "SAMPLE-007-46851",
+        "date": "2021-08-19",
+        "result": "PASSED",
+        "odometer": 62450,
+        "odometer_unit": "MI",
+        "expiry_date": "2022-08-18",
+        "advisories": [
+          {
+            "type": "ADVISORY",
+            "text": "Front Brake pad(s) wearing thin (1.1.13 (a) (ii))"
+          }
+        ],
+        "failures": [],
+        "dangerous": [],
+        "total_defects": 1
+      },
+      {
+        "test_number": 8,
+        "test_id": "SAMPLE-008-19337",
+        "date": "2020-08-05",
+        "result": "PASSED",
+        "odometer": 41280,
+        "odometer_unit": "MI",
+        "expiry_date": "2021-08-04",
+        "advisories": [],
+        "failures": [],
+        "dangerous": [],
+        "total_defects": 0
+      }
+    ],
+    "clocking_analysis": {
+      "clocked": true,
+      "risk_level": "high",
+      "reason": "Mileage decreased between MOT tests \u2014 possible odometer rollback",
+      "flags": [
+        {
+          "type": "mileage_drop",
+          "severity": "high",
+          "detail": "Mileage dropped from 79,132 mi on 2 Sep 2022 to 58,420 mi on 18 Oct 2022 \u2014 a decrease of 20,712 miles in 46 days",
+          "from_date": "2022-09-02",
+          "to_date": "2022-10-18",
+          "drop_amount": 20712
+        }
+      ]
+    },
+    "condition_score": 58,
+    "mileage_timeline": [
+      {
+        "date": "2020-08-05",
+        "miles": 41280,
+        "unit": "MI"
+      },
+      {
+        "date": "2021-08-19",
+        "miles": 62450,
+        "unit": "MI"
+      },
+      {
+        "date": "2022-09-02",
+        "miles": 79132,
+        "unit": "MI"
+      },
+      {
+        "date": "2022-10-18",
+        "miles": 58420,
+        "unit": "MI"
+      },
+      {
+        "date": "2023-08-04",
+        "miles": 71880,
+        "unit": "MI"
+      },
+      {
+        "date": "2024-07-09",
+        "miles": 84210,
+        "unit": "MI"
+      },
+      {
+        "date": "2024-07-22",
+        "miles": 84290,
+        "unit": "MI"
+      },
+      {
+        "date": "2025-07-13",
+        "miles": 98715,
+        "unit": "MI"
+      }
+    ],
+    "failure_patterns": [
+      {
+        "category": "brake",
+        "occurrences": 4,
+        "concern_level": "medium"
+      },
+      {
+        "category": "suspension",
+        "occurrences": 3,
+        "concern_level": "medium"
+      },
+      {
+        "category": "tyre",
+        "occurrences": 2,
+        "concern_level": "low"
+      }
+    ],
+    "ulez_compliance": {
+      "compliant": true,
+      "status": "compliant",
+      "reason": "Diesel Euro 6 \u2014 meets ULEZ standard",
+      "euro_standard": 6,
+      "euro_inferred": false,
+      "fuel_type": "DIESEL",
+      "daily_charge": "\u00a30.00",
+      "zones": {
+        "london": true,
+        "birmingham": true,
+        "bath": true,
+        "bristol": true,
+        "sheffield": true,
+        "tyneside": true,
+        "portsmouth": true,
+        "scotland_lez": true
+      },
+      "zone_details": [
+        {
+          "zone_id": "london",
+          "name": "London ULEZ",
+          "region": "London",
+          "compliant": true,
+          "charge": "\u00a30.00",
+          "cars_affected": true,
+          "zone_type": "ULEZ"
+        },
+        {
+          "zone_id": "birmingham",
+          "name": "Birmingham CAZ",
+          "region": "Birmingham",
+          "compliant": true,
+          "charge": "\u00a30.00",
+          "cars_affected": true,
+          "zone_type": "CAZ Class D"
+        },
+        {
+          "zone_id": "bath",
+          "name": "Bath CAZ",
+          "region": "Bath",
+          "compliant": true,
+          "charge": "\u00a30.00",
+          "cars_affected": false,
+          "zone_type": "CAZ Class C"
+        },
+        {
+          "zone_id": "bristol",
+          "name": "Bristol CAZ",
+          "region": "Bristol",
+          "compliant": true,
+          "charge": "\u00a30.00",
+          "cars_affected": true,
+          "zone_type": "CAZ Class D"
+        },
+        {
+          "zone_id": "sheffield",
+          "name": "Sheffield CAZ",
+          "region": "Sheffield",
+          "compliant": true,
+          "charge": "\u00a30.00",
+          "cars_affected": false,
+          "zone_type": "CAZ Class C"
+        },
+        {
+          "zone_id": "tyneside",
+          "name": "Tyneside CAZ",
+          "region": "Newcastle/Gateshead",
+          "compliant": true,
+          "charge": "\u00a30.00",
+          "cars_affected": false,
+          "zone_type": "CAZ Class C"
+        },
+        {
+          "zone_id": "portsmouth",
+          "name": "Portsmouth CAZ",
+          "region": "Portsmouth",
+          "compliant": true,
+          "charge": "\u00a30.00",
+          "cars_affected": false,
+          "zone_type": "CAZ Class B"
+        },
+        {
+          "zone_id": "scotland_lez",
+          "name": "Scotland LEZ",
+          "region": "Glasgow/Edinburgh/Aberdeen/Dundee",
+          "compliant": true,
+          "charge": "\u00a30.00",
+          "cars_affected": true,
+          "zone_type": "LEZ"
+        }
+      ],
+      "total_zones": 8,
+      "compliant_zones": 8,
+      "non_compliant_zones": 0,
+      "charges_apply_zones": 0
+    },
+    "tax_calculation": {
+      "band": "Standard",
+      "band_range": "Post-April 2017",
+      "co2_emissions": 124,
+      "fuel_type": "DIESEL",
+      "first_year_rate": 0,
+      "annual_rate": 195,
+      "six_month_rate": 107.25,
+      "monthly_total": 20.49,
+      "is_electric": false,
+      "is_diesel": true,
+      "tax_regime": "Post-April 2017",
+      "year_of_manufacture": 2017
+    },
+    "safety_rating": {
+      "source": "Euro NCAP",
+      "make": "BMW",
+      "model": "3 Series",
+      "year_range": "2019-2025",
+      "stars": 5,
+      "adult": 97,
+      "child": 87,
+      "pedestrian": 87,
+      "safety_assist": 76,
+      "overall": 87,
+      "test_year": 2019
+    },
+    "vehicle_stats": {
+      "vehicle_age_years": 8,
+      "year_of_manufacture": 2017,
+      "first_registered": "2017-03",
+      "mot_expiry_date": "2026-07-12",
+      "mot_days_remaining": 76,
+      "mot_status_detail": "Valid for 76 days",
+      "tax_due_date": "2026-09-01",
+      "tax_days_remaining": 127,
+      "tax_status_detail": "Valid for 127 days",
+      "v5c_issued_date": "2022-04-08",
+      "v5c_days_since": 1124,
+      "v5c_insight": "V5C issued ~3 years ago",
+      "estimated_annual_mileage": 12339,
+      "total_recorded_mileage": 98715,
+      "mileage_readings_count": 8,
+      "mileage_assessment": "Average mileage",
+      "total_advisory_items": 8,
+      "total_failure_items": 3,
+      "total_dangerous_items": 1,
+      "total_major_items": 2,
+      "total_minor_items": 0
+    },
+    "finance_check": {
+      "finance_outstanding": true,
+      "record_count": 1,
+      "records": [
+        {
+          "agreement_type": "PCP (Personal Contract Purchase)",
+          "finance_company": "Black Horse Finance",
+          "agreement_date": "2022-04-15",
+          "agreement_term": "48 months",
+          "contact_number": null
+        }
+      ],
+      "data_source": "Experian"
+    },
+    "stolen_check": {
+      "stolen": false,
+      "reported_date": null,
+      "police_force": null,
+      "reference": null,
+      "data_source": "Experian"
+    },
+    "write_off_check": {
+      "written_off": true,
+      "record_count": 1,
+      "records": [
+        {
+          "category": "S",
+          "date": "2022-02-09",
+          "loss_type": "Collision",
+          "insurer_name": "Sample Insurance Co.",
+          "claim_number": "SMPL-2022-04471",
+          "damage_locations": [
+            "Front Nearside",
+            "Front Offside",
+            "Bonnet"
+          ]
+        }
+      ],
+      "data_source": "Experian"
+    },
+    "plate_changes": {
+      "changes_found": true,
+      "record_count": 1,
+      "records": [
+        {
+          "previous_plate": "BL17XYZ",
+          "change_date": "2022-04-08",
+          "change_type": "Transfer"
+        }
+      ],
+      "data_source": "Experian"
+    },
+    "valuation": {
+      "private_sale": 11250,
+      "dealer_forecourt": 13495,
+      "trade_in": 9100,
+      "part_exchange": 9750,
+      "valuation_date": "2026-05-05",
+      "mileage_used": 98715,
+      "condition": "Mileage-adjusted",
+      "data_source": "Brego"
+    },
+    "keeper_history": {
+      "keeper_count": 3,
+      "last_change_date": "2022-04-08",
+      "keepers": [
+        {
+          "keeper_number": 3,
+          "start_date": "2022-04-08",
+          "end_date": null,
+          "is_current": true,
+          "start_display": "8 Apr 2022",
+          "end_display": null,
+          "tenure_display": "3 years \u00b7 1 month",
+          "label": "Third Owner"
+        },
+        {
+          "keeper_number": 2,
+          "start_date": "2020-06-15",
+          "end_date": "2022-04-08",
+          "is_current": false,
+          "start_display": "15 Jun 2020",
+          "end_display": "8 Apr 2022",
+          "tenure_display": "1 year \u00b7 9 months",
+          "label": "Second Owner"
+        },
+        {
+          "keeper_number": 1,
+          "start_date": "2017-03-22",
+          "end_date": "2020-06-15",
+          "is_current": false,
+          "start_display": "22 Mar 2017",
+          "end_display": "15 Jun 2020",
+          "tenure_display": "3 years \u00b7 2 months",
+          "label": "First Owner"
+        }
+      ],
+      "data_source": "Experian"
+    },
+    "high_risk": {
+      "flagged": false,
+      "records": [],
+      "data_source": "Experian"
+    },
+    "previous_searches": {
+      "search_count": 14,
+      "records": [
+        {
+          "date": "2026-04-30",
+          "business_type": "MOTOR TRADE & OTHER"
+        },
+        {
+          "date": "2026-04-22",
+          "business_type": "MOTOR TRADE & OTHER"
+        },
+        {
+          "date": "2026-04-15",
+          "business_type": "FINANCE COMPANY"
+        },
+        {
+          "date": "2026-04-09",
+          "business_type": "MOTOR TRADE & OTHER"
+        },
+        {
+          "date": "2026-03-28",
+          "business_type": "MOTOR TRADE & OTHER"
+        },
+        {
+          "date": "2026-03-12",
+          "business_type": "MOTOR TRADE & OTHER"
+        },
+        {
+          "date": "2026-02-19",
+          "business_type": "INSURANCE COMPANY"
+        },
+        {
+          "date": "2026-02-04",
+          "business_type": "MOTOR TRADE & OTHER"
+        },
+        {
+          "date": "2026-01-20",
+          "business_type": "MOTOR TRADE & OTHER"
+        },
+        {
+          "date": "2025-12-15",
+          "business_type": "MOTOR TRADE & OTHER"
+        },
+        {
+          "date": "2025-11-04",
+          "business_type": "MOTOR TRADE & OTHER"
+        },
+        {
+          "date": "2025-09-22",
+          "business_type": "MOTOR TRADE & OTHER"
+        },
+        {
+          "date": "2025-08-08",
+          "business_type": "FINANCE COMPANY"
+        },
+        {
+          "date": "2025-06-17",
+          "business_type": "MOTOR TRADE & OTHER"
+        }
+      ],
+      "data_source": "Experian"
+    },
+    "salvage_check": {
+      "salvage_found": false,
+      "records": [],
+      "data_source": "CarGuide"
+    },
+    "import_status": null,
+    "vehicle_images": null,
+    "listing_price": null,
+    "checked_at": "2026-05-05T10:00:00",
+    "data_sources": [
+      "DVLA VES API",
+      "DVSA MOT History API",
+      "Experian via One Auto API"
+    ]
+  }
+}
