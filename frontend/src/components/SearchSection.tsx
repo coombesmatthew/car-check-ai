@@ -150,6 +150,12 @@ export default function SearchSection({ onCheckComplete }: { onCheckComplete?: (
               {error && (
                 <p className="mt-3 text-red-600 text-sm text-center">{error}</p>
               )}
+              <p className="mt-3 text-center text-sm text-slate-500">
+                Curious what you get for £9.99?{" "}
+                <a href="/sample-report" className="text-blue-600 font-medium hover:underline">
+                  See an example report →
+                </a>
+              </p>
         </form>
 
         <div className="flex items-center justify-center gap-3 mt-4 flex-wrap">

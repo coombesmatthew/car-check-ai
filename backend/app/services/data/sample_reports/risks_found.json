@@ -1,5 +1,5 @@
 {
-  "registration": "SAMPLE2",
+  "registration": "BD17 SMP",
   "report_ref": "CV-SAMPLE-RISKS1",
   "tier": "car",
   "is_ev": false,
@@ -7,10 +7,10 @@
   "amount_pence": null,
   "currency": null,
   "check_data": {
-    "registration": "SAMPLE2",
+    "registration": "BD17 SMP",
     "tier": "premium",
     "vehicle": {
-      "registration": "SAMPLE2",
+      "registration": "BD17 SMP",
       "make": "BMW",
       "colour": "GREY",
       "fuel_type": "DIESEL",
@@ -31,7 +31,7 @@
       "total_tests": 8,
       "total_passes": 5,
       "total_failures": 3,
-      "registration": "SAMPLE2",
+      "registration": "BD17 SMP",
       "make": "BMW",
       "model": "320D M SPORT",
       "first_used_date": "2017-03-22",

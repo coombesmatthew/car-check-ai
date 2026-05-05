@@ -12,9 +12,9 @@ import { track } from "@/lib/analytics";
 type Tab = { id: SampleVariant; label: string; sublabel: string };
 
 const TABS: Tab[] = [
-  { id: "risks", label: "Risks Found", sublabel: "BMW 320d · finance + write-off flagged" },
-  { id: "clean", label: "Clean Result", sublabel: "MINI · all checks passed" },
-  { id: "ev", label: "EV Health", sublabel: "Tesla Model 3 · battery + range" },
+  { id: "risks", label: "BMW 320d", sublabel: "Risks found" },
+  { id: "clean", label: "MINI", sublabel: "All clear" },
+  { id: "ev", label: "Tesla Model 3", sublabel: "Battery + range" },
 ];
 
 function isValidVariant(v: string | null): v is SampleVariant {
@@ -68,22 +68,23 @@ function SampleReportContent() {
 
   return (
     <div>
-      {/* Banner */}
-      <div className="mb-4 flex flex-col sm:flex-row sm:items-center gap-3 bg-blue-50 border border-blue-200 rounded-lg px-4 py-3">
-        <div className="flex items-start gap-3 flex-1">
-          <svg className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      {/* Sticky banner */}
+      <div className="sticky top-0 z-30 -mx-4 px-4 mb-4 py-3 bg-blue-50/95 backdrop-blur supports-[backdrop-filter]:bg-blue-50/80 border-b border-blue-200">
+        <div className="flex items-center gap-3 max-w-5xl mx-auto">
+          <svg className="w-5 h-5 text-blue-600 flex-shrink-0 hidden sm:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <p className="text-sm text-blue-900">
-            This is a sample report. Run a free check on your own car to start.
+          <p className="text-sm text-blue-900 flex-1">
+            <span className="hidden sm:inline">This is a sample report. Run a free check on your own car to start.</span>
+            <span className="sm:hidden font-semibold">Sample report</span>
           </p>
+          <a
+            href="/#search"
+            className="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors flex-shrink-0"
+          >
+            Check your car →
+          </a>
         </div>
-        <a
-          href="/#search"
-          className="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors flex-shrink-0"
-        >
-          Check your car
-        </a>
       </div>
 
       {/* Title */}
@@ -93,7 +94,7 @@ function SampleReportContent() {
       </div>
 
       {/* Tabs */}
-      <div role="tablist" aria-label="Sample variants" className="flex gap-2 overflow-x-auto pb-2 mb-4 -mx-1 px-1">
+      <div role="tablist" aria-label="Sample variants" className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
         {TABS.map((t) => {
           const active = t.id === variant;
           return (
@@ -102,16 +103,16 @@ function SampleReportContent() {
               role="tab"
               aria-selected={active}
               onClick={() => switchTab(t.id)}
-              className={`flex-shrink-0 text-left rounded-lg px-4 py-3 border-2 transition-colors ${
+              className={`text-left rounded-lg px-6 py-5 border-2 transition-colors ${
                 active
                   ? "border-blue-600 bg-blue-50"
                   : "border-slate-200 bg-white hover:border-slate-300"
               }`}
             >
-              <div className={`font-semibold text-sm ${active ? "text-blue-700" : "text-slate-900"}`}>
+              <div className={`font-semibold text-lg ${active ? "text-blue-700" : "text-slate-900"}`}>
                 {t.label}
               </div>
-              <div className="text-xs text-slate-500 mt-0.5">{t.sublabel}</div>
+              <div className="text-sm text-slate-500 mt-1">{t.sublabel}</div>
             </button>
           );
         })}

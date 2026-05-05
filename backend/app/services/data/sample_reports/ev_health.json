@@ -1,5 +1,5 @@
 {
-  "registration": "SAMPLE3",
+  "registration": "MA72 SMP",
   "report_ref": "CV-SAMPLE-EV1",
   "tier": "ev",
   "is_ev": true,
@@ -7,12 +7,12 @@
   "amount_pence": null,
   "currency": null,
   "check_data": {
-    "registration": "SAMPLE3",
+    "registration": "MA72 SMP",
     "tier": "ev_complete",
     "is_electric": true,
     "ev_type": "BEV",
     "vehicle": {
-      "registration": "SAMPLE3",
+      "registration": "MA72 SMP",
       "make": "TESLA",
       "colour": "WHITE",
       "fuel_type": "ELECTRICITY",
@@ -33,7 +33,7 @@
       "total_tests": 1,
       "total_passes": 1,
       "total_failures": 0,
-      "registration": "SAMPLE3",
+      "registration": "MA72 SMP",
       "make": "TESLA",
       "model": "MODEL 3 LONG RANGE",
       "first_used_date": "2022-09-08",

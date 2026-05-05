@@ -26,7 +26,7 @@ def test_sample_endpoint_clean_returns_populated_report(client):
     res = client.get("/api/v1/checks/sample?variant=clean")
     assert res.status_code == 200, res.text
     data = res.json()
-    assert data["registration"] == "SAMPLE1"
+    assert data["registration"] == "OU11 SMP"
     assert data["is_ev"] is False
     assert len(data["check_data"]["mot_tests"]) >= 10
     assert data["check_data"]["valuation"]["private_sale"] > 0
@@ -51,7 +51,7 @@ def test_sample_endpoint_unknown_variant_400(client):
 def test_sample_endpoint_default_variant_is_clean(client):
     res = client.get("/api/v1/checks/sample")
     assert res.status_code == 200
-    assert res.json()["registration"] == "SAMPLE1"
+    assert res.json()["registration"] == "OU11 SMP"
 
 
 def test_sample_returns_deep_copies():
@@ -61,7 +61,7 @@ def test_sample_returns_deep_copies():
     a["check_data"]["registration"] = "MUTATED"
     b = get_sample_report("clean")
     assert b is not None
-    assert b["check_data"]["registration"] == "SAMPLE1"
+    assert b["check_data"]["registration"] == "OU11 SMP"
 
 
 def test_clean_fixture_does_not_leak_real_vrm():

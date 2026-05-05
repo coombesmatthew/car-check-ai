@@ -1,13 +1,13 @@
 {
-  "registration": "SAMPLE1",
+  "registration": "OU11 SMP",
   "report_ref": "CV-SAMPLE-CLEAN1",
   "tier": "car",
   "is_ev": false,
   "check_data": {
-    "registration": "SAMPLE1",
+    "registration": "OU11 SMP",
     "tier": "premium",
     "vehicle": {
-      "registration": "SAMPLE1",
+      "registration": "OU11 SMP",
       "make": "MINI",
       "colour": "BLACK",
       "fuel_type": "DIESEL",
@@ -28,7 +28,7 @@
       "total_tests": 14,
       "total_passes": 11,
       "total_failures": 3,
-      "registration": "SAMPLE1",
+      "registration": "OU11 SMP",
       "make": "MINI",
       "model": "MINI",
       "first_used_date": "2011-04-20",
