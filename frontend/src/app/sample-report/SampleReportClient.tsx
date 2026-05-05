@@ -89,7 +89,7 @@ function SampleReportContent() {
 
       {/* Title */}
       <div className="mb-4">
-        <h1 className="text-2xl font-bold text-slate-900">Vehicle Report — Sample</h1>
+        <h1 className="text-2xl font-bold text-slate-900">Sample Reports</h1>
         <p className="text-sm text-slate-500 mt-1">See exactly what you get for £9.99 — same layout, same data, no signup.</p>
       </div>
 
