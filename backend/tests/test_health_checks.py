@@ -1,4 +1,4 @@
-# ruff: noqa: S101
+# ruff: noqa: S101, S105, S106
 # pyright: reportMissingImports=false
 """Unit tests for the operational health-check module."""
 from __future__ import annotations
@@ -15,6 +15,9 @@ from app.services.monitoring.health_checks import (
     HealthReport,
     _alert_fingerprint,
     _notify_discord,
+    check_dvla_ves,
+    check_mot_oauth,
+    check_stripe,
 )
 
 
@@ -102,6 +105,52 @@ async def test_notify_discord_suppresses_repeat_alerts():
     ):
         await _notify_discord(report)
         mock_notify.assert_not_called()
+
+
+# ─── Coverage tests for the new check functions ──────────────────────────────
+
+
+def test_sandbox_endpoints_no_longer_includes_unused_dvla_region():
+    """Regression: dvlaregionfromvrm/v2 isn't called by production code."""
+    paths = {ep["path"] for ep in SANDBOX_ENDPOINTS}
+    assert "/oneauto/dvlaregionfromvrm/v2" not in paths
+
+
+def test_sandbox_endpoints_includes_autopredict():
+    """AutoPredict powers EV Health + EV Complete tiers — must be monitored."""
+    paths = {ep["path"] for ep in SANDBOX_ENDPOINTS}
+    assert "/autopredict/predict/v2" in paths
+    assert "/autopredict/statistics/v2" in paths
+
+
+@pytest.mark.asyncio
+async def test_check_dvla_ves_reports_unhealthy_when_key_missing():
+    with patch("app.services.monitoring.health_checks.settings") as s:
+        s.DVLA_VES_API_KEY = ""
+        s.DVLA_VES_URL = "https://example/"
+        result = await check_dvla_ves()
+    assert result.healthy is False
+    assert result.error == "DVLA_VES_API_KEY not configured"
+
+
+@pytest.mark.asyncio
+async def test_check_mot_oauth_reports_unhealthy_when_creds_missing():
+    with patch("app.services.monitoring.health_checks.settings") as s:
+        s.MOT_CLIENT_ID = ""
+        s.MOT_CLIENT_SECRET = ""
+        s.MOT_TOKEN_URL = "https://example/token"
+        result = await check_mot_oauth()
+    assert result.healthy is False
+    assert "credentials not configured" in (result.error or "")
+
+
+@pytest.mark.asyncio
+async def test_check_stripe_reports_unhealthy_when_key_missing():
+    with patch("app.services.monitoring.health_checks.settings") as s:
+        s.STRIPE_SECRET_KEY = ""
+        result = await check_stripe()
+    assert result.healthy is False
+    assert "STRIPE_SECRET_KEY" in (result.error or "")
 
 
 @pytest.mark.asyncio
