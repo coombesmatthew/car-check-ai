@@ -1,3 +1,4 @@
+# pyright: reportMissingImports=false
 """Operational health checks — sandbox heartbeats + passive live-traffic analysis.
 
 Designed to be triggered hourly by an external cron (GitHub Actions or
@@ -36,14 +37,11 @@ SANDBOX_BASE_URL = "https://sandbox.oneautoapi.com"
 TEST_VRM = "AB12CDE"
 TEST_MILEAGE = 30000
 
-# Endpoints we depend on in production. Each is hit in sandbox during
+# OneAuto endpoints we depend on in production. Each is hit in sandbox during
 # the heartbeat. Order matches our paid pipeline.
+# (Dropped /oneauto/dvlaregionfromvrm/v2 — it isn't called anywhere outside
+#  this file, so monitoring it adds noise without protecting any user-facing flow.)
 SANDBOX_ENDPOINTS: list[dict[str, Any]] = [
-    {
-        "name": "DVLA region (cheapest live endpoint)",
-        "path": "/oneauto/dvlaregionfromvrm/v2",
-        "params": {"vehicle_registration_mark": TEST_VRM},
-    },
     {
         "name": "ClearWatt — Used EV Range",
         "path": "/clearwatt/expectedrangefromvrm/",
@@ -78,6 +76,16 @@ SANDBOX_ENDPOINTS: list[dict[str, Any]] = [
     {
         "name": "CarGuide salvage",
         "path": "/carguide/salvagecheck/v2",
+        "params": {"vehicle_registration_mark": TEST_VRM},
+    },
+    {
+        "name": "AutoPredict — predict",
+        "path": "/autopredict/predict/v2",
+        "params": {"vehicle_registration_mark": TEST_VRM},
+    },
+    {
+        "name": "AutoPredict — statistics",
+        "path": "/autopredict/statistics/v2",
         "params": {"vehicle_registration_mark": TEST_VRM},
     },
 ]
@@ -186,6 +194,14 @@ async def check_live_traffic_health() -> list[dict[str, Any]]:
       - At least LIVE_MIN_SAMPLES calls in the window, AND
       - error rate exceeds LIVE_ERROR_RATE_THRESHOLD
 
+    "Error" means `error IS NOT NULL` on the api_calls row, which covers all
+    three failure modes the OneAuto client records:
+      - HTTP 4xx/5xx (status_code set, error set)
+      - Timeout / network exception (status_code NULL, error set)
+      - HTTP 200 with `success: false` body (status_code 200, error set)
+    Filtering on status_code >= 400 alone would miss the last two — and the
+    last is OneAuto's most common failure shape (rate / plan / no-data limits).
+
     Free signal — we only see what real customers triggered, no new paid calls.
     """
     # ApiCall.created_at is naive UTC (server_default=now()), so compare with naive UTC.
@@ -197,7 +213,7 @@ async def check_live_traffic_health() -> list[dict[str, Any]]:
             select(
                 ApiCall.endpoint,
                 func.count().label("total"),
-                func.count().filter(ApiCall.status_code >= 400).label("errors"),
+                func.count().filter(ApiCall.error.is_not(None)).label("errors"),
             )
             .where(ApiCall.created_at >= cutoff)
             .where(ApiCall.service == "oneauto")
@@ -225,10 +241,100 @@ async def check_live_traffic_health() -> list[dict[str, Any]]:
     return alerts
 
 
+async def check_dvla_ves() -> EndpointResult:
+    """Hit DVLA VES with the test VRM. Powers the FREE tier's vehicle identity.
+
+    DVLA returns 404 for unknown VRMs — that's still a healthy "API alive" signal,
+    so we treat 200 OR 404 as healthy. 401/403/5xx mean we'd lose FREE-tier traffic.
+    """
+    name = "DVLA VES (FREE-tier identity)"
+    path = settings.DVLA_VES_URL
+    if not settings.DVLA_VES_API_KEY or settings.DVLA_VES_API_KEY.startswith("your_"):
+        return EndpointResult(name=name, path=path, healthy=False, error="DVLA_VES_API_KEY not configured")
+    try:
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            resp = await client.post(
+                path,
+                json={"registrationNumber": TEST_VRM},
+                headers={"x-api-key": settings.DVLA_VES_API_KEY, "Content-Type": "application/json"},
+            )
+        ok = resp.status_code in (200, 404)
+        return EndpointResult(
+            name=name,
+            path=path,
+            healthy=ok,
+            status_code=resp.status_code,
+            error=None if ok else resp.text[:200],
+        )
+    except Exception as e:
+        return EndpointResult(name=name, path=path, healthy=False, error=str(e)[:200])
+
+
+async def check_mot_oauth() -> EndpointResult:
+    """Hit DVSA MOT's OAuth token endpoint. Powers the FREE tier's MOT history.
+
+    Just acquires a token — that proves credentials are alive. We don't make a
+    history call to keep the heartbeat free of side effects (and history calls
+    are tiny anyway, but logging them as part of monitoring would muddy the
+    api_calls table).
+    """
+    name = "DVSA MOT OAuth (FREE-tier MOT history)"
+    path = settings.MOT_TOKEN_URL
+    if not settings.MOT_CLIENT_ID or not settings.MOT_CLIENT_SECRET:
+        return EndpointResult(name=name, path=path, healthy=False, error="MOT OAuth credentials not configured")
+    try:
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            resp = await client.post(
+                path,
+                data={
+                    "grant_type": "client_credentials",
+                    "client_id": settings.MOT_CLIENT_ID,
+                    "client_secret": settings.MOT_CLIENT_SECRET,
+                    "scope": settings.MOT_SCOPE_URL,
+                },
+                headers={"Content-Type": "application/x-www-form-urlencoded"},
+            )
+        ok = resp.status_code == 200 and "access_token" in resp.text
+        return EndpointResult(
+            name=name,
+            path=path,
+            healthy=ok,
+            status_code=resp.status_code,
+            error=None if ok else resp.text[:200],
+        )
+    except Exception as e:
+        return EndpointResult(name=name, path=path, healthy=False, error=str(e)[:200])
+
+
+async def check_stripe() -> EndpointResult:
+    """Validate the Stripe API key is alive via Account.retrieve.
+
+    Free, doesn't create or modify anything. Catches revoked / mistyped keys
+    before a customer hits checkout and gets a 500.
+    """
+    import asyncio
+
+    import stripe
+
+    name = "Stripe (payment API key)"
+    path = "stripe.Account.retrieve"
+    if not settings.STRIPE_SECRET_KEY or settings.STRIPE_SECRET_KEY.startswith("your_"):
+        return EndpointResult(name=name, path=path, healthy=False, error="STRIPE_SECRET_KEY not configured")
+    try:
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+        await asyncio.to_thread(stripe.Account.retrieve)
+        return EndpointResult(name=name, path=path, healthy=True, status_code=200)
+    except Exception as e:
+        return EndpointResult(name=name, path=path, healthy=False, error=str(e)[:200])
+
+
 async def run_health_check(notify_on_failure: bool = True) -> HealthReport:
     """Top-level: run sandbox + live-traffic checks, ping Discord on failure."""
     report = HealthReport(timestamp=datetime.now(timezone.utc).isoformat())
     report.sandbox_results = await check_sandbox_endpoints()
+    report.sandbox_results.append(await check_dvla_ves())
+    report.sandbox_results.append(await check_mot_oauth())
+    report.sandbox_results.append(await check_stripe())
     report.live_traffic_alerts = await check_live_traffic_health()
 
     if notify_on_failure and not report.healthy:
