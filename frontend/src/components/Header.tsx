@@ -34,6 +34,9 @@ export default function Header() {
           <a href="#full-report" className="text-slate-600 hover:text-slate-900 transition-colors">
             Pricing
           </a>
+          <a href="/sample-report" className="text-slate-600 hover:text-slate-900 transition-colors">
+            Sample Reports
+          </a>
           <a href="#how-it-works" className="text-slate-600 hover:text-slate-900 transition-colors">
             How It Works
           </a>
@@ -74,6 +77,9 @@ export default function Header() {
           </a>
           <a href="#full-report" className="block py-2 text-slate-600 hover:text-slate-900" onClick={() => setMenuOpen(false)}>
             Pricing
+          </a>
+          <a href="/sample-report" className="block py-2 text-slate-600 hover:text-slate-900" onClick={() => setMenuOpen(false)}>
+            Sample Reports
           </a>
           <a href="#how-it-works" className="block py-2 text-slate-600 hover:text-slate-900" onClick={() => setMenuOpen(false)}>
             How It Works
