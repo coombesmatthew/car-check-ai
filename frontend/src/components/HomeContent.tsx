@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import SearchSection from "@/components/SearchSection";
 
 const faqItems = [
@@ -42,7 +42,11 @@ export default function HomeContent() {
 
   return (
     <>
-      <SearchSection onCheckComplete={setHasResult} />
+      {/* Suspense boundary required because SearchSection uses useSearchParams,
+          which forces a client-side bailout during static prerender (Next 14). */}
+      <Suspense fallback={null}>
+        <SearchSection onCheckComplete={setHasResult} />
+      </Suspense>
 
       {!hasResult && (
         <>
