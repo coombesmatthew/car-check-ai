@@ -1,4 +1,10 @@
-"""Tests for PDF generation and email rendering services."""
+# ruff: noqa: S101
+# pyright: reportMissingImports=false
+"""Tests for the email rendering services.
+
+(Previously also covered PDF generation, which was removed on 2026-04-23 in
+favour of online-only reports — see fulfilment.py / email_sender.py.)
+"""
 
 from app.services.notification.email_sender import (
     render_report_email,
@@ -89,7 +95,7 @@ class TestBuildChecksSummary:
             "clocking_analysis": {"clocked": True, "risk_level": "high"},
         }
         items = _build_checks_summary(data)
-        clocked = next(i for i in items if i["label"] == "Mileage Discrepancy")
+        clocked = next(i for i in items if i["label"] == "Mileage Discrepancy Detected")
         assert clocked["status"] == "fail"
 
 
@@ -113,4 +119,7 @@ class TestRenderReportEmail:
         assert "VeriCar" in html
         assert "DEMO1" in html
         assert "FORD" in html
-        assert "92" in html
+        # Bare condition score isn't surfaced in the email any more — the email
+        # links to /report and shows only the At a Glance summary items. Assert
+        # on the report ref instead so we still cover template substitution.
+        assert "CV-TEST-001" in html

@@ -1,3 +1,5 @@
+# ruff: noqa: S101
+# pyright: reportMissingImports=false
 """Tests for EV Health Check endpoints and EV detection logic."""
 
 import pytest
@@ -253,56 +255,56 @@ def _make_clearwatt(retention_pct, test_grade=None):
 class TestBatteryHealth:
     def test_derive_battery_health_excellent(self):
         orch = EVOrchestrator.__new__(EVOrchestrator)
-        bh = orch._derive_battery_health(_make_clearwatt(95), {})
+        bh = orch._derive_battery_health(_make_clearwatt(95))
         assert bh.score == 95
         assert bh.grade == "A"
         assert bh.degradation_estimate_pct == 5.0
 
     def test_derive_battery_health_good(self):
         orch = EVOrchestrator.__new__(EVOrchestrator)
-        bh = orch._derive_battery_health(_make_clearwatt(82), {})
+        bh = orch._derive_battery_health(_make_clearwatt(82))
         assert bh.score == 82
         assert bh.grade == "B"
 
     def test_derive_battery_health_fair(self):
         orch = EVOrchestrator.__new__(EVOrchestrator)
-        bh = orch._derive_battery_health(_make_clearwatt(72), {})
+        bh = orch._derive_battery_health(_make_clearwatt(72))
         assert bh.score == 72
         assert bh.grade == "C"
 
     def test_derive_battery_health_below_average(self):
         orch = EVOrchestrator.__new__(EVOrchestrator)
-        bh = orch._derive_battery_health(_make_clearwatt(65), {})
+        bh = orch._derive_battery_health(_make_clearwatt(65))
         assert bh.score == 65
         assert bh.grade == "D"
 
     def test_derive_battery_health_poor(self):
         orch = EVOrchestrator.__new__(EVOrchestrator)
-        bh = orch._derive_battery_health(_make_clearwatt(55), {})
+        bh = orch._derive_battery_health(_make_clearwatt(55))
         assert bh.score == 55
         assert bh.grade == "F"
 
     def test_derive_battery_health_no_data(self):
         orch = EVOrchestrator.__new__(EVOrchestrator)
-        bh = orch._derive_battery_health(None, {})
+        bh = orch._derive_battery_health(None)
         assert bh.score is None
         assert bh.summary == "No battery data available"
 
     def test_derive_battery_health_clamped(self):
         orch = EVOrchestrator.__new__(EVOrchestrator)
-        bh = orch._derive_battery_health(_make_clearwatt(105), {})
+        bh = orch._derive_battery_health(_make_clearwatt(105))
         assert bh.score == 100
 
     def test_derive_battery_health_with_test_grade(self):
         orch = EVOrchestrator.__new__(EVOrchestrator)
-        bh = orch._derive_battery_health(_make_clearwatt(90, test_grade="A+"), {})
+        bh = orch._derive_battery_health(_make_clearwatt(90, test_grade="A+"))
         assert bh.grade == "A"
         assert bh.test_grade == "A+"
         assert bh.test_date == "2025-06-15"
 
     def test_derive_battery_health_no_test_grade(self):
         orch = EVOrchestrator.__new__(EVOrchestrator)
-        bh = orch._derive_battery_health(_make_clearwatt(85), {})
+        bh = orch._derive_battery_health(_make_clearwatt(85))
         assert bh.test_grade is None
         assert bh.test_date is None
 
@@ -390,7 +392,7 @@ class TestParseEVData:
             "expected_real_electric_range_now": {"min_range_miles": 195, "max_range_miles": 215},
             "battery_health_test_result": {"is_record_available": True, "test_date": "2025-01-10", "test_result_grade": "A"},
         }
-        result = orch._parse_ev_data(clearwatt, None, None, None, {})
+        result = orch._parse_ev_data(clearwatt)
         re = result["range_estimate"]
         assert re.estimated_range_miles == 205  # midpoint of 195-215
         assert re.min_range_now_miles == 195
@@ -403,21 +405,6 @@ class TestParseEVData:
         assert re.battery_test_grade == "A"
         assert re.range_retention_pct is not None
         assert 88 < re.range_retention_pct < 90  # ~89.1%
-
-    def test_parse_autopredict(self):
-        orch = EVOrchestrator.__new__(EVOrchestrator)
-        predict = {"years_left_prediction": 8, "prediction_string": "8-10", "one_year_prediction": 0.95}
-        stats = {
-            "averages_data": {"model_average_final_miles": 150000, "model_average_final_age": 15, "manufacturer_average_final_miles": 140000, "manufacturer_average_final_age": 14},
-            "number_left_data": {"manufacturer_model_year_percentage_left": 92, "manufacturer_model_year_initially_registered": 5000, "manufacturer_model_year_currently_licensed": 4600},
-        }
-        result = orch._parse_ev_data(None, predict, stats, None, {})
-        lp = result["lifespan_prediction"]
-        assert lp.predicted_remaining_years == 8
-        assert lp.prediction_range == "8-10"
-        assert lp.one_year_survival_pct == 0.95
-        assert lp.model_avg_final_miles == 150000
-        assert lp.pct_still_on_road == 92
 
     def test_parse_evdb_range_scenarios(self):
         orch = EVOrchestrator.__new__(EVOrchestrator)
@@ -436,7 +423,7 @@ class TestParseEVData:
             "pence_per_mile_data": {"pence_per_mile_combined_mild": {"domestic_standard": 5.0, "public_charger": 12.0}},
             "unit_costs": {"pence_per_kwh_electric_details": {"domestic_standard": 24.5, "public_charger": 65.0}},
         }
-        result = orch._parse_ev_data(None, None, None, None, {"pence_per_mile": ppm})
+        result = orch._parse_ev_data(None, ppm)
         scenarios = result["range_scenarios"]
         assert len(scenarios) == 9
         # Check cold highway is worst
