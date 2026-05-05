@@ -303,6 +303,34 @@ export default function HomeContent() {
                   Start free. Upgrade if you need the full picture.
                 </p>
               </div>
+
+              {/* Sample report banner */}
+              <a
+                href="/sample-report"
+                className="block mb-6 bg-gradient-to-r from-blue-50 to-purple-50 border border-purple-200 rounded-xl px-5 py-4 hover:border-purple-300 hover:shadow-sm transition-all group"
+              >
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-white border border-purple-200 flex items-center justify-center flex-shrink-0">
+                      <svg className="w-5 h-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-slate-900 text-sm">Want to see a report before you buy?</p>
+                      <p className="text-xs text-slate-500 mt-0.5">Three real samples — clean car, risks-found, and EV health.</p>
+                    </div>
+                  </div>
+                  <span className="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-purple-700 group-hover:text-purple-800 whitespace-nowrap">
+                    View samples
+                    <svg className="w-4 h-4 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                    </svg>
+                  </span>
+                </div>
+              </a>
+
               {/* Car checks row */}
               <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">Car Checks</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -353,9 +381,6 @@ export default function HomeContent() {
                   <a href="#search" className="block text-center py-2.5 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors text-sm">
                     Get Premium &mdash; &pound;9.99
                   </a>
-                  <a href="/sample-report" className="block text-center text-xs text-purple-600 hover:underline mt-2.5">
-                    See a sample report →
-                  </a>
                 </div>
               </div>
 
@@ -392,9 +417,6 @@ export default function HomeContent() {
                   <a href="/ev" className="block text-center py-2.5 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 transition-colors text-sm">
                     Get EV Health Check &mdash; &pound;8.99
                   </a>
-                  <a href="/sample-report?variant=ev" className="block text-center text-xs text-emerald-700 hover:underline mt-2.5">
-                    See a sample report →
-                  </a>
                 </div>
 
                 {/* EV Complete tier */}
@@ -420,9 +442,6 @@ export default function HomeContent() {
                   </ul>
                   <a href="/ev" className="block text-center py-2.5 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 transition-colors text-sm">
                     Get EV Complete &mdash; &pound;13.99
-                  </a>
-                  <a href="/sample-report?variant=ev" className="block text-center text-xs text-teal-700 hover:underline mt-2.5">
-                    See a sample report →
                   </a>
                 </div>
               </div>

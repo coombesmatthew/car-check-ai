@@ -27,6 +27,7 @@ export default function Footer() {
             <nav className="text-sm text-slate-500 leading-relaxed">
               <a href="#search" className="block hover:text-slate-700 transition-colors">Free Check</a>
               <a href="#full-report" className="block hover:text-slate-700 transition-colors">Full Report</a>
+              <a href="/sample-report" className="block hover:text-slate-700 transition-colors">Sample Report</a>
               <a href="#how-it-works" className="block hover:text-slate-700 transition-colors">How It Works</a>
               <a href="/ev" className="block text-emerald-600 hover:text-emerald-700 transition-colors">EV Health Check</a>
               <a href="/privacy" className="block hover:text-slate-700 transition-colors">Privacy Policy</a>
