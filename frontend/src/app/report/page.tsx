@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import CheckResult from "@/components/CheckResult";
 import EVCheckResult from "@/components/ev/EVCheckResult";
 import { getReportData, ReportDataResponse } from "@/lib/api";
+import { track } from "@/lib/analytics";
 
 function ReportContent() {
   const searchParams = useSearchParams();
@@ -31,6 +32,10 @@ function ReportContent() {
         if (cancelled) return;
         setData(res);
         setStatus("ready");
+        track("report_viewed", {
+          is_ev: res.is_ev,
+          session_id: sessionId,
+        });
       } catch (err) {
         if (cancelled) return;
         const msg = err instanceof Error ? err.message : "Failed to load report";

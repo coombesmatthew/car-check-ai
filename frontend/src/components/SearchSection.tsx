@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { runFreeCheck, getCheckCount, FreeCheckResponse } from "@/lib/api";
+import { track } from "@/lib/analytics";
 import TrustBar from "@/components/ui/TrustBar";
 import CheckResult from "@/components/CheckResult";
 import UpsellSection from "@/components/UpsellSection";
@@ -21,7 +22,6 @@ export default function SearchSection({ onCheckComplete }: { onCheckComplete?: (
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<FreeCheckResponse | null>(null);
 
-  // BASIC tier upsell state
   const [showUpsell, setShowUpsell] = useState(false);
   const [reportError, setReportError] = useState<string | null>(null);
   const [checkCount, setCheckCount] = useState<number | null>(null);
@@ -66,7 +66,13 @@ export default function SearchSection({ onCheckComplete }: { onCheckComplete?: (
     try {
       const data = await runFreeCheck(cleaned);
       const fuel = data.vehicle?.fuel_type?.toUpperCase() ?? "";
-      if (EV_FUEL_TYPES.includes(fuel)) {
+      const isEv = EV_FUEL_TYPES.includes(fuel);
+      track("check_submitted", {
+        registration: cleaned,
+        is_ev: isEv,
+        source: "homepage",
+      });
+      if (isEv) {
         router.replace(`/ev?reg=${cleaned}`);
         return;
       }
